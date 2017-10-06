@@ -50,6 +50,21 @@ typedef enum {
     CFAST_RET_ALLOC_ERR
 } CFAST_RET;
 
+typedef enum {
+    CFAST_LANG_EN,
+    CFAST_LANG_CN,
+    CFAST_LANG_OTHER
+} CFAST_LANG;
+
+typedef enum {
+    CFAST_PARAM_NEEDLESS,
+    CFAST_PARAM_OPTIONAL,
+    CFAST_PARAM_ESSENTIAL
+} CFAST_PARAM_NEED;
+
+#define CFAST_LANG_IS_EN(lang) ((lang) == CFAST_LANG_EN)
+#define CFAST_LANG_IS_CN(lang) ((lang) == CFAST_LANG_CN)
+
 typedef struct {
     CFAST_CHAR* data;
     CFAST_SIZE  len;

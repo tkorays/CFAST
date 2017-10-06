@@ -56,5 +56,26 @@ CFAST_VOID CFAST_CMD_PrintHelp(CFAST_CMD_Env* env, CFAST_CMD_Command* cmd);
 CFAST_VOID CFAST_CMD_SetSingleMode(CFAST_CMD_Env* env);
 CFAST_VOID CFAST_CMD_Execute(CFAST_CMD_Env* env, CFAST_SIZE argc, CFAST_CHAR** argv);
 
+/**
+配置项是否可选，必须的配置项没有如何处理？
+id
+shortName
+longName
+isOptional
+
+parseResult:
+id
+use
+param
+ */
+
+ /* 用户根据id来一个个判断，必须参数是否没有 */
+typedef struct {
+    CFAST_ID    id;     /* option序号，以插入顺序为准 */
+    CFAST_BOOL  isUse;  /* 是否使用该参数 */
+    CFAST_CHAR* param;  /* 参数 */
+} CFAST_CMD_OptInfo;
+
+
 
 #endif /* __CFAST_COMMAND_H__ */
