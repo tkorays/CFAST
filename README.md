@@ -1,5 +1,4 @@
 # CFAST
-===
 C Fast, a C library for industrial use.
 
 ## Author
