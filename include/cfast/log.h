@@ -14,6 +14,9 @@ typedef enum {
 #define CFAST_LOG_LEVEL_OFF 0
 #define CFAST_LOG_LEVEL_ALL 0xFFFF
 
+/* [2017-01-02-12:32:00:900][P(1234)|T(2333)][demo.c:2233][FuncABC] */
+#define CFAST_LOG_FORMAT "[%s][P(%d)|T(%d)][%s:%d][%s]"
+
 #define CFAST_LOG_Debug(cid, tid, fmtStr, ...)
 #define CFAST_LOG_Info(cid, tid, fmtStr, ...)
 #define CFAST_LOG_Warn(cid, tid, fmtStr, ...)
@@ -29,5 +32,7 @@ typedef struct {
 CFAST_RET CFAST_LOG_Init();
 
 CFAST_RET CFAST_LOG_Start(CFAST_CHAR* path, CFAST_LOG_Logger* logger);
+
+CFAST_VOID CFAST_LOG_Log(CFAST_LOG_LEVEL level, CFAST_INT cid, CFAST_INT tid, const CFAST_CHAR* fmtStr, ...);
 
 #endif /* __CFAST_LOG_H__ */

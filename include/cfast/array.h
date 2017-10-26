@@ -3,6 +3,11 @@
 
 #include "cfast_def.h"
 
+typedef struct {
+    CFAST_SIZE count;
+
+} CFAST_Array;
+
 typedef struct CFAST_ARRAY_Node_S{
     CFAST_VOID* data;
     CFAST_SIZE size;
