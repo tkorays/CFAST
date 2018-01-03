@@ -89,9 +89,40 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
 }
 
 cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
-    
+
 }
-cf_ret_t    cf_list_free(cf_list_t* li, cf_bool_t free_node);
-cf_list_iter_t  cf_list_iter_init(cf_list_t* li);
-cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
-cf_ret_t    cf_list_iter_data(cf_list_iter_t it, cf_void_t* data);
+cf_ret_t cf_list_free(cf_list_t* li, cf_bool_t free_node) {
+    cf_list_iter_t it = CF_NULL_PTR;
+    cf_list_node_t* node = CF_NULL_PTR;
+    if(!li) return CF_RET_FAIL;
+    cf_list_iter_init(li, &it);
+    while(it) {
+        node = it;
+        it = cf_list_iter_next(it);
+
+        if(free_node && li->fn_free) {
+            li->fn_free(node->data);
+        }
+        free(node);
+    }
+    free(li);
+
+    return CF_RET_SUCCESS;
+}
+
+cf_ret_t    cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it) {
+    if(!li || !it) return CF_RET_NULL_PTR;
+    *it = (cf_list_iter_t)li->head;
+    return CF_RET_SUCCESS;
+}
+
+cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it) {
+    if(!it) return CF_NULL_PTR;
+    return ((cf_list_node_t*)it)->next;
+}
+
+cf_ret_t    cf_list_iter_data(cf_list_iter_t it, cf_void_t* data) {
+    if(!it || !data) return CF_RET_NULL_PTR;
+    data = ((cf_list_node_t*)it)->data;
+    return CF_RET_SUCCESS;
+}
