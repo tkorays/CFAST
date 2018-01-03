@@ -20,6 +20,7 @@
 #define CF_OS_LINUX 
 #endif
 
+#define CF_NULL_PTR (void*)0
 #define CF_NULL (void*)0
 #define CF_TRUE 1
 #define CF_FALSE 0
@@ -27,6 +28,9 @@
 #define CF_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 
+typedef int32_t     cf_int32_t;
+typedef uint32_t    cf_uint32_t;    
+typedef void        cf_void_t;      /** void* */
 typedef uint32_t    cf_id_t;        /** 用于表示id */
 typedef void*       cf_handle_t;    /** 用于表示句柄 */
 typedef uint32_t    cf_size_t;      /** 用于表示大小 */
@@ -34,11 +38,11 @@ typedef uint8_t     cf_bool_t;      /** bool型变量 */
 typedef uintptr_t   cf_ptr_t;       /** 指针 */
 
 typedef enum {
-    CF_SUCCESS = 0,
-    CF_FAIL,
-    CF_PARAM_ERR,
-    CF_MALLOC_ERR,
-    CF_NULL_PTR
+    CF_RET_SUCCESS = 0,
+    CF_RET_FAIL,
+    CF_RET_PARAM_ERR,
+    CF_RET_MALLOC_ERR,
+    CF_RET_NULL_PTR
 } cf_ret_t;
 
 #endif /* __CF_DEF_H__ */
