@@ -1,7 +1,6 @@
 #include "cfast/cf_def.h"
 #include "cfast/cf_list_if.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 
 typedef struct _cf_list_node {
@@ -104,7 +103,6 @@ cf_ret_t cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos) {
             li->tail = CF_NULL_PTR;
         }
     } else if(index >= li->number) {
-        printf("get tail\n");
         /* tail */
         node = li->tail;
         ((cf_list_node_t*)li->tail)->next = CF_NULL_PTR;
