@@ -1,5 +1,5 @@
-/**********************************************
- * Copyright (c) 2018, tkorays
+/****************************************************
+ * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
  * @file    cf_def.h
@@ -7,7 +7,7 @@
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-3
- *********************************************/
+ ****************************************************/
 #ifndef __CF_DEF_H__
 #define __CF_DEF_H__
 
