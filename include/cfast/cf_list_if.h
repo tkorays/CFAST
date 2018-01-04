@@ -32,8 +32,9 @@ cf_ret_t    cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos);
 cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos);
 cf_ret_t    cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data);
 cf_ret_t    cf_list_free(cf_list_t* li, cf_bool_t free_data);
+cf_size_t   cf_list_size(cf_list_t* li);
 cf_ret_t    cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it);
 cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
-cf_ret_t    cf_list_iter_data(cf_list_iter_t it, cf_void_t* data);
+cf_ret_t    cf_list_iter_data(cf_list_iter_t it, cf_void_t** data);
 
 #endif /* __CF_LIST_IF_H__ */

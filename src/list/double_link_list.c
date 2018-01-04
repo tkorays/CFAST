@@ -1,5 +1,7 @@
 #include "cfast/cf_def.h"
 #include "cfast/cf_list_if.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 
 typedef struct _cf_list_node {
@@ -33,33 +35,34 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
     node->data = data;
 
     abs_pos = (pos >= 0 ? pos : -pos);
-    if(abs_pos > li->number) {
+    if((pos > 0 && abs_pos > li->number) && (pos < 0 && (abs_pos + 1) > li->number)) {
         free(node);
         return CF_RET_FAIL;
     }
 
     if(pos < 0) {
-        abs_pos = li->number - abs_pos + 1;
+        abs_pos = li->number + 1 - abs_pos;
     }
 
+    /* 往前插入 */
     for(index = 0, tmp = li->head; index < abs_pos && tmp; index++, tmp = tmp->next) ;
-    if(tmp == CF_NULL_PTR) {
+    if(CF_NULL_PTR == li->head) {
         /* empty */
         node->prev = CF_NULL_PTR;
         node->next = CF_NULL_PTR;
         li->head = node;
         li->tail = node;
-    }else if(tmp->prev == CF_NULL_PTR) {
+    }else if(index == 0) {
         /* head */
         node->prev = CF_NULL_PTR;
         node->next = tmp;
         tmp->prev = node;
         li->head = node;
-    } else if(tmp->next == CF_NULL_PTR) {
+    } else if(index >= li->number) {
         /* tail */
-        node->prev = tmp;
+        node->prev = li->tail;
         node->next = CF_NULL_PTR;
-        tmp->next = node;
+        ((cf_list_node_t*)li->tail)->next = node;
         li->tail = node;
     } else {
         node->prev = tmp;
@@ -72,7 +75,7 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
     return CF_RET_SUCCESS;
 }
 
-cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos) {
+cf_ret_t cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos) {
     cf_list_node_t* node = CF_NULL_PTR;
     cf_list_node_t* tmp = CF_NULL_PTR;
     cf_uint32_t abs_pos = 0;
@@ -80,17 +83,19 @@ cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos) {
     if(!li || !data) return CF_RET_NULL_PTR;
 
     abs_pos = (pos >= 0 ? pos : -pos);
-    if(abs_pos > li->number) {
+    if((pos > 0 && abs_pos > li->number) && (pos < 0 && (abs_pos + 1) > li->number)) {
         return CF_RET_FAIL;
     }
 
+    if(pos < 0) {
+        abs_pos = li->number + 1 - abs_pos;
+    }
+
     for(index = 0, node = li->head; index < abs_pos && node; index++, node = node->next) ;
-    if(!node) {
+    if(CF_NULL_PTR == li->head) {
         data = CF_NULL_PTR;
         return CF_RET_FAIL;
-    }
-    
-    if(node->prev == CF_NULL_PTR) {
+    } else if(index == 0) {
         /* head */
         li->head = node->next;
         if(node->next) {
@@ -98,8 +103,11 @@ cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos) {
         } else {
             li->tail = CF_NULL_PTR;
         }
-    } else if(node->next == CF_NULL_PTR) {
+    } else if(index >= li->number) {
+        printf("get tail\n");
         /* tail */
+        node = li->tail;
+        ((cf_list_node_t*)li->tail)->next = CF_NULL_PTR;
         li->tail = node->prev;
         if(node->prev) {
             node->prev->next = CF_NULL_PTR;
@@ -128,7 +136,9 @@ cf_ret_t cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data) {
     if(ret != CF_RET_SUCCESS) {
         return CF_RET_FAIL;
     }
-    li->fn_free(data);
+    if(free_data) {
+        li->fn_free(data);
+    }
 
     return CF_RET_SUCCESS;
 }
@@ -152,6 +162,11 @@ cf_ret_t cf_list_free(cf_list_t* li, cf_bool_t free_data) {
     return CF_RET_SUCCESS;
 }
 
+cf_size_t cf_list_size(cf_list_t* li) {
+    if(!li) return 0;
+    return li->number;
+}
+
 cf_ret_t cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it) {
     if(!li || !it) return CF_RET_NULL_PTR;
     *it = (cf_list_iter_t)li->head;
@@ -163,8 +178,8 @@ cf_list_iter_t cf_list_iter_next(cf_list_iter_t it) {
     return ((cf_list_node_t*)it)->next;
 }
 
-cf_ret_t cf_list_iter_data(cf_list_iter_t it, cf_void_t* data) {
+cf_ret_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data) {
     if(!it || !data) return CF_RET_NULL_PTR;
-    data = ((cf_list_node_t*)it)->data;
+    *data = ((cf_list_node_t*)it)->data;
     return CF_RET_SUCCESS;
 }
