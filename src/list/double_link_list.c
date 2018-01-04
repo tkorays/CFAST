@@ -32,6 +32,7 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
     node = (cf_list_node_t*)malloc(sizeof(cf_list_node_t));
     node->data = data;
 
+    /* 链表为空，则直接插入 */
     if(CF_NULL_PTR == li->head) {
         node->prev = CF_NULL_PTR;
         node->prev = CF_NULL_PTR;
@@ -41,6 +42,7 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
         return CF_RET_SUCCESS;
     }
 
+    /* 插入头部 */
     if(CF_LIST_POS_HEAD == pos) {
         tmp = li->head;
         node->prev = CF_NULL_PTR;
@@ -51,6 +53,7 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
         return CF_RET_SUCCESS;
     } 
 
+    /* 插入到尾部 */
     if(CF_LIST_POS_TAIL == pos) {
         tmp = li->tail;
         node->prev = tmp;
@@ -61,6 +64,7 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
         return CF_RET_SUCCESS;
     }
 
+    /* 插入到中间，正数从前往后，负数从后往前 */
     abs_pos = (pos >= 0 ? pos : -pos);
     if(abs_pos > li->number) {
         free(node);
@@ -89,9 +93,74 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
 }
 
 cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
+    cf_list_node_t* node = CF_NULL_PTR;
+    cf_list_node_t* tmp = CF_NULL_PTR;
+    cf_uint32_t abs_pos = 0;
+    cf_uint32_t index;
+    if(!li || !data) return CF_RET_NULL_PTR;
+
+    /* 链表为空 */
+    if(li->head == CF_NULL_PTR) {
+        data = CF_NULL_PTR;
+        return CF_RET_FAIL;
+    }
+
+    /* 移除头节点 */
+    if(CF_LIST_POS_HEAD == pos) {
+        node = li->head;
+        li->head = node->next;
+        if(node->next) {
+            node->next->prev = CF_NULL_PTR;
+        } else {
+            li->tail = CF_NULL_PTR;
+        }
+        data = node->data;
+        free(node);
+        return CF_RET_SUCCESS;
+    }
+
+    /* 移除尾部节点 */
+    if(CF_LIST_POS_TAIL == pos) {
+        node = li->tail;
+        li->tail = node->prev;
+        if(node->prev) {
+            node->prev->next = CF_NULL_PTR;
+        } else {
+            li->head = CF_NULL_PTR;
+        }
+        data = node->data;
+        free(node);
+        return CF_RET_SUCCESS;
+    }
+
+    abs_pos = (pos >= 0 ? pos : -pos);
+    if(abs_pos > li->number) {
+        return CF_RET_FAIL;
+    }
+
+    for(index = 0, node = li->head; index < abs_pos && node; index++, node = node->next) ;
+    if(!node) {
+        data = CF_NULL_PTR;
+        return CF_RET_FAIL;
+    }
+    
+    if(node->prev == CF_NULL_PTR) {
+        /* head */
+        li->head = node->next;
+        if(node->next) {
+            node->next->prev = CF_NULL_PTR;
+        } else {
+            li->tail = CF_NULL_PTR;
+        }
+        data = node->data;
+        free(node);
+    } else if(node->next == CF_NULL_PTR) {
+        /* tail */
+
+    }
 
 }
-cf_ret_t cf_list_free(cf_list_t* li, cf_bool_t free_node) {
+cf_ret_t cf_list_free(cf_list_t* li, cf_bool_t free_data) {
     cf_list_iter_t it = CF_NULL_PTR;
     cf_list_node_t* node = CF_NULL_PTR;
     if(!li) return CF_RET_FAIL;
@@ -100,7 +169,7 @@ cf_ret_t cf_list_free(cf_list_t* li, cf_bool_t free_node) {
         node = it;
         it = cf_list_iter_next(it);
 
-        if(free_node && li->fn_free) {
+        if(free_data && li->fn_free) {
             li->fn_free(node->data);
         }
         free(node);
