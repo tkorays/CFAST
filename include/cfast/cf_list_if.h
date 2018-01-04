@@ -28,6 +28,9 @@ typedef struct _cf_list {
     fn_cf_list_free     fn_free;    /*< free function pointer */
 } cf_list_t;
 
+/**
+ * Iterator of a list
+ */
 typedef cf_void_t* cf_list_iter_t;
 
 /**
