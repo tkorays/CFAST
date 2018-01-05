@@ -8,9 +8,16 @@ typedef struct _cf_list_node {
     struct _cf_list_node *prev, *next;
 } cf_list_node_t;
 
+struct cf_list {
+    cf_size_t           number;     /*< number of list items */
+    cf_void_t*          head;       /*< head of list */
+    cf_void_t*          tail;       /*< tail of list */
+    fn_cf_list_free     fn_free;    /*< free function pointer */
+};
 
-cf_list_t*  cf_list_new(fn_cf_list_free func) {
-    cf_list_t* li = (cf_list_t*)malloc(sizeof(cf_list_t));
+
+cf_list_t*  cf_list_create(fn_cf_list_free func) {
+    struct cf_list* li = (struct cf_list*)malloc(sizeof(struct cf_list));
     if(CF_NULL_PTR == li) {
         return CF_NULL_PTR;
     }
@@ -23,7 +30,7 @@ cf_list_t*  cf_list_new(fn_cf_list_free func) {
     return li;
 }
 
-cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
+cf_ret_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
     cf_list_node_t* node = CF_NULL_PTR;
     cf_list_node_t* tmp = CF_NULL_PTR;
     cf_uint32_t abs_pos = 0;
@@ -74,7 +81,7 @@ cf_ret_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos) {
     return CF_RET_SUCCESS;
 }
 
-cf_ret_t cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos) {
+cf_ret_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) {
     cf_list_node_t* node = CF_NULL_PTR;
     cf_list_node_t* tmp = CF_NULL_PTR;
     cf_uint32_t abs_pos = 0;
@@ -124,7 +131,7 @@ cf_ret_t cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos) {
     return CF_RET_SUCCESS;
 }
 
-cf_ret_t cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data) {
+cf_ret_t cf_list_delete(struct cf_list* li, cf_int32_t pos, cf_bool_t free_data) {
     cf_ret_t ret = CF_RET_SUCCESS;
     cf_void_t* data = CF_NULL_PTR;
     if(!li) return CF_RET_FAIL;
@@ -141,7 +148,7 @@ cf_ret_t cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data) {
     return CF_RET_SUCCESS;
 }
 
-cf_ret_t cf_list_free(cf_list_t* li, cf_bool_t free_data) {
+cf_ret_t cf_list_destroy(struct cf_list* li, cf_bool_t free_data) {
     cf_list_iter_t it = CF_NULL_PTR;
     cf_list_node_t* node = CF_NULL_PTR;
     if(!li) return CF_RET_FAIL;
@@ -160,12 +167,12 @@ cf_ret_t cf_list_free(cf_list_t* li, cf_bool_t free_data) {
     return CF_RET_SUCCESS;
 }
 
-cf_size_t cf_list_size(cf_list_t* li) {
+cf_size_t cf_list_size(struct cf_list* li) {
     if(!li) return 0;
     return li->number;
 }
 
-cf_ret_t cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it) {
+cf_ret_t cf_list_iter_init(struct cf_list* li, cf_list_iter_t* it) {
     if(!li || !it) return CF_RET_NULL_PTR;
     *it = (cf_list_iter_t)li->head;
     return CF_RET_SUCCESS;

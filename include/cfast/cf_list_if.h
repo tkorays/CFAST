@@ -21,12 +21,7 @@ typedef void(*fn_cf_list_free)(void*);
 /**
  * This structure represents a double linked list.
  */
-typedef struct _cf_list {
-    cf_size_t           number;     /*< number of list items */
-    cf_void_t*          head;       /*< head of list */
-    cf_void_t*          tail;       /*< tail of list */
-    fn_cf_list_free     fn_free;    /*< free function pointer */
-} cf_list_t;
+typedef struct cf_list cf_list_t;
 
 /**
  * Iterator of a list
@@ -44,11 +39,11 @@ typedef cf_void_t* cf_list_iter_t;
 #define CF_LIST_POS_TAIL -1
 
 /**
- * Create a list
+ * Create a list.
  * @param fn_cf_list_free       Func for free data
  * @return                      The list.
  */
-cf_list_t*  cf_list_new(fn_cf_list_free func);
+cf_list_t*  cf_list_create(fn_cf_list_free func);
 
 /**
  * Insert item to list.
@@ -83,7 +78,7 @@ cf_ret_t    cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data);
  * @param free_data Whethere to free data.
  * @return          The result.
  */
-cf_ret_t    cf_list_free(cf_list_t* li, cf_bool_t free_data);
+cf_ret_t    cf_list_destroy(cf_list_t* li, cf_bool_t free_data);
 
 /**
  * Get the size of the list.
@@ -102,7 +97,7 @@ cf_ret_t    cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it);
 
 /**
  * Get next iterator.
- * @param li        The list.
+ * @param li        The iterator.
  * @return          The next iterator.
  */
 cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
