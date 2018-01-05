@@ -22,7 +22,7 @@ cf_void_t           cf_mpool_block_destroy(cf_mpool_block_t* block);
 
 cf_mpool_t* cf_mpool_create(cf_size_t blk_size) {
     struct cf_mpool* pool = CF_NULL_PTR;
-    if(blk_size) return CF_NULL_PTR;
+    if(blk_size == 0) return CF_NULL_PTR;
 
     pool = cf_malloc(sizeof(struct cf_mpool));
     if(!pool) return CF_NULL_PTR;
@@ -76,8 +76,9 @@ cf_void_t*  cf_mpool_alloc(cf_mpool_t* pool, cf_size_t size) {
         /* 块的首地址已经对齐 */
         addr = p->ptr->start;
         p->ptr->start = addr + size;
+        p->blk_num++;
     } else {
-        p->ptr->start += size;
+        p->ptr->start = addr + size;
     }
 
     return addr;
