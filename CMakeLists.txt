@@ -10,6 +10,7 @@ endif()
 
 set(SRC_LIST src/common/cf_list.c
     src/common/cf_mem.c
+    src/common/cf_mpool.c
     )
 
 add_library(cfast STATIC ${SRC_LIST})

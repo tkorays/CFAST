@@ -37,7 +37,7 @@ typedef uint32_t        cf_id_t;        /** 用于表示id */
 typedef void*           cf_handle_t;    /** 用于表示句柄 */
 typedef uint32_t        cf_size_t;      /** 用于表示大小 */
 typedef uint8_t         cf_bool_t;      /** bool型变量 */
-typedef uintptr_t       cf_ptr_t;       /** 指针 */
+typedef uintptr_t       cf_uintptr_t;   /** 指针 */
 typedef int32_t         cf_errno_t;     /** errno */
 
 typedef enum {
