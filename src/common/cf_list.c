@@ -1,6 +1,6 @@
 #include "cfast/cf_def.h"
 #include "cfast/cf_list_if.h"
-#include <stdlib.h>
+#include "cfast/cf_mem_if.h"
 
 
 typedef struct _cf_list_node {
@@ -17,7 +17,7 @@ struct cf_list {
 
 
 cf_list_t*  cf_list_create(fn_cf_list_free func) {
-    struct cf_list* li = (struct cf_list*)malloc(sizeof(struct cf_list));
+    struct cf_list* li = (struct cf_list*)cf_malloc(sizeof(struct cf_list));
     if(CF_NULL_PTR == li) {
         return CF_NULL_PTR;
     }
@@ -37,12 +37,12 @@ cf_ret_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
     cf_uint32_t index;
     if(!li || !data) return CF_RET_NULL_PTR;
 
-    node = (cf_list_node_t*)malloc(sizeof(cf_list_node_t));
+    node = (cf_list_node_t*)cf_malloc(sizeof(cf_list_node_t));
     node->data = data;
 
     abs_pos = (pos >= 0 ? pos : -pos);
     if((pos > 0 && abs_pos > li->number) && (pos < 0 && (abs_pos + 1) > li->number)) {
-        free(node);
+        cf_free(node);
         return CF_RET_FAIL;
     }
 
@@ -126,7 +126,7 @@ cf_ret_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) {
     }
     li->number--;
     *data = node->data;
-    free(node);
+    cf_free(node);
 
     return CF_RET_SUCCESS;
 }
@@ -160,9 +160,9 @@ cf_ret_t cf_list_destroy(struct cf_list* li, cf_bool_t free_data) {
         if(free_data && li->fn_free) {
             li->fn_free(node->data);
         }
-        free(node);
+        cf_free(node);
     }
-    free(li);
+    cf_free(li);
 
     return CF_RET_SUCCESS;
 }

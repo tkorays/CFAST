@@ -28,14 +28,17 @@
 #define CF_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 
-typedef int32_t     cf_int32_t;
-typedef uint32_t    cf_uint32_t;    
-typedef void        cf_void_t;      /** void* */
-typedef uint32_t    cf_id_t;        /** 用于表示id */
-typedef void*       cf_handle_t;    /** 用于表示句柄 */
-typedef uint32_t    cf_size_t;      /** 用于表示大小 */
-typedef uint8_t     cf_bool_t;      /** bool型变量 */
-typedef uintptr_t   cf_ptr_t;       /** 指针 */
+typedef char            cf_char_t;
+typedef unsigned char   cf_uchar_t;
+typedef int32_t         cf_int32_t;
+typedef uint32_t        cf_uint32_t;    
+typedef void            cf_void_t;      /** void* */
+typedef uint32_t        cf_id_t;        /** 用于表示id */
+typedef void*           cf_handle_t;    /** 用于表示句柄 */
+typedef uint32_t        cf_size_t;      /** 用于表示大小 */
+typedef uint8_t         cf_bool_t;      /** bool型变量 */
+typedef uintptr_t       cf_ptr_t;       /** 指针 */
+typedef int32_t         cf_errno_t;     /** errno */
 
 typedef enum {
     CF_RET_SUCCESS = 0,
