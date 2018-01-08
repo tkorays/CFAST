@@ -16,6 +16,7 @@
 
 
 #define CF_CLI_INVALID_ID -1
+#define CF_CLI_DEFAULT_GROUP ""
 
 typedef struct cf_cli_cmd_cxt cf_cli_cmd_cxt_t;
 typedef cf_errno_t(*cf_cli_pfn_proc_cmd)(cf_cli_cmd_cxt_t* cxt, cf_char_t* s);
@@ -55,17 +56,19 @@ typedef struct cf_cli_cmd_cxt {
     cf_void_t*      data;
 } cf_cli_cmd_cxt_t;
 
-typedef struct cf_cli {
-    cf_cli_cmd_t*       root;   /* one root */
-    cf_cli_pfn_input    input;
-    cf_cli_pfn_output   output;
-    cf_char_t           inbuf[1024];
+typedef struct cf_cli_s {
+    cf_cli_cmd_t*       root;           /* one root, delete! */
+    cf_list_t*          cmds;           /** All commands */
+    cf_cli_pfn_input    input;          /** input method */
+    cf_cli_pfn_output   output;         /** output method */
+    cf_char_t           inbuf[1024];    /** input buffer */
 } cf_cli_t;
 
 cf_cli_t*   cf_cli_init();
 cf_void_t   cf_cli_deinit(cf_cli_t* cli);
 cf_errno_t  cf_cli_set_io_func(cf_cli_t* cli, cf_cli_pfn_input input, cf_cli_pfn_output output);
 cf_errno_t  cf_cli_install_all_cmds(cf_cli_t* cli, cf_cli_cmd_t* root);
+cf_errno_t  cf_cli_register_cmds(cf_cli_t* cli, cf_char_t* group, cf_cli_cmd_t* cmds, cf_size_t size);
 cf_errno_t  cf_cli_run_line(cf_cli_t* cli, cf_char_t* line);
 cf_errno_t  cf_cli_run(cf_cli_t* cli);
 
