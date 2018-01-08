@@ -19,7 +19,7 @@
 
 typedef struct cf_cli_cmd_cxt cf_cli_cmd_cxt_t;
 typedef cf_errno_t(*cf_cli_pfn_proc_cmd)(cf_cli_cmd_cxt_t* cxt, cf_char_t* s);
-typedef cf_void_t(*cf_cli_pfn_input)(cf_char_t* buf);
+typedef cf_void_t(*cf_cli_pfn_input)(cf_char_t* buf, cf_size_t bufsize);
 typedef cf_void_t(*cf_cli_pfn_output)(cf_char_t* buf);
 
 /**
@@ -33,15 +33,19 @@ typedef struct {
     cf_char_t*  help;       /** Help. */
 } cf_cli_cmdopt_t;
 
-typedef struct cf_cli_cmd {
+/**
+ * A command.
+ */
+typedef struct cf_cli_cmd_s {
     cf_id_t                 id;
     cf_char_t*              name;
-    cf_cli_cmdopt_t*        options;
-    struct cf_cli_cmd*      subcmds;
+    cf_size_t               option_cnt;
+    cf_cli_cmdopt_t*        option;
+    cf_size_t               subcmd_cnt;
+    struct cf_cli_cmd_s*    subcmd;
     cf_char_t*              help;
     cf_cli_pfn_proc_cmd     proc_cmd;
 } cf_cli_cmd_t;
-
 
 /**
  * Context for a command.
@@ -52,15 +56,18 @@ typedef struct cf_cli_cmd_cxt {
 } cf_cli_cmd_cxt_t;
 
 typedef struct cf_cli {
-    cf_list_t*          tree;
+    cf_cli_cmd_t*       root;   /* one root */
     cf_cli_pfn_input    input;
     cf_cli_pfn_output   output;
+    cf_char_t           inbuf[1024];
 } cf_cli_t;
 
 cf_cli_t*   cf_cli_init();
 cf_void_t   cf_cli_deinit(cf_cli_t* cli);
-cf_errno_t  cf_cli_install_all_cmds(cf_cli_t* cli);
-cf_errno_t  cf_cli_execute(cf_cli_t* cli, cf_char_t* s);
+cf_errno_t  cf_cli_set_io_func(cf_cli_t* cli, cf_cli_pfn_input input, cf_cli_pfn_output output);
+cf_errno_t  cf_cli_install_all_cmds(cf_cli_t* cli, cf_cli_cmd_t* root);
+cf_errno_t  cf_cli_run_line(cf_cli_t* cli, cf_char_t* line);
+cf_errno_t  cf_cli_run(cf_cli_t* cli);
 
 
 

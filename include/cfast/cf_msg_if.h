@@ -11,6 +11,10 @@
 #ifndef __CF_MSG_IF_H__
 #define __CF_MSG_IF_H__
 
+#include "cf_def.h"
 
+
+cf_errno_t cf_msg_init();
+cf_errno_t cf_msg_deinit();
 
 #endif /* __CF_MSG_IF_H__ */

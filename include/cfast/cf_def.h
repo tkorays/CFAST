@@ -21,12 +21,14 @@
 #endif
 
 #define CF_NULL_PTR (void*)0
-#define CF_NULL (void*)0
+#define CF_NULL 0
 #define CF_TRUE 1
 #define CF_FALSE 0
 #define CF_MIN(a, b) ((a) > (b) ? (b) : (a))
 #define CF_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
+#define CF_PCHAR(s) ((cf_char_t*)(s))
+#define CF_MAKE_ERRNO(m, no) ((m)<<16 | no)
 
 typedef char            cf_char_t;
 typedef unsigned char   cf_uchar_t;
@@ -40,6 +42,13 @@ typedef uint8_t         cf_bool_t;      /** bool型变量 */
 typedef uintptr_t       cf_uintptr_t;   /** 指针 */
 typedef int32_t         cf_errno_t;     /** errno */
 
+
+#define CF_ERR_MODULE_COMMON 0
+#define CF_ERRNO_OK             CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 0)
+#define CF_ERRNO_NOK            CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 1)
+#define CF_ERRNO_INVALID_PARAM  CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 2)
+#define CF_ERRNO_MALOC_ERROR    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 3)
+#define CF_ERRNO_STATE_ERROR    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 4)
 
 typedef enum {
     CF_RET_SUCCESS = 0,
