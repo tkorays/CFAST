@@ -40,6 +40,7 @@ typedef uint8_t         cf_bool_t;      /** bool型变量 */
 typedef uintptr_t       cf_uintptr_t;   /** 指针 */
 typedef int32_t         cf_errno_t;     /** errno */
 
+
 typedef enum {
     CF_RET_SUCCESS = 0,
     CF_RET_FAIL,
