@@ -3,15 +3,19 @@
 
 #include "cf_def.h"
 #include "cf_list_if.h"
+#include "cf_string_if.h"
+
 
 /**
  * The structure represents an option.
+ * It will not allocate memory or copy memory.
+ * cfg_opt_t just use pointer to point to real address.
  */
 typedef struct {
-    cf_char_t   short_name;     /** option's short name */
-    cf_char_t   long_name[16];  /** option's long name */
-    cf_bool_t   has_arg;        /** does this option have arguement */
-    cf_char_t*  arg;            /** arguement of this option */
+    cf_bool_t           is_short;       /** is short name or not */
+    cf_const_string_t   name;           /** name, don't change this data */
+    cf_bool_t           has_arg;        /** does this option have arguement */
+    cf_const_string_t   arg;            /** arguement of this option, don't change */
 } cf_opt_t;
 
 
