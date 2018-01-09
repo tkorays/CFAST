@@ -2,6 +2,28 @@
 #include "cfast/cf_mem_if.h"
 #include <string.h>
 
+cf_string_t* cf_str_new(cf_size_t size) {
+    cf_string_t* s = CF_NULL_PTR;
+    if(size == 0) return CF_NULL_PTR;
+
+    s = (cf_string_t*)cf_malloc(sizeof(cf_string_t));
+    if(!s) return CF_NULL_PTR;
+
+    s->length = size;
+    return s;
+}
+
+cf_void_t cf_str_free(cf_string_t* s) {
+    if(!s) return;
+    if(s->data) cf_free(s->data);
+    cf_free(s);
+}
+
+cf_void_t cf_str_cont_free(cf_string_const_t* s) {
+    if(!s) return;
+    cf_free(s);
+}
+
 cf_string_t* cf_str_from_pchar(cf_char_t* pc) {
     cf_string_t* s = CF_NULL_PTR;
     if(!pc) return CF_NULL_PTR;

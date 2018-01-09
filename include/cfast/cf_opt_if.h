@@ -12,9 +12,9 @@
  */
 typedef struct {
     cf_bool_t           is_short;       /** is short name or not */
-    cf_const_string_t   name;           /** name, don't change this data */
+    cf_string_const_t   name;           /** name, don't change this data */
     cf_bool_t           has_arg;        /** does this option have arguement */
-    cf_const_string_t   arg;            /** arguement of this option, don't change */
+    cf_string_const_t   arg;            /** arguement of this option, don't change */
 } cf_opt_t;
 
 
