@@ -13,4 +13,8 @@ typedef struct {
 } cf_const_string_t;
 
 
+cf_string_t*    cf_str_from_pchar(cf_char_t* pc);
+cf_size_t       cf_str_len(cf_string_t* s);
+cf_void_t       cf_str_to_pchar(cf_string_t*s, cf_char_t** ppc);
+
 #endif /* __CF_STRING_H__ */

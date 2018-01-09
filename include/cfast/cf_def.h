@@ -20,8 +20,8 @@
 #define CF_OS_LINUX 
 #endif
 
-#define CF_NULL_PTR (void*)0
-#define CF_NULL 0
+#define CF_NULL_PTR 0
+#define CF_NULL (void*)0
 #define CF_TRUE 1
 #define CF_FALSE 0
 #define CF_MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -47,7 +47,7 @@ typedef int32_t         cf_errno_t;     /** errno */
 #define CF_ERRNO_OK             CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 0)
 #define CF_ERRNO_NOK            CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 1)
 #define CF_ERRNO_INVALID_PARAM  CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 2)
-#define CF_ERRNO_MALOC_ERROR    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 3)
+#define CF_ERRNO_MALLOC_ERROR   CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 3)
 #define CF_ERRNO_STATE_ERROR    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 4)
 
 typedef enum {
