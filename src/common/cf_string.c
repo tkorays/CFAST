@@ -31,7 +31,8 @@ cf_string_t* cf_str_from_pchar(cf_char_t* pc) {
     s = (cf_string_t*)cf_malloc(sizeof(cf_string_t));
     if(!s) return CF_NULL_PTR;
 
-    s->data = pc;
+    s->data = (cf_char_t*)cf_malloc(strlen(pc) + 1);
+    cf_memcpy_s(s->data, strlen(pc) + 1, pc, strlen(pc) + 1);
     s->length = strlen(pc);
     return s;
 }

@@ -14,9 +14,11 @@ set(SRC_LIST src/common/cf_list.c
     src/common/cf_cli.c
     src/common/cf_opt.c 
     src/common/cf_string.c
+    src/common/cf_str.c
     )
 
 add_library(cfast STATIC ${SRC_LIST})
+target_link_libraries(cfast pthread)
 
 install(TARGETS cfast
     RUNTIME DESTINATION bin

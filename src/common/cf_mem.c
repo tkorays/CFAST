@@ -14,7 +14,7 @@ cf_void_t* cf_realloc(cf_void_t* addr, cf_size_t size) {
     return realloc(addr, size);
 }
 
-cf_void_t* cf_memcpy_s(cf_void_t* dst, cf_size_t dst_size, cf_void_t* src, cf_size_t src_size) {
+cf_void_t* cf_memcpy_s(cf_void_t* dst, cf_size_t dst_size, const cf_void_t* src, cf_size_t src_size) {
     if(dst_size < src_size) return CF_NULL_PTR;
     return memcpy(src, dst, dst_size);
 }
