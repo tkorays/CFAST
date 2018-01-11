@@ -13,6 +13,9 @@
 
 #include "cf_def.h"
 
+/**
+ * Log level.
+ */
 typedef enum {
     CF_LOG_LEVEL_DEBUG      = 0x0001,
     CF_LOG_LEVEL_INFO       = 0x0002,
@@ -21,8 +24,14 @@ typedef enum {
     CF_LOG_LEVEL_FATAL      = 0x0010
 } cf_log_level_t;
 
+/**
+ * Log handle.
+ */
 typedef struct cf_log_s cf_log_t;
 
+/**
+ * Macro for logging.
+ */
 #define CF_LOG(log, level, fmtstr, ...)  cf_log_put(log, __FILE__, __LINE__, __FUNCTION__, level, fmtstr, ##__VA_ARGS__)
 /* example */
 /*
@@ -33,9 +42,38 @@ typedef struct cf_log_s cf_log_t;
 #define CF_LOG_FATAL(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_FATAL, fmtstr, __VA_ARGS__)
 */
 
+
+/**
+ * Create a log instance.
+ * @param filename      Log filename.
+ * @return              Log handle.
+ */
 cf_log_t*   cf_log_create(const cf_char_t* filename);
+
+/**
+ * Destroy a log instance.
+ * @param log           Log handle.
+ * @return              
+ */
 cf_void_t   cf_log_destroy(cf_log_t* log);
+
+/**
+ * Set a log.
+ * @param 
+ * @return              Log handle.
+ */
 cf_void_t   cf_log_set();
+
+/**
+ * Put a log to file.
+ * @param log           Log handle.
+ * @param filename      Trace filename.
+ * @param line          Trace line.
+ * @param func          Trace function.
+ * @param level         Log level.
+ * @param fmtstr        Format string.
+ * @return              Log handle.
+ */
 cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...);
 
 #endif /* __CF_LOG_IF_H__ */
