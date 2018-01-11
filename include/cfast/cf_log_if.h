@@ -23,16 +23,19 @@ typedef enum {
 
 typedef struct cf_log_s cf_log_t;
 
-#define CF_LOG(level, fmtstr, ...)  cf_log_put(__FILE__, __LINE__, level, fmtstr, __VA_ARGS__)
-#define CF_LOG_DEBUG(fmtstr, ...)   CF_LOG(CF_LOG_LEVEL_DEBUG, fmtstr, __VA_ARGS__)
-#define CF_LOG_INFO(fmtstr, ...)    CF_LOG(CF_LOG_LEVEL_INFO, fmtstr, __VA_ARGS__)
-#define CF_LOG_WARNING(fmtstr, ...) CF_LOG(CF_LOG_LEVEL_WARNING, fmtstr, __VA_ARGS__)
-#define CF_LOG_ERROR(fmtstr, ...)   CF_LOG(CF_LOG_LEVEL_ERROR, fmtstr, __VA_ARGS__)
-#define CF_LOG_FATAL(fmtstr, ...)   CF_LOG(CF_LOG_LEVEL_FATAL, fmtstr, __VA_ARGS__)
+#define CF_LOG(log, level, fmtstr, ...)  cf_log_put(log, __FILE__, __LINE__, __FUNCTION__, level, fmtstr, ##__VA_ARGS__)
+/* example */
+/*
+#define CF_LOG_DEBUG(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_DEBUG, fmtstr, __VA_ARGS__)
+#define CF_LOG_INFO(fmtstr, ...)    CF_LOG(glog, CF_LOG_LEVEL_INFO, fmtstr, __VA_ARGS__)
+#define CF_LOG_WARNING(fmtstr, ...) CF_LOG(glog, CF_LOG_LEVEL_WARNING, fmtstr, __VA_ARGS__)
+#define CF_LOG_ERROR(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_ERROR, fmtstr, __VA_ARGS__)
+#define CF_LOG_FATAL(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_FATAL, fmtstr, __VA_ARGS__)
+*/
 
 cf_log_t*   cf_log_create(const cf_char_t* filename);
 cf_void_t   cf_log_destroy(cf_log_t* log);
 cf_void_t   cf_log_set();
-cf_void_t   cf_log_put(const cf_char_t* filename, const cf_char_t* line, cf_log_level_t level, const cf_char_t* fmtstr, ...);
+cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...);
 
 #endif /* __CF_LOG_IF_H__ */

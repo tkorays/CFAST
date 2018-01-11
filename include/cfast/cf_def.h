@@ -32,6 +32,8 @@
 
 typedef char            cf_char_t;
 typedef unsigned char   cf_uchar_t;
+typedef int             cf_int_t;
+typedef unsigned int    cf_uint_t;
 typedef int32_t         cf_int32_t;
 typedef uint32_t        cf_uint32_t;    
 typedef void            cf_void_t;      /** void* */
