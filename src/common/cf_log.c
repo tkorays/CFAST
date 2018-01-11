@@ -58,36 +58,40 @@ cf_log_t*   cf_log_create(const cf_char_t* filename) {
     log->fp = fp;
     return (cf_log_t*)log;
 }
+
 cf_void_t   cf_log_destroy(cf_log_t* log) {
     if(!log) return ;
     (cf_void_t)pthread_mutex_destroy(&log->mutex);
     fclose(log->fp);
     cf_free(log);
 }
-cf_void_t   cf_log_set() {
+
+cf_void_t   cf_log_set_cache(cf_bool_t enable) {
 
 }
+
 cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t n = 0;
     time_t t = time(CF_NULL_PTR);
     cf_char_t* pt = ctime(&t);
     cf_char_t ts[32] = {0};
+
     if(!log || !filename || !line || !fmtstr || !pt) return ;
     cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 2);
     pthread_mutex_lock(&log->mutex);
 #ifdef _UCRT
     n = sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, (cf_uint_t)getpid(), (cf_uint_t)pthread_self().p, _cf_log_get_level_name(level), filename, line, func);
 #else
-	n = sprintf ( log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, ( cf_uint_t ) getpid ( ), ( cf_uint_t ) pthread_self ( ), _cf_log_get_level_name ( level ), filename, line, func );
+	  n = sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, (cf_uint_t)getpid(), (cf_uint_t)pthread_self(), _cf_log_get_level_name(level), filename, line, func);
 #endif
     va_start(args, fmtstr); 
     n += vsprintf(log->wbuf + n, fmtstr, args);
+    va_end(args); 
+
     log->wbuf[n] = '\n';
     log->wbuf[n+1] = '\0';
-
     fwrite(log->wbuf, cf_strlen(log->wbuf), 1, log->fp);
-    pthread_mutex_unlock(&log->mutex);
 
-    va_end(args); 
+    pthread_mutex_unlock(&log->mutex);
 }
