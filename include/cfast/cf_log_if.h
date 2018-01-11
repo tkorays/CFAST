@@ -58,11 +58,11 @@ cf_log_t*   cf_log_create(const cf_char_t* filename);
 cf_void_t   cf_log_destroy(cf_log_t* log);
 
 /**
- * Set a log.
- * @param 
- * @return              Log handle.
+ * Set a log catch.
+ * @param enable        Enalbe cache or not.
+ * @return
  */
-cf_void_t   cf_log_set();
+cf_void_t   cf_log_set_cache(cf_bool_t enable);
 
 /**
  * Put a log to file.
