@@ -1,3 +1,5 @@
+#define _TIMESPEC_DEFINED
+
 #include "cfast/cf_log_if.h"
 #include "cfast/cf_str_if.h"
 #include "cfast/cf_mem_if.h"
@@ -74,7 +76,11 @@ cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, 
     if(!log || !filename || !line || !fmtstr || !pt) return ;
     cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 2);
     pthread_mutex_lock(&log->mutex);
-    n = sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, (cf_uint_t)getpid(), (cf_uint_t)pthread_self(), _cf_log_get_level_name(level), filename, line, func);
+#ifdef _UCRT
+    n = sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, (cf_uint_t)getpid(), (cf_uint_t)pthread_self().p, _cf_log_get_level_name(level), filename, line, func);
+#else
+	n = sprintf ( log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, ( cf_uint_t ) getpid ( ), ( cf_uint_t ) pthread_self ( ), _cf_log_get_level_name ( level ), filename, line, func );
+#endif
     va_start(args, fmtstr); 
     n += vsprintf(log->wbuf + n, fmtstr, args);
     log->wbuf[n] = '\n';
