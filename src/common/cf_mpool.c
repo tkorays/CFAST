@@ -13,6 +13,8 @@ typedef struct cf_mpool_block {
 struct cf_mpool {
     cf_size_t           blk_size;   /** 一个内存分配块大小 */
     cf_size_t           blk_num;    /** 内存分配块个数 */
+    cf_size_t           used;       /** 已经使用的内存 */
+    cf_size_t           unused;     /** 未使用的，且可被使用的内存大小，不包含对齐浪费的 */
     cf_mpool_block_t*   head;       /** 内存块头指针 */
     cf_mpool_block_t*   ptr;        /** 当前申请块指针 */
 };
@@ -28,6 +30,8 @@ cf_mpool_t* cf_mpool_create(cf_size_t blk_size) {
     if(!pool) return CF_NULL_PTR;
 
     pool->blk_size = blk_size;
+    pool->used = 0;
+    pool->unused = 0;
 
     /* 默认申请一块内存分配块 */
     pool->head = cf_mpool_block_create(blk_size);
@@ -38,6 +42,7 @@ cf_mpool_t* cf_mpool_create(cf_size_t blk_size) {
 
     pool->ptr = pool->head;
     pool->blk_num = 1;
+    pool->unused = (pool->head->end - pool->head->start);
 
     return (cf_mpool_t*)pool;
 }
@@ -81,6 +86,8 @@ cf_void_t*  cf_mpool_alloc(cf_mpool_t* pool, cf_size_t size) {
         p->ptr->start = addr + size;
     }
 
+    pool->used += size;
+    pool->unused = (p->ptr->end - p->ptr->start);
     return addr;
 }
 
@@ -103,4 +110,13 @@ cf_void_t cf_mpool_block_destroy(cf_mpool_block_t* block) {
     if(block) {
         cf_free(block);
     }
+}
+
+cf_void_t cf_mpool_get_stat(cf_mpool_t* pool, cf_mpool_stat_t* stat) {
+    if(!pool || !stat) return ;
+    stat->blksize = pool->blk_size;
+    stat->blknum = pool->blk_num;
+    stat->lgblknum = 0;
+    stat->used = pool->used;
+    stat->unused = pool->unused;
 }

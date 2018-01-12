@@ -7,7 +7,11 @@
 #endif
 
 cf_uint_t cf_getpid() {
+#ifdef CF_OS_WIN
     return(cf_uint_t)_getpid();
+#else
+    return (cf_uint_t)getpid();
+#endif
 }
 
 cf_uint_t cf_gettid() {
