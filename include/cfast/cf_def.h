@@ -53,6 +53,26 @@ typedef int32_t         cf_errno_t;     /** errno */
 #define CF_ERRNO_STATE_ERROR    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 4)
 #define CF_ERRNO_SIZE_OVER      CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 5)
 
+#ifndef CF_API
+#  ifdef _WIN32
+#       define CF_OS_WIN 
+#       if defined(CF_BUILD_SHARED) /* build dll */
+#           define CF_API __declspec(dllexport)
+#       elif !defined(CF_BUILD_STATIC) /* use dll */
+#           define CF_API __declspec(dllimport)
+#       else /* static library */
+#         define CF_API
+#       endif
+#  else
+#       define CF_OS_LINUX
+#       if __GNUC__ >= 4
+#           define CF_API __attribute__((visibility("default")))
+#       else
+#           define CF_API
+#       endif
+#  endif
+#endif
+
 typedef enum {
     CF_RET_SUCCESS = 0,
     CF_RET_FAIL,

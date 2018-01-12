@@ -1,15 +1,13 @@
 #include "cfast/cf_log_if.h"
 #include "cfast/cf_str_if.h"
 #include "cfast/cf_mem_if.h"
-#include <pthread.h>
+#include "cfast/cf_thread_if.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
-#if defined _WIN32 || WIN32 
-    #include <process.h>
-#else
-    #include <unistd.h>
-#endif
+
+#include "pthread.h"
+
 
 typedef struct cf_log_s {
     cf_char_t       filename[256];
@@ -78,7 +76,7 @@ cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, 
     if(!log || !filename || !line || !fmtstr || !pt) return ;
     cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 2);
     pthread_mutex_lock(&log->mutex);
-    n = sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, (cf_uint_t)getpid(), (cf_uint_t)pthread_self(), _cf_log_get_level_name(level), filename, line, func);
+    n = sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, cf_getpid(), cf_gettid(), _cf_log_get_level_name(level), filename, line, func);
 
     va_start(args, fmtstr); 
     n += vsprintf(log->wbuf + n, fmtstr, args);
