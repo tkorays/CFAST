@@ -7,12 +7,12 @@
 #endif
 
 cf_uint_t cf_getpid() {
-    return(cf_uint_t)getpid();
+    return(cf_uint_t)_getpid();
 }
 
 cf_uint_t cf_gettid() {
 #ifdef CF_OS_WIN
-    (cf_uint_t)pthread_self().p;
+    return (cf_uint_t)pthread_self().p;
 #else 
     return (cf_uint_t)pthread_self();
 #endif
