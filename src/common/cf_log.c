@@ -156,7 +156,7 @@ cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, 
     /* 日志级别不够，则不记录 */
     if(((struct cf_log_s*)log)->level > level) return ;
 
-    cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 2);
+    cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 1);
 
     if(log->cache_size && log->cache_count >= log->cache_size) {
         /* 将日志立即刷到文件中 */
@@ -207,7 +207,7 @@ cf_void_t _cf_log_put_item(cf_log_t* log, cf_log_item_t* item) {
     cf_char_t ts[32] = {0};
     if(!log || !item) return ;
     pt = ctime(&item->ts);
-    cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 2);
+    cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 1);
     sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]%s\n", ts, 
         item->pid, item->tid, _cf_log_get_level_name(item->level), 
         item->filename, item->line, item->funcname, item->logstr);
