@@ -30,12 +30,18 @@
 #define CF_PCHAR(s) ((cf_char_t*)(s))
 #define CF_MAKE_ERRNO(m, no) ((m)<<16 | no)
 
-typedef char            cf_char_t;
-typedef unsigned char   cf_uchar_t;
 typedef int             cf_int_t;
 typedef unsigned int    cf_uint_t;
+typedef char            cf_char_t;
+typedef unsigned char   cf_uchar_t;
+typedef char            cf_int8_t;
+typedef unsigned char   cf_uint8_t;
+typedef short           cf_int16_t;
+typedef unsigned short  cf_uint16_t;
 typedef int32_t         cf_int32_t;
-typedef uint32_t        cf_uint32_t;    
+typedef uint32_t        cf_uint32_t;  
+typedef int64_t         cf_int64_t;
+typedef uint64_t        cf_uint64_t;  
 typedef void            cf_void_t;      /** void* */
 typedef uint32_t        cf_id_t;        /** 用于表示id */
 typedef void*           cf_handle_t;    /** 用于表示句柄 */
