@@ -28,4 +28,8 @@ cf_errno_t  cf_file_opendir(cf_file_dir_t** dir, const cf_char_t* path);
 cf_errno_t  cf_file_closedir(cf_file_dir_t* dir);
 cf_file_dirent_t* cf_file_readdir(cf_file_dir_t* dir);
 
+cf_bool_t   cf_file_exist(cf_char_t* filename);
+cf_errno_t  cf_file_rmdir(cf_char_t* dirname);
+cf_errno_t  cf_file_remove(cf_char_t* filename);
+
 #endif /* __CF_FILE_IF_H__ */
