@@ -35,7 +35,7 @@ typedef struct cf_file_s cf_file_t;
 typedef struct cf_file_dir_s cf_file_dir_t;
 typedef struct cf_file_dirent_s cf_file_dirent_t;
 
-cf_errno_t  cf_file_open(cf_file_t** f, const cf_char_t* filename, const cf_char_t* mode);
+cf_errno_t  cf_file_open(cf_file_t* f, const cf_char_t* filename, const cf_char_t* mode);
 cf_errno_t  cf_file_close(cf_file_t* f);
 cf_errno_t  cf_file_write(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt);
 cf_errno_t  cf_file_read(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt);
