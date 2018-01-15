@@ -17,6 +17,7 @@ set(SRC_LIST src/common/cf_list.c
     src/common/cf_str.c
     src/common/cf_log.c
     src/common/cf_thread.c
+    src/common/cf_err.c
     )
 
 add_library(cfast STATIC ${SRC_LIST})
