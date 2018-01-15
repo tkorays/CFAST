@@ -3,6 +3,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#ifdef CF_OS_WIN
+    
+#else 
+    #include<sys/types.h>
+　　 #include<dirent.h>
+#endif
+
 typedef struct cf_file_s {
     FILE *fp;
 } cf_file_t;
@@ -105,5 +112,15 @@ cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
     ret = vfscanf(f->fp, fmtstr, args);
     va_end(args);
     return (ret == -1) ? CF_EFWRITE : CF_OK;
+}
+
+cf_file_dir_t*  cf_file_opendir(const cf_char_t* path) {
+    return 0;
+}
+cf_errno_t  cf_file_closedir(cf_file_dir_t* dir) {
+    return CF_OK;
+}
+cf_file_dirent_t* cf_file_readdir(cf_file_dir_t* dir) {
+    return 0;
 }
 
