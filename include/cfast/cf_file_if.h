@@ -12,6 +12,11 @@
 #define __CF_FILE_IF_H__
 
 #include "cfast/cf_file_if.h"
+#include <stdio.h>
+
+#define CF_FILE_SEEK_SET    SEEK_SET
+#define CF_FILE_SEEK_CUR    SEEK_CUR 
+#define CF_FILE_SEEK_END    SEEK_END
 
 typedef enum {
     CF_FILE_TYPE_NOT_DEF = 0,
@@ -30,9 +35,7 @@ typedef struct cf_file_s cf_file_t;
 typedef struct cf_file_dir_s cf_file_dir_t;
 typedef struct cf_file_dirent_s cf_file_dirent_t;
 
-// TODO: permission!
-
-cf_file_t*  cf_file_open(const cf_char_t* filename, const cf_char_t* mode);
+cf_errno_t  cf_file_open(cf_file_t** f, const cf_char_t* filename, const cf_char_t* mode);
 cf_errno_t  cf_file_close(cf_file_t* f);
 cf_errno_t  cf_file_write(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt);
 cf_errno_t  cf_file_read(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt);
@@ -41,6 +44,8 @@ cf_errno_t  cf_file_getc(cf_file_t* f, cf_char_t* c);
 cf_errno_t  cf_file_putc(cf_file_t* f, cf_char_t c);
 cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size);
 cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff);
+cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* buff, ...);
+cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* buff, ...);
 
 cf_file_dir_t*  cf_file_opendir(const cf_char_t* path);
 cf_errno_t  cf_file_closedir(cf_file_dir_t* dir);
