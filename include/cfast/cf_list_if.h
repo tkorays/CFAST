@@ -52,7 +52,7 @@ cf_list_t*  cf_list_create(fn_cf_list_free func);
  * @param pos       Inset position, range from -N-1 to N.
  * @return          The result.
  */
-cf_ret_t    cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos);
+cf_errno_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos);
 
 /**
  * Remove item from list, NOT free data.
@@ -61,7 +61,7 @@ cf_ret_t    cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos);
  * @param pos       Inset position, range from -N-1 to N.
  * @return          The result.
  */
-cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos);
+cf_errno_t cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos);
 
 /**
  * Delete item from list, MAY free data.
@@ -70,7 +70,7 @@ cf_ret_t    cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos);
  * @param free_data Whethere to free data.
  * @return          The result.
  */
-cf_ret_t    cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data);
+cf_errno_t cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data);
 
 /**
  * Free the list.
@@ -78,7 +78,7 @@ cf_ret_t    cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data);
  * @param free_data Whethere to free data.
  * @return          The result.
  */
-cf_ret_t    cf_list_destroy(cf_list_t* li, cf_bool_t free_data);
+cf_errno_t cf_list_destroy(cf_list_t* li, cf_bool_t free_data);
 
 /**
  * Get the size of the list.
@@ -93,7 +93,7 @@ cf_size_t   cf_list_size(cf_list_t* li);
  * @param it        The iterator.
  * @return          The result.
  */
-cf_ret_t    cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it);
+cf_errno_t cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it);
 
 /**
  * Get next iterator.
@@ -108,6 +108,6 @@ cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
  * @param data      Data.
  * @return          The result.
  */
-cf_ret_t    cf_list_iter_data(cf_list_iter_t it, cf_void_t** data);
+cf_errno_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data);
 
 #endif /* __CF_LIST_IF_H__ */

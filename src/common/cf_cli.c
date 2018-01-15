@@ -1,5 +1,6 @@
 #include "cfast/cf_cli_if.h"
 #include "cfast/cf_mem_if.h"
+#include "cfast/cf_err_if.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -34,7 +35,7 @@ cf_void_t   cf_cli_deinit(cf_cli_t* cli) {
 }
 
 cf_errno_t  cf_cli_set_io_func(cf_cli_t* cli, cf_cli_pfn_input input, cf_cli_pfn_output output) {
-    if(!cli) return CF_ERRNO_INVALID_PARAM;
+    if(!cli) return CF_EPARAM;
 
     if(input) {
         cli->input = input;
@@ -43,28 +44,28 @@ cf_errno_t  cf_cli_set_io_func(cf_cli_t* cli, cf_cli_pfn_input input, cf_cli_pfn
     if(output) {
         cli->output = output;
     }
-    return CF_ERRNO_OK;
+    return CF_OK;
 }
 
 cf_errno_t  cf_cli_install_all_cmds(cf_cli_t* cli, cf_cli_cmd_t* root) {
-    if(!cli || !root) return CF_ERRNO_INVALID_PARAM;
+    if(!cli || !root) return CF_EPARAM;
     cli->root = root;
-    return CF_ERRNO_OK;
+    return CF_OK;
 }
 
 cf_errno_t  cf_cli_run_line(cf_cli_t* cli, cf_char_t* line) {
-    if(!cli || !line) return CF_ERRNO_INVALID_PARAM;
+    if(!cli || !line) return CF_EPARAM;
     // todo: just output
     cli->output(line);
-    return CF_ERRNO_OK;
+    return CF_OK;
 }
 
 cf_errno_t cf_cli_run(cf_cli_t* cli) {
-    if(!cli) return CF_ERRNO_INVALID_PARAM;
+    if(!cli) return CF_EPARAM;
     while(CF_TRUE) {
         cli->input(cli->inbuf, sizeof(cli->inbuf));
         if(strcmp(cli->inbuf, "exit") == 0) break;
         cf_cli_run_line(cli, cli->inbuf);
     }
-    return CF_ERRNO_OK;
+    return CF_OK;
 }

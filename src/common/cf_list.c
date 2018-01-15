@@ -1,6 +1,7 @@
 #include "cfast/cf_def.h"
 #include "cfast/cf_list_if.h"
 #include "cfast/cf_mem_if.h"
+#include "cfast/cf_err_if.h"
 
 
 typedef struct _cf_list_node {
@@ -30,12 +31,12 @@ cf_list_t*  cf_list_create(fn_cf_list_free func) {
     return li;
 }
 
-cf_ret_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
+cf_errno_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
     cf_list_node_t* node = CF_NULL_PTR;
     cf_list_node_t* tmp = CF_NULL_PTR;
     cf_uint32_t abs_pos = 0;
     cf_uint32_t index;
-    if(!li || !data) return CF_RET_NULL_PTR;
+    if(!li || !data) return CF_EPARAM;
 
     node = (cf_list_node_t*)cf_malloc(sizeof(cf_list_node_t));
     node->data = data;
@@ -43,7 +44,7 @@ cf_ret_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
     abs_pos = (pos >= 0 ? pos : -pos);
     if((pos > 0 && abs_pos > li->number) && (pos < 0 && (abs_pos + 1) > li->number)) {
         cf_free(node);
-        return CF_RET_FAIL;
+        return CF_NOK;
     }
 
     if(pos < 0) {
@@ -78,19 +79,19 @@ cf_ret_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
     }
     li->number++;
 
-    return CF_RET_SUCCESS;
+    return CF_OK;
 }
 
-cf_ret_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) {
+cf_errno_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) {
     cf_list_node_t* node = CF_NULL_PTR;
     cf_list_node_t* tmp = CF_NULL_PTR;
     cf_uint32_t abs_pos = 0;
     cf_uint32_t index;
-    if(!li || !data) return CF_RET_NULL_PTR;
+    if(!li || !data) return CF_EPARAM;
 
     abs_pos = (pos >= 0 ? pos : -pos);
     if((pos > 0 && abs_pos > li->number) && (pos < 0 && (abs_pos + 1) > li->number)) {
-        return CF_RET_FAIL;
+        return CF_NOK;
     }
 
     if(pos < 0) {
@@ -128,30 +129,30 @@ cf_ret_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) {
     *data = node->data;
     cf_free(node);
 
-    return CF_RET_SUCCESS;
+    return CF_OK;
 }
 
-cf_ret_t cf_list_delete(struct cf_list* li, cf_int32_t pos, cf_bool_t free_data) {
-    cf_ret_t ret = CF_RET_SUCCESS;
+cf_errno_t cf_list_delete(struct cf_list* li, cf_int32_t pos, cf_bool_t free_data) {
+    cf_errno_t ret = CF_OK;
     cf_void_t* data = CF_NULL_PTR;
-    if(!li) return CF_RET_FAIL;
-    if(!li->fn_free && free_data) return CF_RET_FAIL;
+    if(!li) return CF_EPARAM;
+    if(!li->fn_free && free_data) return CF_EPARAM;
 
     ret = cf_list_remove(li, &data, pos);
-    if(ret != CF_RET_SUCCESS) {
-        return CF_RET_FAIL;
+    if(ret != CF_OK) {
+        return CF_NOK;
     }
     if(free_data) {
         li->fn_free(data);
     }
 
-    return CF_RET_SUCCESS;
+    return CF_OK;
 }
 
-cf_ret_t cf_list_destroy(struct cf_list* li, cf_bool_t free_data) {
+cf_errno_t cf_list_destroy(struct cf_list* li, cf_bool_t free_data) {
     cf_list_iter_t it = CF_NULL_PTR;
     cf_list_node_t* node = CF_NULL_PTR;
-    if(!li) return CF_RET_FAIL;
+    if(!li) return CF_EPARAM;
     cf_list_iter_init(li, &it);
     while(it) {
         node = it;
@@ -164,7 +165,7 @@ cf_ret_t cf_list_destroy(struct cf_list* li, cf_bool_t free_data) {
     }
     cf_free(li);
 
-    return CF_RET_SUCCESS;
+    return CF_OK;
 }
 
 cf_size_t cf_list_size(struct cf_list* li) {
@@ -172,10 +173,10 @@ cf_size_t cf_list_size(struct cf_list* li) {
     return li->number;
 }
 
-cf_ret_t cf_list_iter_init(struct cf_list* li, cf_list_iter_t* it) {
-    if(!li || !it) return CF_RET_NULL_PTR;
+cf_errno_t cf_list_iter_init(struct cf_list* li, cf_list_iter_t* it) {
+    if(!li || !it) return CF_EPARAM;
     *it = (cf_list_iter_t)li->head;
-    return CF_RET_SUCCESS;
+    return CF_OK;
 }
 
 cf_list_iter_t cf_list_iter_next(cf_list_iter_t it) {
@@ -183,8 +184,8 @@ cf_list_iter_t cf_list_iter_next(cf_list_iter_t it) {
     return ((cf_list_node_t*)it)->next;
 }
 
-cf_ret_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data) {
-    if(!it || !data) return CF_RET_NULL_PTR;
+cf_errno_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data) {
+    if(!it || !data) return CF_EPARAM;
     *data = ((cf_list_node_t*)it)->data;
-    return CF_RET_SUCCESS;
+    return CF_OK;
 }
