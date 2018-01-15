@@ -44,8 +44,8 @@ cf_errno_t  cf_file_getc(cf_file_t* f, cf_char_t* c);
 cf_errno_t  cf_file_putc(cf_file_t* f, cf_char_t c);
 cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size);
 cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff);
-cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* buff, ...);
-cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* buff, ...);
+cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* fmtstr, ...);
+cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...);
 
 cf_file_dir_t*  cf_file_opendir(const cf_char_t* path);
 cf_errno_t  cf_file_closedir(cf_file_dir_t* dir);

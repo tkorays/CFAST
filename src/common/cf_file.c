@@ -1,6 +1,7 @@
 #include "cfast/cf_file_if.h"
 #include "cfast/cf_err_if.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 typedef struct cf_file_s {
     FILE *fp;
@@ -58,11 +59,51 @@ cf_errno_t  cf_file_getc(cf_file_t* f, cf_char_t* c) {
 }
 
 cf_errno_t  cf_file_putc(cf_file_t* f, cf_char_t c) {
-    if(!f || !c) return CF_EPARAM;
+    if(!f) return CF_EPARAM;
     if(!f->fp) return CF_EFILE_HANDLE;
     if(c != (cf_char_t)fputc(c, f->fp)) {
         return CF_EFWRITE;
     }
     return CF_OK;
+}
+
+cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size) {
+    if(!f || !buf) return CF_EPARAM;
+    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!fgets(buff, size, f->fp)) {
+        return CF_EFREAD;
+    }
+    return CF_OK;
+}
+
+cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff) {
+    if(!f || !buf) return CF_EPARAM;
+    if(!f->fp) return CF_EFILE_HANDLE;
+    if(fputs(buff, f->fp) <= 0) {
+        return CF_EFWRITE;
+    }
+    return CF_OK;
+}
+
+cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
+    va_list args;
+    cf_int_t ret = 0;
+    if(!f || !buf) return CF_EPARAM;
+    if(!f->fp) return CF_EFILE_HANDLE;
+    va_start(args, fmtstr);
+    ret = vfprintf(f->fp, fmtstr, args);
+    va_end(args);
+    return (ret == -1) ? CF_EFWRITE : CF_OK;
+}
+
+cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
+    va_list args;
+    cf_int_t ret = 0;
+    if(!f || !buf) return CF_EPARAM;
+    if(!f->fp) return CF_EFILE_HANDLE;
+    va_start(args, fmtstr);
+    ret = vfscanf(f->fp, fmtstr, args);
+    va_end(args);
+    return (ret == -1) ? CF_EFWRITE : CF_OK;
 }
 
