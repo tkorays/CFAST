@@ -9,5 +9,8 @@ int main() {
         printf("get file: %s\n", dire.name);
     }
     cf_file_closedir(&dir);
+
+    printf("file log_test.c exist: %u\n", cf_file_exist("log_test.c"));
+    printf("file log_test.ca not exist: %u\n", cf_file_exist("log_test.ca"));
     return 0;
 }

@@ -59,6 +59,8 @@ cf_errno_t cf_file_readdir(cf_file_dir_t* dir, cf_file_dirent_t* dirinfo);
 cf_bool_t   cf_file_exist(const cf_char_t* filename);
 cf_errno_t  cf_file_rmdir(const cf_char_t* dirname);
 cf_errno_t  cf_file_remove(const cf_char_t* filename);
+cf_errno_t  cf_file_chdir(const cf_char_t* dirname);
+cf_errno_t  cf_file_getcwd(cf_char_t* cwd, cf_size_t size);
 cf_errno_t  cf_file_copy(const cf_char_t* src, const cf_char_t* dst);
 cf_errno_t  cf_file_rename(const cf_char_t* src, const cf_char_t* dst);
 cf_errno_t  cf_file_mkdir(const cf_char_t* path);

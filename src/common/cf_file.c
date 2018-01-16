@@ -6,8 +6,10 @@
 
 #ifdef CF_OS_WIN
     #include <io.h>
-#else 
+#else
+    #include <unistd.h>
     #include<sys/types.h>
+    #include <sys/stat.h>
     #include<dirent.h>
 #endif
 
@@ -181,4 +183,45 @@ cf_errno_t cf_file_readdir(cf_file_dir_t* dir, cf_file_dirent_t* dirinfo) {
     cf_strcpy_s(dirinfo->name, sizeof(dirinfo->name), _dirent->pdir->d_name);
 #endif
     return CF_OK;
+}
+
+cf_bool_t   cf_file_exist(const cf_char_t* filename) {
+    if(!filename) return CF_FALSE;
+    return access(filename, 0) == 0 ? CF_TRUE : CF_FALSE;
+}
+
+cf_errno_t  cf_file_rmdir(const cf_char_t* dirname) {
+    if(!dirname) return CF_NOK;
+#ifdef CF_OS_WIN
+    return RemoveDirectory(dirname) ? CF_OK : CF_NOK;
+#else
+    return rmdir(dirname) == 0 ? CF_OK : CF_NOK;
+#endif
+}
+
+cf_errno_t  cf_file_remove(const cf_char_t* filename) {
+    if(!filename) return CF_NOK;
+    #ifdef CF_OS_WIN
+    return DeleteFile(filename) ? CF_OK : CF_NOK;
+#else
+    return remove(filename) == 0 ? CF_OK : CF_NOK;
+#endif
+}
+
+cf_errno_t  cf_file_chdir(const cf_char_t* dirname) {
+    if(!dirname) return CF_NOK;
+#ifdef CF_OS_WIN
+    return _chdir(dirname) = 0 ? CF_OK : CF_NOK;
+#else
+    return chdir(dirname) == 0 ? CF_OK : CF_NOK;
+#endif
+}
+
+cf_errno_t  cf_file_getcwd(cf_char_t* cwd, cf_size_t size) {
+    if(!cwd) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    return _getcwd(cwd, size) ? CF_OK : CF_NOK;
+#else
+    return getcwd(cwd, size) ? CF_OK : CF_NOK;
+#endif
 }
