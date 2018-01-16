@@ -5,12 +5,15 @@
 #include <stdarg.h>
 
 #ifdef CF_OS_WIN
+    #include <windows.h>
     #include <io.h>
+    #include <direct.h>
 #else
     #include <unistd.h>
     #include<sys/types.h>
     #include <sys/stat.h>
     #include<dirent.h>
+    #include<fcntl.h>
 #endif
 
 typedef struct cf_file_s {
@@ -193,7 +196,7 @@ cf_bool_t   cf_file_exist(const cf_char_t* filename) {
 cf_errno_t  cf_file_rmdir(const cf_char_t* dirname) {
     if(!dirname) return CF_NOK;
 #ifdef CF_OS_WIN
-    return RemoveDirectory(dirname) ? CF_OK : CF_NOK;
+    return _rmdir(dirname) == 0 ? CF_OK : CF_NOK;
 #else
     return rmdir(dirname) == 0 ? CF_OK : CF_NOK;
 #endif
@@ -201,11 +204,7 @@ cf_errno_t  cf_file_rmdir(const cf_char_t* dirname) {
 
 cf_errno_t  cf_file_remove(const cf_char_t* filename) {
     if(!filename) return CF_NOK;
-    #ifdef CF_OS_WIN
-    return DeleteFile(filename) ? CF_OK : CF_NOK;
-#else
     return remove(filename) == 0 ? CF_OK : CF_NOK;
-#endif
 }
 
 cf_errno_t  cf_file_chdir(const cf_char_t* dirname) {
@@ -224,4 +223,70 @@ cf_errno_t  cf_file_getcwd(cf_char_t* cwd, cf_size_t size) {
 #else
     return getcwd(cwd, size) ? CF_OK : CF_NOK;
 #endif
+}
+
+cf_errno_t  cf_file_copy(const cf_char_t* src, const cf_char_t* dst) {
+#ifndef CF_OS_WIN
+    cf_int_t fd1 = 0;
+    cf_int_t fd2 = 0;
+    cf_int_t len;
+    cf_char_t buff[1024]; 
+#endif
+    if(!src || !dst) return CF_EPARAM;
+    
+#ifdef CF_OS_WIN
+    return CopyFile(src, dst, 0) ? CF_OK : CF_NOK; /* copy force */
+#else
+    fd1 = open(src,O_RDWR|O_CREAT);
+    if(!fd1) return CF_NOK;
+
+    fd2 = open(dst,O_RDWR|O_CREAT);
+    if(!fd2) {
+        close(fd1);
+        return CF_NOK;
+    }
+    while((len = read(fd1, buff, sizeof(buff)))) {  
+        write(fd2, buff, len);
+    }
+    close(fd1);
+    close(fd2);
+    return CF_OK;
+#endif
+}
+
+cf_errno_t  cf_file_rename(const cf_char_t* src, const cf_char_t* dst) {
+    if(!dst || !src) return CF_EPARAM;
+    return rename(src, dst) == 0 ? CF_OK : CF_NOK;
+}
+
+// TODO: permisissions
+cf_errno_t  cf_file_mkdir(const cf_char_t* path) {
+    if(!path) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    return _mkdir(path) == 0 ? CF_OK : CF_NOK;
+#else
+    return mkdir(path, 0755) == 0 ? CF_OK : CF_NOK;
+#endif
+}
+
+cf_errno_t  cf_file_link(const cf_char_t* from_path, const cf_char_t* to_path) {
+    if(!from_path || !to_path) return CF_EPARAM;
+    return link(from_path, to_path) == 0 ? CF_OK : CF_NOK;
+}
+
+cf_errno_t  cf_file_unlink(const cf_char_t* pathname) {
+    if(!pathname) return CF_EPARAM;
+    return unlink(pathname) == 0 ? CF_OK : CF_NOK;
+}
+
+cf_errno_t  cf_file_get_extension(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
+    return CF_OK;
+}
+
+cf_errno_t  cf_file_get_basedir(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
+    return CF_OK;
+}
+
+cf_errno_t  cf_file_path_join(cf_char_t* buff, cf_size_t size, const cf_char_t* p1, const cf_char_t* p2) {
+    return CF_OK;
 }

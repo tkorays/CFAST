@@ -64,8 +64,8 @@ cf_errno_t  cf_file_getcwd(cf_char_t* cwd, cf_size_t size);
 cf_errno_t  cf_file_copy(const cf_char_t* src, const cf_char_t* dst);
 cf_errno_t  cf_file_rename(const cf_char_t* src, const cf_char_t* dst);
 cf_errno_t  cf_file_mkdir(const cf_char_t* path);
-cf_errno_t  cf_file_mkdir_r(const cf_char_t* path);
 cf_errno_t  cf_file_link(const cf_char_t* from_path, const cf_char_t* to_path);
+cf_errno_t  cf_file_unlink(const cf_char_t* pathname);
 
 cf_errno_t  cf_file_get_extension(const cf_char_t* path, cf_char_t* buf, cf_size_t size);
 cf_errno_t  cf_file_get_basedir(const cf_char_t* path, cf_char_t* buf, cf_size_t size);
