@@ -1,5 +1,6 @@
 #include "cfast/cf_file_if.h"
 #include "cfast/cf_err_if.h"
+#include "cfast/cf_str_if.h"
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -7,29 +8,29 @@
     #include <io.h>
 #else 
     #include<sys/types.h>
-　　 #include<dirent.h>
+    #include<dirent.h>
 #endif
 
 typedef struct cf_file_s {
     FILE *fp;
 } cf_file_t;
 
-typedef struct cf_file_dir_s {
+typedef struct __dir_s {
 #ifdef CF_OS_WIN
-    struct _finddata_t *fileinfo;
+    struct _finddata_t fileinfo;
     long handle;
 #else
     DIR* dir;
 #endif
-} cf_file_dir_t;
+} __dir_t;
 
-typedef struct cf_file_dirent_s {
+typedef struct __dirent_s {
 #ifdef CF_OS_WIN
-    struct _finddata_t *fileinfo;
+    struct _finddata_t fileinfo;
 #else
-    dirent* pdir;
+    struct dirent* pdir;
 #endif
-} cf_file_dirent_t;
+} __dirent_t;
 
 cf_errno_t  cf_file_open(cf_file_t* f, const cf_char_t* filename, const cf_char_t* mode) {
     if(!f || !filename || !mode) return CF_EPARAM;
@@ -92,7 +93,7 @@ cf_errno_t  cf_file_putc(cf_file_t* f, cf_char_t c) {
 }
 
 cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size) {
-    if(!f || !buf) return CF_EPARAM;
+    if(!f || !buff) return CF_EPARAM;
     if(!f->fp) return CF_EFILE_HANDLE;
     if(!fgets(buff, size, f->fp)) {
         return CF_EFREAD;
@@ -101,7 +102,7 @@ cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size) {
 }
 
 cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff) {
-    if(!f || !buf) return CF_EPARAM;
+    if(!f || !buff) return CF_EPARAM;
     if(!f->fp) return CF_EFILE_HANDLE;
     if(fputs(buff, f->fp) <= 0) {
         return CF_EFWRITE;
@@ -112,7 +113,7 @@ cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff) {
 cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t ret = 0;
-    if(!f || !buf) return CF_EPARAM;
+    if(!f || !fmtstr) return CF_EPARAM;
     if(!f->fp) return CF_EFILE_HANDLE;
     va_start(args, fmtstr);
     ret = vfprintf(f->fp, fmtstr, args);
@@ -123,7 +124,7 @@ cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
 cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t ret = 0;
-    if(!f || !buf) return CF_EPARAM;
+    if(!f || !fmtstr) return CF_EPARAM;
     if(!f->fp) return CF_EFILE_HANDLE;
     va_start(args, fmtstr);
     ret = vfscanf(f->fp, fmtstr, args);
@@ -132,42 +133,52 @@ cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
 }
 
 cf_errno_t  cf_file_opendir(cf_file_dir_t* dir, const cf_char_t* path) {
-    if(!dir || !path) return CF_EPARAM;
+    __dir_t* _dir;
 #ifdef CF_OS_WIN
-    dir->handle = _findfirst(path, dir->dir);
-    if(dir->handle == -1L) return CF_NOK;
+    cf_char_t path_pattern[CF_MAX_PATH_SIZE] = {0};
+#endif
+    if(!dir || !path) return CF_EPARAM;
+    _dir = (__dir_t*)dir->__real_impl;
+#ifdef CF_OS_WIN
+    if(CF_OK != cf_file_path_join(path_pattern, sizeof(path_pattern), path, "*")) {
+        return CF_NOK;
+    }
+    _dir->handle = _findfirst(path_pattern, &_dir->fileinfo);
+    if(_dir->handle == -1L) return CF_NOK;
 #else
-    dir->dir = opendir(path);
-    if(!dir->dir) return CF_ENOK;
+    _dir->dir = opendir(path);
+    if(!_dir->dir) return CF_NOK;
 #endif
     return CF_OK;
 }
 cf_errno_t  cf_file_closedir(cf_file_dir_t* dir) {
+    __dir_t* _dir;
     if(!dir) return CF_EPARAM;
+    _dir = (__dir_t*)dir->__real_impl;
 #ifdef CF_OS_WIN
-    if(!dir->handle) return CF_ENULLPTR;
-    if(!_findclose(dir->handle)) return CF_NOK;
+    if(!_dir->handle) return CF_ENULLPTR;
+    if(!_findclose(_dir->handle)) return CF_NOK;
 #else
-    if(!dir->dir) return CF_ENULLPTR;
-    if(closedir(dir->dir) != 0) return CF_NOK;
+    if(!_dir->dir) return CF_ENULLPTR;
+    if(closedir(_dir->dir) != 0) return CF_NOK;
 #endif
     return CF_OK;
 }
 
 cf_errno_t cf_file_readdir(cf_file_dir_t* dir, cf_file_dirent_t* dirinfo) {
+    __dir_t* _dir;
+    __dirent_t* _dirent;
+    if(!dir || !dirinfo) return CF_EPARAM;
+    _dir = (__dir_t*)dir->__real_impl;
+    _dirent = (__dirent_t*)dirinfo->__real_impl;
 #ifdef CF_OS_WIN
-    cf_int_t ret = 0; 
-    if(!dir) return CF_EPARAM;
-    if(!dir->handle) return CF_ENULLPTR;
-    ret = _findnext(dir->handle, dirinfo);
-    if(ret == 0) return CF_EEOF;
-    else if(ret == -1L) return CF_NOK;
+    if(!_dir->handle) return CF_ENULLPTR;
+    if(_findnext(_dir->handle, &_dirent->fileifo) == -1L) return CF_EEOF;
+    cf_strcpy_s(dirinfo->name, sizeof(dirinfo->name), _dirent->fileifo.name);
 #else
-    if(!dir) return CF_EPARAM;
-    if(!dir->pdir) return CF_ENULLPTR;
-    dirinfo->pdir = readdir(dir->dir);
-    if(!dirinfo->pdir) return CF_EEOF;
+    _dirent->pdir = readdir(_dir->dir);
+    if(!_dirent->pdir) return CF_EEOF;
+    cf_strcpy_s(dirinfo->name, sizeof(dirinfo->name), _dirent->pdir->d_name);
 #endif
     return CF_OK;
 }
-

@@ -11,7 +11,8 @@
 #ifndef __CF_FILE_IF_H__
 #define __CF_FILE_IF_H__
 
-#include "cfast/cf_file_if.h"
+#include "cfast/cf_def.h"
+#include "cfast/cf_err_if.h"
 #include <stdio.h>
 
 #define CF_FILE_SEEK_SET    SEEK_SET
@@ -30,12 +31,13 @@ typedef enum {
     CF_FILE_TYPE_UNKNOWN
 } cf_filetype_t;
 
-
 typedef struct cf_file_s cf_file_t;
-typedef struct cf_file_dir_s cf_file_dir_t;
+typedef struct cf_file_dir_s {
+    cf_char_t   __real_impl[16];
+} cf_file_dir_t;
 typedef struct cf_file_dirent_s {
     cf_char_t   name[CF_MAX_PATH_SIZE];
-    cf_void_t*  __real_ptr;
+    cf_char_t   __real_impl[320];
 } cf_file_dirent_t;
 
 cf_errno_t  cf_file_open(cf_file_t* f, const cf_char_t* filename, const cf_char_t* mode);
@@ -52,7 +54,7 @@ cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...);
 
 cf_errno_t  cf_file_opendir(cf_file_dir_t* dir, const cf_char_t* path);
 cf_errno_t  cf_file_closedir(cf_file_dir_t* dir);
-cf_file_dirent_t* cf_file_readdir(cf_file_dir_t* dir);
+cf_errno_t cf_file_readdir(cf_file_dir_t* dir, cf_file_dirent_t* dirinfo);
 
 cf_bool_t   cf_file_exist(const cf_char_t* filename);
 cf_errno_t  cf_file_rmdir(const cf_char_t* dirname);
