@@ -33,7 +33,10 @@ typedef enum {
 
 typedef struct cf_file_s cf_file_t;
 typedef struct cf_file_dir_s cf_file_dir_t;
-typedef struct cf_file_dirent_s cf_file_dirent_t;
+typedef struct cf_file_dirent_s {
+    cf_char_t   name[CF_MAX_PATH_SIZE];
+    cf_void_t*  __real_ptr;
+} cf_file_dirent_t;
 
 cf_errno_t  cf_file_open(cf_file_t* f, const cf_char_t* filename, const cf_char_t* mode);
 cf_errno_t  cf_file_close(cf_file_t* f);
@@ -47,7 +50,7 @@ cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff);
 cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* fmtstr, ...);
 cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...);
 
-cf_file_dir_t*  cf_file_opendir(const cf_char_t* path);
+cf_errno_t  cf_file_opendir(cf_file_dir_t* dir, const cf_char_t* path);
 cf_errno_t  cf_file_closedir(cf_file_dir_t* dir);
 cf_file_dirent_t* cf_file_readdir(cf_file_dir_t* dir);
 

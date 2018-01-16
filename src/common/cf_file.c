@@ -4,7 +4,7 @@
 #include <stdarg.h>
 
 #ifdef CF_OS_WIN
-    
+    #include <io.h>
 #else 
     #include<sys/types.h>
 　　 #include<dirent.h>
@@ -13,6 +13,23 @@
 typedef struct cf_file_s {
     FILE *fp;
 } cf_file_t;
+
+typedef struct cf_file_dir_s {
+#ifdef CF_OS_WIN
+    struct _finddata_t *fileinfo;
+    long handle;
+#else
+    DIR* dir;
+#endif
+} cf_file_dir_t;
+
+typedef struct cf_file_dirent_s {
+#ifdef CF_OS_WIN
+    struct _finddata_t *fileinfo;
+#else
+    dirent* pdir;
+#endif
+} cf_file_dirent_t;
 
 cf_errno_t  cf_file_open(cf_file_t* f, const cf_char_t* filename, const cf_char_t* mode) {
     if(!f || !filename || !mode) return CF_EPARAM;
@@ -114,13 +131,43 @@ cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
     return (ret == -1) ? CF_EFWRITE : CF_OK;
 }
 
-cf_file_dir_t*  cf_file_opendir(const cf_char_t* path) {
-    return 0;
-}
-cf_errno_t  cf_file_closedir(cf_file_dir_t* dir) {
+cf_errno_t  cf_file_opendir(cf_file_dir_t* dir, const cf_char_t* path) {
+    if(!dir || !path) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    dir->handle = _findfirst(path, dir->dir);
+    if(dir->handle == -1L) return CF_NOK;
+#else
+    dir->dir = opendir(path);
+    if(!dir->dir) return CF_ENOK;
+#endif
     return CF_OK;
 }
-cf_file_dirent_t* cf_file_readdir(cf_file_dir_t* dir) {
-    return 0;
+cf_errno_t  cf_file_closedir(cf_file_dir_t* dir) {
+    if(!dir) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    if(!dir->handle) return CF_ENULLPTR;
+    if(!_findclose(dir->handle)) return CF_NOK;
+#else
+    if(!dir->dir) return CF_ENULLPTR;
+    if(closedir(dir->dir) != 0) return CF_NOK;
+#endif
+    return CF_OK;
+}
+
+cf_errno_t cf_file_readdir(cf_file_dir_t* dir, cf_file_dirent_t* dirinfo) {
+#ifdef CF_OS_WIN
+    cf_int_t ret = 0; 
+    if(!dir) return CF_EPARAM;
+    if(!dir->handle) return CF_ENULLPTR;
+    ret = _findnext(dir->handle, dirinfo);
+    if(ret == 0) return CF_EEOF;
+    else if(ret == -1L) return CF_NOK;
+#else
+    if(!dir) return CF_EPARAM;
+    if(!dir->pdir) return CF_ENULLPTR;
+    dirinfo->pdir = readdir(dir->dir);
+    if(!dirinfo->pdir) return CF_EEOF;
+#endif
+    return CF_OK;
 }
 

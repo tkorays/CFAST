@@ -28,6 +28,7 @@
 #define CF_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #define CF_PCHAR(s) ((cf_char_t*)(s))
+#define CF_MAX_PATH_SIZE 256
 
 typedef int             cf_int_t;
 typedef unsigned int    cf_uint_t;
