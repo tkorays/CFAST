@@ -16,7 +16,10 @@ static cf_err_info_t g_common_err_desc[] = {
     {CF_EFILE_HANDLE, "File handle is error!"},
     {CF_EFWRITE, "Fail to write file."},
     {CF_EFREAD, "Fail to read file."},
-    {CF_ENULLPTR, "Null pointer."}
+    {CF_ENULLPTR, "Null pointer."},
+    {CF_EEOF, "End of file."},
+    {CF_EFULL, "Full!"},
+    {CF_EEMPTY, "Empty!"}
 };
 
 _cf_errors_in_module_t g_err_desc[CF_ERR_MODULE_MAX_NUM] = {

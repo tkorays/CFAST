@@ -27,7 +27,8 @@ typedef struct {
 #define CF_EFREAD       CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 8)
 #define CF_ENULLPTR     CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 9)
 #define CF_EEOF         CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 10)
-
+#define CF_EFULL        CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 11)
+#define CF_EEMPTY       CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 12)
 
 /**
  * Get description of an error.
