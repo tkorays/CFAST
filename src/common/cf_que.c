@@ -63,7 +63,7 @@ cf_errno_t  cf_que_dequeue(cf_que_t* que, cf_void_t** data, cf_size_t* size) {
     *data = que->items[que->head].data;
     *size = que->items[que->head].size;
     que->head = (que->head + 1) % que->max_size;
-    
+
     if(que->head == que->tail) que->empty = CF_TRUE;
     return CF_OK;
 }
