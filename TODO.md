@@ -9,8 +9,9 @@
 * [ ] cf_file.c剩余接口实现。
 * [ ] cf_time_if.h，time接口确定和实现。
 * [ ] 消息队列。
-* [ ] queue（使用array实现）.
+* [x] queue（使用array实现）.
 * [ ] hash.
 * [ ] set.
 * [ ] stack（使用array实现）.
 * [ ] array（和list不同，大小固定，不能动态增加）.
+* [ ] socket封装！！！

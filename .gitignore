@@ -3,5 +3,6 @@
 *.out
 *.a
 build/
+build-*/
 *~
 *.log

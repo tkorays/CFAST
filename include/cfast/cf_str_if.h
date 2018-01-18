@@ -78,4 +78,5 @@ cf_char_t* cf_strrstr(cf_char_t* s1, cf_char_t* s2);
  */
 cf_char_t* cf_strchr(const cf_char_t* s, cf_char_t c);
 
+
 #endif /* __CF_STR_H__ */

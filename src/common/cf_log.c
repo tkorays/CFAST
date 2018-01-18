@@ -4,6 +4,7 @@
 #include "cfast/cf_thread_if.h"
 #include "cfast/cf_mpool_if.h"
 #include "cfast/cf_list_if.h"
+#include "cfast/cf_err_if.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
@@ -103,7 +104,7 @@ cf_void_t cf_log_set_output_level(cf_log_t* log, cf_log_level_t level) {
 }
 
 cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
-    if(!log) return CF_ERRNO_INVALID_PARAM;
+    if(!log) return CF_EPARAM;
 
     pthread_mutex_lock(&log->mutex);
 
@@ -126,7 +127,7 @@ cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
     }
 
     log->cache_logs = cf_malloc(sizeof(struct cf_log_item_s)*size);
-    if(!log->cache_logs) return CF_ERRNO_MALLOC_ERROR;
+    if(!log->cache_logs) return CF_EMALLOC;
     log->cache_size = size;
     log->cache_count = 0;
 
@@ -137,11 +138,11 @@ cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
         log->cache_size = 0;
 
         pthread_mutex_unlock(&log->mutex);
-        return CF_ERRNO_OK;
+        return CF_OK;
     } 
 
     pthread_mutex_unlock(&log->mutex);
-    return CF_ERRNO_OK;
+    return CF_OK;
 }
 
 cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...) {

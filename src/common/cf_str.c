@@ -1,5 +1,6 @@
 #include "cfast/cf_str_if.h"
 #include "cfast/cf_mem_if.h"
+#include "cfast/cf_err_if.h"
 
 #include <string.h>
 
