@@ -30,7 +30,7 @@ _cf_errors_in_module_t g_err_desc[CF_ERR_MODULE_MAX_NUM] = {
     {0, CF_NULL_PTR}
 };
 
-cf_void_t cf_err_get_info(cf_errno_t err, cf_char_t* desc, cf_size_t size) {
+cf_void_t cf_err_get(cf_errno_t err, cf_char_t* desc, cf_size_t size) {
     cf_uint32_t m = CF_ERR_GET_MODULE(err);
     cf_uint32_t e = CF_ERR_GET_MERR(err);
     if(!desc || size == 0) {

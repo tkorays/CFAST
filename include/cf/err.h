@@ -40,7 +40,7 @@ typedef struct {
  * @param size          Size of 'desc' buffer.
  * @return 
  */
-cf_void_t cf_err_get_info(cf_errno_t err, cf_char_t* desc, cf_size_t size);
+cf_void_t cf_err_get(cf_errno_t err, cf_char_t* desc, cf_size_t size);
 
 /**
  * Register error info to global config.
