@@ -19,7 +19,10 @@ static cf_err_info_t g_common_err_desc[] = {
     {CF_ENULLPTR, "Null pointer."},
     {CF_EEOF, "End of file."},
     {CF_EFULL, "Full!"},
-    {CF_EEMPTY, "Empty!"}
+    {CF_EEMPTY, "Empty!"},
+    {CF_ETOOBIG, "Size is too big!"},
+    {CF_ETOOSHORT, "Size is too short!"},
+    {CF_ENOTFOUND, "Not Found!"}
 };
 
 _cf_errors_in_module_t g_err_desc[CF_ERR_MODULE_MAX_NUM] = {
