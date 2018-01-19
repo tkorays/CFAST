@@ -1,6 +1,6 @@
-#include "cfast/cf_opt_if.h"
-#include "cfast/cf_mem_if.h"
-#include "cfast/cf_err_if.h"
+#include <cf/opt.h>
+#include <cf/memory.h>
+#include <cf/err.h>
 
 #include <string.h>
 

@@ -1,7 +1,7 @@
-#ifndef __CF_ERR_IF_H__
-#define __CF_ERR_IF_H__
+#ifndef __CF_ERR_H__
+#define __CF_ERR_H__
 
-#include "cf_def.h"
+#include <cf/types.h>
 
 /**
  * Errno Description
@@ -48,4 +48,4 @@ cf_void_t cf_err_get_info(cf_errno_t err, cf_char_t* desc, cf_size_t size);
  */
 cf_void_t cf_err_register(cf_uint32_t module, cf_err_info_t* errs, cf_size_t size);
 
-#endif /* __CF_ERR_IF_H__ */
+#endif /* __CF_ERR_H__ */

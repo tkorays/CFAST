@@ -2,16 +2,16 @@
  * Copyright (c) 2018, tkorays
  * All rights reserved.
  * 
- * @file    cf_log_if.h
+ * @file    log.h
  * @brief   CFAST的日志模块对外接口
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-3
  *********************************************/
-#ifndef __CF_LOG_IF_H__
-#define __CF_LOG_IF_H__
+#ifndef __CF_LOG_H__
+#define __CF_LOG_H__
 
-#include "cf_def.h"
+#include <cf/types.h>
 
 /**
  * Log level.
@@ -91,4 +91,4 @@ cf_void_t   cf_log_flush(cf_log_t* log);
 
 cf_void_t   cf_log_put_pool_info(cf_log_t* log);
 
-#endif /* __CF_LOG_IF_H__ */
+#endif /* __CF_LOG_H__ */

@@ -8,18 +8,19 @@ if(NOT CMAKE_INSTALL_PREFIX)
     set(CMAKE_INSTALL_PREFIX /usr/local)
 endif()
 
-set(SRC_LIST src/common/cf_list.c
-    src/common/cf_mem.c
-    src/common/cf_mpool.c
-    src/common/cf_cli.c
-    src/common/cf_opt.c 
-    src/common/cf_string.c
-    src/common/cf_str.c
-    src/common/cf_log.c
-    src/common/cf_thread.c
-    src/common/cf_err.c
-    src/common/cf_file.c
-    src/common/cf_que.c
+set(SRC_LIST src/common/list.c
+    src/common/memory.c
+    src/common/mpool.c
+    src/common/cli.c
+    src/common/opt.c 
+    src/common/string.c
+    src/common/str.c
+    src/common/log.c
+    src/common/thread.c
+    src/common/err.c
+    src/common/file.c
+    src/common/queue.c
+    src/common/config.c
     )
 
 add_library(cfast STATIC ${SRC_LIST})

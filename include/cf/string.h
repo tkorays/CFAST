@@ -2,7 +2,7 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_string_if.h
+ * @file    string.h
  * @brief   String.
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
@@ -10,7 +10,8 @@
  ****************************************************/
 #ifndef __CF_STRING_H__
 #define __CF_STRING_H__
-#include "cf_def.h"
+
+#include <cf/types.h>
 
 /**
  * String.

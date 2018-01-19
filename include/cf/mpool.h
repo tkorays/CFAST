@@ -2,7 +2,7 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_mpool_if.h
+ * @file    mpool.h
  * @brief   Memory pool.
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
@@ -11,7 +11,7 @@
 #ifndef __CF_MPOOL_H__
 #define __CF_MPOOL_H__
 
-#include "cf_def.h"
+#include <cf/types.h>
 
 /**
  * Default block size

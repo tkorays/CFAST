@@ -2,23 +2,17 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_def.h
+ * @file    types.h
  * @brief   CFAST基础的定义
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-3
  ****************************************************/
-#ifndef __CF_DEF_H__
-#define __CF_DEF_H__
+#ifndef __CF_TYPES_H__
+#define __CF_TYPES_H__
 
 #include <stdint.h>
-
-/* 操作系统定义 */
-#ifdef _WIN32
-#define CF_OS_WIN 
-#else 
-#define CF_OS_LINUX 
-#endif
+#include <cf/config.h>
 
 #define CF_NULL_PTR 0
 #define CF_NULL (void*)0
@@ -29,6 +23,14 @@
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #define CF_PCHAR(s) ((cf_char_t*)(s))
 #define CF_MAX_PATH_SIZE 256
+
+#define CF_MAX_INT32    0x7fffffff
+#define CF_MAX_UINT32   UINT_MAX
+#define CF_MIN_INT32    0x80000000
+#define CF_MAX_INT64    9223372036854775807L
+#define CF_MAX_UINT64   18446744073709551615UL
+#define CF_MIN_INT64    (-CF_MAX_INT64 - 1L)
+
 
 typedef int             cf_int_t;
 typedef unsigned int    cf_uint_t;
@@ -59,26 +61,6 @@ typedef int32_t         cf_errno_t;     /** errno */
 #define CF_ERRNO_STATE_ERROR    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 4)
 #define CF_ERRNO_SIZE_OVER      CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 5)
 
-#ifndef CF_API
-#  ifdef _WIN32
-#       define CF_OS_WIN 
-#       if defined(CF_BUILD_SHARED) /* build dll */
-#           define CF_API __declspec(dllexport)
-#       elif !defined(CF_BUILD_STATIC) /* use dll */
-#           define CF_API __declspec(dllimport)
-#       else /* static library */
-#         define CF_API
-#       endif
-#  else
-#       define CF_OS_LINUX
-#       if __GNUC__ >= 4
-#           define CF_API __attribute__((visibility("default")))
-#       else
-#           define CF_API
-#       endif
-#  endif
-#endif
-
 typedef enum {
     CF_RET_SUCCESS = 0,
     CF_RET_FAIL,
@@ -87,4 +69,4 @@ typedef enum {
     CF_RET_NULL_PTR
 } cf_ret_t;
 
-#endif /* __CF_DEF_H__ */
+#endif /* __CF_TYPES_H__ */

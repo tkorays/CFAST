@@ -2,7 +2,7 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_str_if.h
+ * @file    str.h
  * @brief   String functions for standard library.
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
@@ -11,7 +11,7 @@
 #ifndef __CF_STR_H__
 #define __CF_STR_H__
 
-#include "cf_def.h"
+#include <cf/types.h>
 
 /**
  * Calculate length of a string.

@@ -8,10 +8,10 @@
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-5
  ****************************************************/
-#ifndef __CF_MEM_IF_H__
-#define __CF_MEM_IF_H__
+#ifndef __CF_MEMORY_H__
+#define __CF_MEMORY_H__
 
-#include "cf_def.h"
+#include <cf/types.h>
 
 /**
  * Allocate memory.
@@ -55,4 +55,4 @@ cf_void_t* cf_memcpy_s(cf_void_t* dst, cf_size_t dst_size, const cf_void_t* src,
  */
 cf_void_t* cf_memset_s(cf_void_t* s, cf_size_t smax, cf_char_t c, cf_size_t rsize);
 
-#endif /* __CF_MEM_IF_H__ */
+#endif /* __CF_MEMORY_H__ */

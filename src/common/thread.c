@@ -1,4 +1,4 @@
-#include "cfast/cf_thread_if.h"
+#include <cf/thread.h>
 #include "pthread.h"
 #ifdef CF_OS_WIN
 #include <process.h>

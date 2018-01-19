@@ -2,16 +2,16 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_list_if.h
+ * @file    list.h
  * @brief   A double linked list.
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-3
  ****************************************************/
-#ifndef __CF_LIST_IF_H__
-#define __CF_LIST_IF_H__
+#ifndef __CF_LIST_H__
+#define __CF_LIST_H__
 
-#include "cf_def.h"
+#include <cf/types.h>
 
 /**
  * Type of free function to free item data of a list.
@@ -110,4 +110,4 @@ cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
  */
 cf_errno_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data);
 
-#endif /* __CF_LIST_IF_H__ */
+#endif /* __CF_LIST_H__ */

@@ -1,6 +1,6 @@
-#include "cfast/cf_file_if.h"
-#include "cfast/cf_err_if.h"
-#include "cfast/cf_str_if.h"
+#include <cf/file.h>
+#include <cf/err.h>
+#include <cf/str.h>
 #include <stdio.h>
 #include <stdarg.h>
 

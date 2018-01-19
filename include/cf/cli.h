@@ -2,17 +2,17 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_cli_if.h
+ * @file    cli.h
  * @brief   Command line interface.
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-6
  ****************************************************/
-#ifndef __CF_CLI_IF_H__
-#define __CF_CLI_IF_H__
+#ifndef __CF_CLI_H__
+#define __CF_CLI_H__
 
-#include "cf_def.h"
-#include "cf_list_if.h"
+#include <cf/types.h>
+#include <cf/list.h>
 
 
 #define CF_CLI_INVALID_ID -1
@@ -74,4 +74,4 @@ cf_errno_t  cf_cli_run(cf_cli_t* cli);
 
 
 
-#endif /* __CF_CLI_IF_H__ */
+#endif /* __CF_CLI_H__ */

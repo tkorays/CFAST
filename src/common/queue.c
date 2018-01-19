@@ -1,6 +1,6 @@
-#include "cfast/cf_que_if.h"
-#include "cfast/cf_err_if.h"
-#include "cfast/cf_mem_if.h"
+#include <cf/queue.h>
+#include <cf/err.h>
+#include <cf/memory.h>
 
 typedef struct {
     cf_size_t   size;

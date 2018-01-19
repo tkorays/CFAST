@@ -1,7 +1,7 @@
-#include "cfast/cf_def.h"
-#include "cfast/cf_list_if.h"
-#include "cfast/cf_mem_if.h"
-#include "cfast/cf_err_if.h"
+#include <cf/types.h>
+#include <cf/list.h>
+#include <cf/memory.h>
+#include <cf/err.h>
 
 
 typedef struct _cf_list_node {

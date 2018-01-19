@@ -2,17 +2,17 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_file_if.h
+ * @file    file.h
  * @brief   File operations.
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-14
  ****************************************************/
-#ifndef __CF_FILE_IF_H__
-#define __CF_FILE_IF_H__
+#ifndef __CF_FILE_H__
+#define __CF_FILE_H__
 
-#include "cfast/cf_def.h"
-#include "cfast/cf_err_if.h"
+#include <cf/types.h>
+#include <cf/err.h>
 #include <stdio.h>
 
 #define CF_FILE_SEEK_SET    SEEK_SET
@@ -71,4 +71,4 @@ cf_errno_t  cf_file_get_extension(const cf_char_t* path, cf_char_t* buf, cf_size
 cf_errno_t  cf_file_get_basedir(const cf_char_t* path, cf_char_t* buf, cf_size_t size);
 cf_errno_t  cf_file_path_join(cf_char_t* buff, cf_size_t size, const cf_char_t* p1, const cf_char_t* p2);
 
-#endif /* __CF_FILE_IF_H__ */
+#endif /* __CF_FILE_H__ */

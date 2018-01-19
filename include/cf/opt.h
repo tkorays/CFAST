@@ -1,8 +1,8 @@
-#ifndef __CF_OPT_IF_H__
-#define __CF_OPT_IF_H__
+#ifndef __CF_OPT_H__
+#define __CF_OPT_H__
 
-#include "cf_def.h"
-#include "cf_string_if.h"
+#include <cf/types.h>
+#include <cf/string.h>
 
 
 /**
@@ -26,4 +26,4 @@ typedef struct cf_opt_s {
  */
 cf_errno_t cf_opt_get(cf_uint32_t argc, cf_char_t** argv, cf_opt_t** opts);
 
-#endif /* __CF_OPT_IF_H__ */
+#endif /* __CF_OPT_H__ */

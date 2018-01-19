@@ -1,5 +1,5 @@
-#include "cfast/cf_err_if.h"
-#include "cfast/cf_str_if.h"
+#include <cf/err.h>
+#include <cf/str.h>
 
 typedef struct {
     cf_size_t   size;

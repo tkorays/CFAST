@@ -1,5 +1,5 @@
-#include "cfast/cf_mpool_if.h"
-#include "cfast/cf_mem_if.h"
+#include <cf/mpool.h>
+#include <cf/memory.h>
 
 #define CF_ALIGN_SIZE 4
 #define CF_ADDR_ALIGN(d, a) (((d)+(a-1)) & ~(a-1))

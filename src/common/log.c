@@ -1,10 +1,10 @@
-#include "cfast/cf_log_if.h"
-#include "cfast/cf_str_if.h"
-#include "cfast/cf_mem_if.h"
-#include "cfast/cf_thread_if.h"
-#include "cfast/cf_mpool_if.h"
-#include "cfast/cf_list_if.h"
-#include "cfast/cf_err_if.h"
+#include <cf/log.h>
+#include <cf/str.h>
+#include <cf/memory.h>
+#include <cf/thread.h>
+#include <cf/mpool.h>
+#include <cf/list.h>
+#include <cf/err.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>

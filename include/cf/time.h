@@ -2,16 +2,16 @@
  * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
  * All rights reserved.
  * 
- * @file    cf_time_if.h
+ * @file    time.h
  * @brief   Time.
  * @version 1.0
  * @author  tkorays<tkorays@hotmail.com>
  * @date    2018-1-17
  ****************************************************/
-#ifndef __CF_TIME_IF_H__
-#define __CF_TIME_IF_H__
+#ifndef __CF_TIME_H__
+#define __CF_TIME_H__
 
-#include "cf_def.h"
+#include <cf/types.h>
 
 typedef uint64_t cf_time_t;
 typedef uint64_t cf_time_interval_t;
@@ -23,4 +23,4 @@ cf_errno_t cf_time_ctime(cf_time_t t, cf_char_t* buff, cf_size_t size);
 //cf_errno_t cf_time_strftime();
 
 
-#endif /* __CF_TIME_IF_H__ */
+#endif /* __CF_TIME_H__ */

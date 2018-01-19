@@ -1,4 +1,4 @@
-#include "cfast/cf_mem_if.h"
+#include <cf/memory.h>
 #include <stdlib.h>
 #include <string.h>
 

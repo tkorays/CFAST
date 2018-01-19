@@ -1,5 +1,5 @@
-#include "cfast/cf_string_if.h"
-#include "cfast/cf_mem_if.h"
+#include <cf/string.h>
+#include <cf/memory.h>
 #include <string.h>
 
 cf_string_t* cf_str_new(cf_size_t size) {
