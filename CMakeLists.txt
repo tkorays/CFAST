@@ -13,7 +13,6 @@ set(SRC_LIST src/common/list.c
     src/common/mpool.c
     src/common/cli.c
     src/common/opt.c 
-    src/common/string.c
     src/common/str.c
     src/common/log.c
     src/common/thread.c

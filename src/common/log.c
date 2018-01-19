@@ -239,7 +239,7 @@ cf_void_t cf_log_write_pool_info(cf_log_t* log)
     if(!log || !log->pool) return;
     cf_mpool_stat_t stat = {0};
     cf_mpool_get_stat(log->pool, &stat);
-    cf_log_put(log, __FILE__, __LINE__, __FUNCTION__, CF_LOG_LEVEL_INFO, "Pool Statistics: " \
+    cf_log_write(log, __FILE__, __LINE__, __FUNCTION__, CF_LOG_LEVEL_INFO, "Pool Statistics: " \
     "block size(%u),"\
     "block num(%u),"\
     "large block num(%u),"\

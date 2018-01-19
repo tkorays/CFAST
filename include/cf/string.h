@@ -12,64 +12,39 @@
 #define __CF_STRING_H__
 
 #include <cf/types.h>
+#include <cf/str.h>
 
 /**
  * String.
  */
 typedef struct {
-    cf_char_t*  data;   /** string data without \0 */
-    cf_size_t   length; /** string length */
+    cf_char_t*  ptr;   /** string data without \0 */
+    cf_size_t   len; /** string length */
 } cf_string_t;
 
-/**
- * Const string, data is protected.
- */
-typedef struct {
-    const cf_char_t*    data;   /** string data without \0 */
-    cf_size_t           length; /** string length */
-} cf_string_const_t;
+inline cf_string_t cf_string(cf_char_t* s) {
+    cf_string_t str;
+    str.ptr = s;
+    str.len = s ? cf_strlen(s) : 0;
+    return str;
+}
 
-/**
- * Create a string.
- * @param size      Size of string memory.
- * @return          Instance of cf_string_t.
- */
-cf_string_t*    cf_str_new(cf_size_t size);
+inline cf_string_t* cf_string_from_c(cf_string_t* str, const cf_char_t* s) {
+    if(!str) return CF_NULL_PTR;
+    str->ptr = (cf_char_t*)s;
+    str->len = s ? cf_strlen(s) : 0;
+    return str;
+}
 
-/**
- * Free a string.
- * @param s         string.
- * @return          None.
- */
-cf_void_t       cf_str_free(cf_string_t* s);
+inline cf_string_t* cf_string_set(cf_string_t* str, const cf_char_t* s, cf_size_t len) {
+    if(!str) return CF_NULL_PTR;
+    str->ptr = (cf_char_t*)s;
+    str->len = len;
+    return str;
+}
 
-/**
- * Free a const string.
- * @param s         string.
- * @return          None.
- */
-cf_void_t       cf_str_cont_free(cf_string_const_t* s);
-
-/**
- * Create a string from char*.
- * @param pc        char* string.
- * @return          cf_string_t.
- */
-cf_string_t*    cf_str_from_pchar(cf_char_t* pc);
-
-/**
- * Get length of a string.
- * @param s         String.
- * @return          Length.
- */
-cf_size_t       cf_str_len(cf_string_t* s);
-
-/**
- * Get length of a string.
- * @param s         String.
- * @param ppc       char**.
- * @return          None.
- */
-cf_void_t       cf_str_to_pchar(cf_string_t* s, cf_char_t** ppc);
+inline cf_size_t cf_string_len(cf_string_t* str) {
+    return str ? str->len : 0;
+}
 
 #endif /* __CF_STRING_H__ */
