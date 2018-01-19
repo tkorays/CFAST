@@ -17,11 +17,12 @@
  * Log level.
  */
 typedef enum {
-    CF_LOG_LEVEL_DEBUG      = 0x0001,
-    CF_LOG_LEVEL_INFO       = 0x0002,
-    CF_LOG_LEVEL_WARNING    = 0x0004,
-    CF_LOG_LEVEL_ERROR      = 0x0008,
-    CF_LOG_LEVEL_FATAL      = 0x0010
+    CF_LOG_LEVEL_DEBUG      = 1,
+    CF_LOG_LEVEL_INFO       = 2,
+    CF_LOG_LEVEL_WARNING    = 3,
+    CF_LOG_LEVEL_ERROR      = 4,
+    CF_LOG_LEVEL_FATAL      = 5,
+    CF_LOG_LEVEL_NONE       = 6
 } cf_log_level_t;
 
 /**
@@ -32,8 +33,8 @@ typedef struct cf_log_s cf_log_t;
 /**
  * Macro for logging.
  */
-#define CF_LOG(log, level, fmtstr, ...)  cf_log_put(log, __FILE__, __LINE__, __FUNCTION__, level, fmtstr, ##__VA_ARGS__)
-#define CF_LOG_POOL_STAT(log) cf_log_put_pool_info(log)
+#define CF_LOG(log, level, fmtstr, ...)  cf_log_write(log, __FILE__, __LINE__, __FUNCTION__, level, fmtstr, ##__VA_ARGS__)
+#define CF_LOG_POOL_STAT(log) cf_log_write_pool_info(log)
 /* example */
 /*
 #define CF_LOG_DEBUG(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_DEBUG, fmtstr, __VA_ARGS__)
@@ -64,7 +65,7 @@ cf_void_t   cf_log_destroy(cf_log_t* log);
  * @param level         Control log's output level.
  * @return
  */
-cf_void_t   cf_log_set_output_level(cf_log_t* log, cf_log_level_t level);
+cf_void_t   cf_log_set_level(cf_log_t* log, cf_log_level_t level);
 
 /**
  * Set a log cache.
@@ -75,7 +76,7 @@ cf_void_t   cf_log_set_output_level(cf_log_t* log, cf_log_level_t level);
 cf_errno_t  cf_log_set_cache(cf_log_t* log, cf_size_t size);
 
 /**
- * Put a log to file.
+ * Write a log to file.
  * @param log           Log handle.
  * @param filename      Trace filename.
  * @param line          Trace line.
@@ -84,11 +85,11 @@ cf_errno_t  cf_log_set_cache(cf_log_t* log, cf_size_t size);
  * @param fmtstr        Format string.
  * @return              Log handle.
  */
-cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...);
+cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...);
 
 
 cf_void_t   cf_log_flush(cf_log_t* log);
 
-cf_void_t   cf_log_put_pool_info(cf_log_t* log);
+cf_void_t   cf_log_write_pool_info(cf_log_t* log);
 
 #endif /* __CF_LOG_H__ */

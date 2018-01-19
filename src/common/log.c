@@ -98,7 +98,7 @@ cf_void_t cf_log_destroy(cf_log_t* log) {
     cf_free(log);
 }
 
-cf_void_t cf_log_set_output_level(cf_log_t* log, cf_log_level_t level) {
+cf_void_t cf_log_set_level(cf_log_t* log, cf_log_level_t level) {
     if(!log) return;
     pthread_mutex_lock(&log->mutex);
     ((struct cf_log_s*)log)->level = level;
@@ -147,7 +147,7 @@ cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
     return CF_OK;
 }
 
-cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...) {
+cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t n = 0;
     time_t t = time(CF_NULL_PTR);
@@ -234,7 +234,7 @@ cf_void_t cf_log_flush(cf_log_t* log) {
     pthread_mutex_unlock(&log->mutex);
 }
 
-cf_void_t cf_log_put_pool_info(cf_log_t* log) 
+cf_void_t cf_log_write_pool_info(cf_log_t* log) 
 {
     if(!log || !log->pool) return;
     cf_mpool_stat_t stat = {0};
