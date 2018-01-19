@@ -11,6 +11,8 @@
 
 #include "pthread.h"
 
+#define CFAST_LOG_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s]"
+
 /**
  * 单个log日志记录
  */
@@ -188,7 +190,7 @@ cf_void_t   cf_log_put(cf_log_t* log, const cf_char_t* filename, cf_int_t line, 
 
         log->cache_count++;
     } else {
-        n = sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]", ts, cf_getpid(), cf_gettid(), _cf_log_get_level_name(level), filename, line, func);
+        n = sprintf(log->wbuf, CFAST_LOG_FORMAT, ts, cf_getpid(), cf_gettid(), _cf_log_get_level_name(level), filename, line, func);
 
         va_start(args, fmtstr); 
         n += vsprintf(log->wbuf + n, fmtstr, args);
@@ -209,7 +211,7 @@ cf_void_t _cf_log_put_item(cf_log_t* log, cf_log_item_t* item) {
     if(!log || !item) return ;
     pt = ctime(&item->ts);
     cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 1);
-    sprintf(log->wbuf, "[%s][P(%u)|T(%u)][%s][%s:%d, %s]%s\n", ts, 
+    sprintf(log->wbuf, CFAST_LOG_FORMAT "%s\n", ts, 
         item->pid, item->tid, _cf_log_get_level_name(item->level), 
         item->filename, item->line, item->funcname, item->logstr);
     fwrite(log->wbuf, cf_strlen(log->wbuf), 1, log->fp);
