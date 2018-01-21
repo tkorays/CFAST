@@ -13,10 +13,13 @@
 
 #include <cf/types.h>
 
-#define CF_IS_NUM(c) ((c) >= '0' && (c) <= '9')
+#define CF_IS_ASCII(c) ((c) < 128)
+#define CF_IS_DIGIT(c) ((c) >= '0' && (c) <= '9')
 #define CF_IS_UPPER_ALPHA(c) ((c) >= 'A' && (c) <= 'Z')
 #define CF_IS_LOWER_ALPHA(c) ((c) >= 'a' && (c) <= 'z')
 #define CF_IS_ALPHA(c) (CF_IS_UPPER_ALPHA(c) || CF_IS_LOWER_ALPHA(c))
+#define CF_IS_SPACE(c) ((c) == '\t' || (c) == '\n' || (c) == ' ')
+#define CF_IS_BLANK(c) ((c) == '\t' || (c) == ' ')
 
 /**
  * Calculate length of a string.
