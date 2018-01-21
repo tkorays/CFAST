@@ -13,6 +13,11 @@
 
 #include <cf/types.h>
 
+#define CF_IS_NUM(c) ((c) >= '0' && (c) <= '9')
+#define CF_IS_UPPER_ALPHA(c) ((c) >= 'A' && (c) <= 'Z')
+#define CF_IS_LOWER_ALPHA(c) ((c) >= 'a' && (c) <= 'z')
+#define CF_IS_ALPHA(c) (CF_IS_UPPER_ALPHA(c) || CF_IS_LOWER_ALPHA(c))
+
 /**
  * Calculate length of a string.
  * @param s         String.
