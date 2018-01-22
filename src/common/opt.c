@@ -3,22 +3,12 @@
 #include <cf/err.h>
 
 #include <string.h>
+ 
+ cf_errno_t cf_opt_get(cf_uint_t argc, cf_char_t* argv[], const cf_opt_t* optdef, cf_opt_it_t* it) {
+     if(argc == 0 || argv == CF_NULL_PTR || optdef == CF_NULL_PTR || it == CF_NULL_PTR) {
+         return CF_EPARAM;
+     }
+     if(it->pos >= argc) return CF_EEOF;
 
-cf_errno_t cf_opt_get(cf_uint32_t argc, cf_char_t** argv, cf_opt_t** opts)
-{
-    cf_uint32_t i;
-    cf_bool_t need_param = CF_FALSE;
-    if(argc == 0 || !argv || !opts) return CF_EPARAM;
-
-    /* 为options申请内存空间 */
-    *opts = (cf_opt_t*)cf_malloc(sizeof(cf_opt_t) * argc);
-    if(!*opts) return CF_EMALLOC;
-    (cf_void_t)cf_memset_s(*opts, sizeof(cf_opt_t) * argc, 0, sizeof(cf_opt_t) * argc);
-
-    for(i = 0; i < argc && argv[i]; i++) {
-        
-    }
-    
-
-    return CF_OK;
-}
+     argv[it->pos]
+ }
