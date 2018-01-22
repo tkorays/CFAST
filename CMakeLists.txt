@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(cfast)
+project(cfast C)
 
 include_directories(./include)
 
