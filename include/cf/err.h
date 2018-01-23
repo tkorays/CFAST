@@ -38,7 +38,6 @@ typedef struct {
  * @param err           Errno of an error.
  * @param desc          Description buffer.
  * @param size          Size of 'desc' buffer.
- * @return 
  */
 cf_void_t cf_err_get(cf_errno_t err, cf_char_t* desc, cf_size_t size);
 
@@ -47,7 +46,6 @@ cf_void_t cf_err_get(cf_errno_t err, cf_char_t* desc, cf_size_t size);
  * @param module        Module number.
  * @param errs          Errors.
  * @param size          Size of 'errs'.
- * @return
  */
 cf_void_t cf_err_register(cf_uint32_t module, cf_err_info_t* errs, cf_size_t size);
 

@@ -40,7 +40,7 @@ typedef cf_void_t* cf_list_iter_t;
 
 /**
  * Create a list.
- * @param fn_cf_list_free       Func for free data
+ * @param func                  Func for free data
  * @return                      The list.
  */
 cf_list_t*  cf_list_create(fn_cf_list_free func);
@@ -97,7 +97,7 @@ cf_errno_t cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it);
 
 /**
  * Get next iterator.
- * @param li        The iterator.
+ * @param it        The iterator.
  * @return          The next iterator.
  */
 cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);

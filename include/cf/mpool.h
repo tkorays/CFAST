@@ -44,7 +44,6 @@ cf_mpool_t* cf_mpool_create(cf_size_t blk_size);
 /**
  * Destroy memory pool.
  * @param pool       The pointer of memory pool.
- * @return           
  */
 cf_void_t   cf_mpool_destroy(cf_mpool_t* pool);
 
@@ -60,7 +59,6 @@ cf_void_t*  cf_mpool_alloc(cf_mpool_t* pool, cf_size_t size);
  * Get statistics for memory pool.
  * @param pool      The pointer of memory pool.
  * @param stat      Statistics.
- * @return 
  */
 cf_void_t   cf_mpool_get_stat(cf_mpool_t* pool, cf_mpool_stat_t* stat);
 

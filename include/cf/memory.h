@@ -23,13 +23,12 @@ cf_void_t* cf_malloc(cf_size_t size);
 /**
  * Destory memory.
  * @param addr       Address of memory.
- * @return
  */
 cf_void_t  cf_free(cf_void_t* addr);
 
 /**
  * Re-Allocate memory.
- * @param size       Memory size
+ * @param addr       Memory size
  * @param size       Size of realloc.
  * @return           Address of memory.
  */

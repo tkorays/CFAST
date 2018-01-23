@@ -55,15 +55,13 @@ cf_log_t*   cf_log_create(const cf_char_t* filename);
 /**
  * Destroy a log instance.
  * @param log           Log handle.
- * @return              
  */
 cf_void_t   cf_log_destroy(cf_log_t* log);
 
 /**
  * Set a log output level.
- * @param log
+ * @param log           Log instance.
  * @param level         Control log's output level.
- * @return
  */
 cf_void_t   cf_log_set_level(cf_log_t* log, cf_log_level_t level);
 
@@ -71,7 +69,6 @@ cf_void_t   cf_log_set_level(cf_log_t* log, cf_log_level_t level);
  * Set a log cache.
  * @param log           Log handle.
  * @param size          Size of cache.
- * @return
  */
 cf_errno_t  cf_log_set_cache(cf_log_t* log, cf_size_t size);
 
@@ -83,7 +80,6 @@ cf_errno_t  cf_log_set_cache(cf_log_t* log, cf_size_t size);
  * @param func          Trace function.
  * @param level         Log level.
  * @param fmtstr        Format string.
- * @return              Log handle.
  */
 cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...);
 
