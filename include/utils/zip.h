@@ -17,6 +17,10 @@
 #define CF_ZIP_CREATEAFTER  (1)
 #define CF_ZIP_APPEND       (2)
 
+typedef struct cf_zip_file_item_s {
+
+} cf_zip_file_item_t;
+
 typedef struct cf_zip_file_s cf_zip_file_t;
 
 cf_zip_file_t* cf_zip_open(const cf_char_t* filename, cf_int_t append);
