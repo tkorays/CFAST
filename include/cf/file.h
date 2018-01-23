@@ -31,7 +31,9 @@ typedef enum {
     CF_FILE_TYPE_UNKNOWN
 } cf_filetype_t;
 
-typedef struct cf_file_s cf_file_t;
+typedef struct cf_file_s {
+    FILE *fp;
+} cf_file_t;
 typedef struct cf_file_dir_s {
     cf_char_t   __real_impl[16];
 } cf_file_dir_t;

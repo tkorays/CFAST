@@ -16,10 +16,6 @@
     #include<fcntl.h>
 #endif
 
-typedef struct cf_file_s {
-    FILE *fp;
-} cf_file_t;
-
 typedef struct __dir_s {
 #ifdef CF_OS_WIN
     struct _finddata_t fileinfo;

@@ -11,5 +11,6 @@
      }
      if(it->pos >= argc) return CF_EEOF;
 
-     argv[it->pos]
+     //argv[it->pos];
+     return CF_OK;
  }
