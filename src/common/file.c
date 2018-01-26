@@ -174,8 +174,8 @@ cf_errno_t cf_file_readdir(cf_file_dir_t* dir, cf_file_dirent_t* dirinfo) {
     _dirent = (__dirent_t*)dirinfo->__real_impl;
 #ifdef CF_OS_WIN
     if(!_dir->handle) return CF_ENULLPTR;
-    if(_findnext(_dir->handle, &_dirent->fileifo) == -1L) return CF_EEOF;
-    cf_strcpy_s(dirinfo->name, sizeof(dirinfo->name), _dirent->fileifo.name);
+    if(_findnext(_dir->handle, &_dirent->fileinfo) == -1L) return CF_EEOF;
+    cf_strcpy_s(dirinfo->name, sizeof(dirinfo->name), _dirent->fileinfo.name);
 #else
     _dirent->pdir = readdir(_dir->dir);
     if(!_dirent->pdir) return CF_EEOF;
@@ -206,7 +206,7 @@ cf_errno_t  cf_file_remove(const cf_char_t* filename) {
 cf_errno_t  cf_file_chdir(const cf_char_t* dirname) {
     if(!dirname) return CF_NOK;
 #ifdef CF_OS_WIN
-    return _chdir(dirname) = 0 ? CF_OK : CF_NOK;
+    return _chdir(dirname) == 0 ? CF_OK : CF_NOK;
 #else
     return chdir(dirname) == 0 ? CF_OK : CF_NOK;
 #endif
