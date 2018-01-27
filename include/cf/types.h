@@ -12,6 +12,7 @@
 #define __CF_TYPES_H__
 
 #include <stdint.h>
+#include <stddef.h>
 #include <cf/config.h>
 
 #define CF_NULL_PTR 0
