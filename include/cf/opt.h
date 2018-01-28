@@ -7,11 +7,11 @@
 #define CF_OPT_ARG_MAX_SIZE 128
 
 typedef struct cf_opt_s {
-    cf_id_t             id;
-    cf_char_t           sname;
-    const cf_char_t*    lname;
-    cf_bool_t           optional;
-    cf_bool_t           hasarg;
+    cf_id_t             id;             /* id */
+    cf_char_t           sname;          /* short name */
+    const cf_char_t*    lname;          /* long name */
+    cf_bool_t           essential;      /* option is essential */
+    cf_bool_t           arg_essential;  /* arg of this option is essential */
 } cf_opt_t;
 
 typedef struct cf_opt_it_s {
