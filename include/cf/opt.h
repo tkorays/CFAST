@@ -4,7 +4,8 @@
 #include <cf/types.h>
 #include <cf/string.h>
 
-#define CF_OPT_ID_INVALID 0
+#define CF_OPT_ID_CMD_SELF  0
+#define CF_OPT_ID_INVALID 0xFFFF
 #define CF_OPT_ARG_MAX_SIZE 128
 
 #define CF_OPT_ESSENTIAL_ARG_ESSENTIAL 3
