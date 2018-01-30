@@ -7,6 +7,9 @@
 
 
 #define CF_OPT_BE_PARAM(s) (cf_strlen((s)) > 0 && ((s)[0] != '-'))
+#define CF_OPT_BE_SHORT_OPT(s) (cf_strlen(s) == 2 && (s)[0] == '-' && (s)[1] != '-')
+#define CF_OPT_BE_LONG_OPT(s) (cf_strlen(s) > 2 && (s)[0] == '-' && (s)[1] == '-' && (s)[2] != '-')
+#define CF_OPT_BE_MULTI_OPT(s) (cf_strlen(s) > 2 && (s)[0] == '-' && (s)[1] != '-')
 
 static const cf_opt_t* __cf_opt_find_opt_by_short_name(const cf_opt_t* optdef, cf_char_t c) {
     cf_uint_t i;
@@ -26,6 +29,41 @@ static const cf_opt_t* __cf_opt_find_opt_by_long_name(const cf_opt_t* optdef, co
         if(cf_strcmp(optdef[i].lname, n) == 0) return &optdef[i];
     }
     return CF_NULL_PTR;
+}
+
+typedef struct {
+    cf_bool_t is_multi;
+    cf_bool_t is_short;
+    cf_char_t name[CF_OPT_NAME_MAX_SIZE];
+    cf_bool_t has_arg;
+    cf_char_t arg[CF_OPT_ARG_MAX_SIZE];
+} cf_opt_t;
+
+cf_errno_t cf_opt_get_raw(cf_uint_t argc, cf_char_t* argv[], cf_uint_t* pos, cf_opt_t* opt) {
+    if(argc == 0 || !argv || !opt || !pos) return CF_NOK;
+    opt->is_multi = CF_FALSE;
+    opt->is_short = CF_FALSE;
+
+    if(argc <= 1) return CF_NOK;
+    if(*pos == 0) *pos = 1;
+    cf_memset_s(opt, sizeof(cf_opt_t), 0, sizeof(cf_opt_t));
+
+    if(CF_OPT_BE_SHORT_OPT(argv[*pos])) {
+        opt->is_multi = CF_FALSE;
+        opt->is_short = CF_TRUE;
+        opt->name[0] = argv[*pos][1];
+    } else if(CF_OPT_BE_LONG_OPT(argv[*pos])) {
+        opt->is_multi = CF_FALSE;
+        opt->is_short = CF_FALSE;
+        cf_strcpy_s(opt->name, sizeof(opt->name), &argv[*pos][2]);
+    } else if(CF_OPT_BE_MULTI_OPT(argv[*pos])) {
+
+    } else {
+        return CF_NOK;
+    }
+
+    (*pos)++;
+    return CF_OK;
 }
 
  cf_errno_t cf_opt_get(cf_uint_t argc, cf_char_t* argv[], const cf_opt_t* optdef, cf_opt_it_t* it) {
