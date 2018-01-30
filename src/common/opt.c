@@ -17,6 +17,7 @@ cf_errno_t cf_opt_get_raw(cf_uint_t argc, cf_char_t* argv[], cf_uint_t* pos, cf_
     if(*pos >= argc) return CF_EEOF;
     if(argc <= 1) return CF_NOK;
     if(*pos == 0) *pos = 1;
+    if(cf_strlen(argv[*pos]) >= CF_OPT_MAX_SIZE) return CF_NOK;
     cf_memset_s(opt, sizeof(cf_opt_t), 0, sizeof(cf_opt_t));
 
     if(CF_OPT_BE_SHORT_OPT(argv[*pos])) {
