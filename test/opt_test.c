@@ -15,12 +15,13 @@ cf_opt_t myopts[] = {
 
 int main(int argc, char* argv[])
 {
-    cf_opt_it_t it = {0};
+    cf_opt_t op = {0};
+    cf_uint_t pos = 0;
     cf_errno_t ret = CF_OK;
     printf("opt test\n");
-    while(CF_OK == (ret = cf_opt_get(argc, argv, myopts, &it)))
+    while(CF_OK == (ret = cf_opt_get_raw(argc, argv, &pos, &op)))
     {
-        printf("%u, name(%s), hasarg(%u)\n", it.opt->id, it.opt->lname, it.hasarg);
+        printf("name(%s), arg(%s)\n", op.name, op.arg);
     }
     if(ret != CF_OK && ret != CF_EEOF) {
         printf("parse error! ret: %d\n", ret);
