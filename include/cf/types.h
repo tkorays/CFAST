@@ -24,6 +24,7 @@
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #define CF_PCHAR(s) ((cf_char_t*)(s))
 #define CF_MAX_PATH_SIZE 256
+#define CF_TYPE_CAST(v, t) ((t)(v))
 
 #define CF_MAX_INT32    0x7fffffff
 #define CF_MAX_UINT32   UINT_MAX
