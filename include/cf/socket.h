@@ -8,9 +8,10 @@
  * address family
  */
 typedef enum {
-    CF_SOCK_AF_INET     = 0,
-    CF_SOCK_AF_INET6    = 1,
-    CF_SOCK_AF_LOCAL    = 2
+    CF_SOCK_AF_UNSPEC   = 0,
+    CF_SOCK_AF_LOCAL    = 1,
+    CF_SOCK_AF_INET     = 2,
+    CF_SOCK_AF_INET6    = 3,
 } cf_sock_af_t;
 
 /**
@@ -68,7 +69,7 @@ typedef struct {
     uint32_t        sin6_scope_id; /* Scope ID (new in 2.4) */
 } cf_sockaddr_in6_t;
 
-typedef cf_uint_t  cf_socket_t;
+typedef cf_int_t  cf_socket_t;
 
 typedef struct cf_sockaddr_s cf_sockaddr_t;
 
