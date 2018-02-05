@@ -71,11 +71,9 @@ typedef struct {
 
 typedef cf_int_t  cf_socket_t;
 
-typedef struct cf_sockaddr_s cf_sockaddr_t;
-
 cf_errno_t cf_socket_create(cf_socket_t* sock, cf_sock_af_t family, cf_sock_type_t type, cf_sock_proto_t protocol);
 cf_errno_t cf_socket_close(cf_socket_t sock);
-cf_errno_t cf_socket_bind(cf_socket_t sock, cf_sockaddr_t* sa);
+cf_errno_t cf_socket_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_size_t addrlen);
 cf_errno_t cf_socket_listen(cf_socket_t sock, cf_uint_t backlog);
 cf_errno_t cf_socket_accept(cf_socket_t sock, cf_socket_t* new_sock);
 cf_errno_t cf_socket_connect(cf_socket_t sock, cf_sockaddr_t* sa);

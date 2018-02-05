@@ -66,3 +66,20 @@ cf_errno_t cf_socket_close(cf_socket_t sock) {
     if(0 != close(sock)) return CF_NOK;
     return CF_OK;
 }
+
+cf_errno_t cf_socket_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_size_t addrlen) {
+    if(sock == 0 || !sa) return CF_EPARAM;
+    // TODO: sa to sockaddr_in or sockaddr_in6
+    if(0 != bind(sock, (struct sockaddr*)sa, addrlen)) return CF_NOK;
+    return CF_OK;
+}
+
+cf_errno_t cf_socket_listen(cf_socket_t sock, cf_uint_t backlog) {
+    if(sock == 0) return CF_EPARAM;
+    if(0 != listen(sock, backlog)) return CF_NOK;
+    return CF_OK;
+}
+
+cf_errno_t cf_socket_accept(cf_socket_t sock, cf_socket_t* new_sock) {
+    return CF_OK;
+}
