@@ -15,13 +15,13 @@
 
 // 模块错误对应的错误详情
 cf_err_info_t sb_errstr[] = {
-        {CF_ESB_0, "sb errno 0"},
-        {CF_ESB_1, "sb errno 1"},
-        {CF_ESB_2, "sb errno 2"},
-        {CF_ESB_3, "sb errno 3"},
-        {CF_ESB_4, "sb errno 4"},
-        {CF_ESB_5, "sb errno 5"},
-        {CF_ESB_X, "sb err id NOT FOUND!"}
+        CF_ERR_STR_BUILD(CF_ESB_0, "sb errno 0"),
+        CF_ERR_STR_BUILD(CF_ESB_1, "sb errno 1"),
+        CF_ERR_STR_BUILD(CF_ESB_2, "sb errno 2"),
+        CF_ERR_STR_BUILD(CF_ESB_3, "sb errno 3"),
+        CF_ERR_STR_BUILD(CF_ESB_4, "sb errno 4"),
+        CF_ERR_STR_BUILD(CF_ESB_5, "sb errno 5"),
+        CF_ERR_STR_BUILD(CF_ESB_X, "sb err id NOT FOUND!")
 };
 
 // 获取模块错误吗的函数

@@ -18,6 +18,8 @@ typedef const cf_char_t*(*cf_err_pfn_strerror)(cf_uint_t eid);
 #define CF_MAKE_ERRNO(m, no) ((m)<<16 | no)
 #define CF_ERR_GET_MODULE(err) (((err)>>16) & 0x0000FFFF)
 #define CF_ERR_GET_MERR(err) ((err) & 0x0000FFFF)
+#define CF_ERR_STR_BUILD(code, desc) {code, desc " (" #code ")"}
+
 #define CF_OK           CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 0)
 #define CF_NOK          CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 1)
 #define CF_EPARAM       CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 2)
