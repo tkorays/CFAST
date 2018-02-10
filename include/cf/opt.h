@@ -4,18 +4,9 @@
 #include <cf/types.h>
 #include <cf/string.h>
 
-#define CF_OPT_ID_CMD_SELF  0
-#define CF_OPT_ID_INVALID 0xFFFF
 #define CF_OPT_NAME_MAX_SIZE 64
 #define CF_OPT_ARG_MAX_SIZE 128
 #define CF_OPT_MAX_SIZE 128
-
-#define CF_OPT_ESSENTIAL_ARG_ESSENTIAL 3
-#define CF_OPT_ESSENTIAL_ARG_OPTIONAL  2
-#define CF_OPT_OPTIONAL_ARG_ESSENTIAL  1
-#define CF_OPT_OPTIONAL_ARG_OPTIONAL   0
-
-#define CF_OPT_ARG_ESSENTIAL(flag) ((flag) & 0x1)
 
 typedef struct {
     cf_bool_t is_multi;
