@@ -1,6 +1,9 @@
 #include <cf/err.h>
 #include <cf/str.h>
 
+/** 各个模块需要注册错误码描述 */
+cf_err_pfn_strerror g_err4modules[CF_ERR_MODULE_MAX_NUM] = {0};
+
 typedef struct {
     cf_size_t   size;
     const cf_err_info_t* errs;
@@ -44,6 +47,21 @@ cf_void_t cf_err_get(cf_errno_t err, cf_char_t* desc, cf_size_t size) {
     cf_strcpy_s(desc, size, g_err_desc[m].errs[e].desc);
 }
 
-cf_void_t cf_err_register(cf_uint32_t module, cf_err_info_t* errs, cf_size_t size) {
+cf_void_t cf_err_register(cf_uint32_t module, cf_err_pfn_strerror fn) {
+    if(module >= CF_ERR_MODULE_MAX_NUM || !fn) return ;
+    g_err4modules[module] = fn;
+    return ;
+}
 
+cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size) {
+    cf_uint_t m = (cf_uint_t)CF_ERR_GET_MODULE(err);
+    cf_uint_t e = (cf_uint_t)CF_ERR_GET_MERR(err);
+
+    if(!msg || size == 0) return ;
+
+    if(m >= CF_ERR_MODULE_MAX_NUM) return ;
+
+    if(g_err4modules[m]) {
+        cf_strcpy_s(msg, size, g_err4modules[m](e));
+    }
 }

@@ -11,6 +11,8 @@ typedef struct {
     const cf_char_t*    desc;   /** description */
 } cf_err_info_t;
 
+typedef const cf_char_t*(*cf_err_pfn_strerror)(cf_uint_t eid);
+
 #define CF_ERR_DESC_MAX_BUFF        128
 #define CF_ERR_MODULE_MAX_NUM       16
 #define CF_MAKE_ERRNO(m, no) ((m)<<16 | no)
@@ -46,7 +48,10 @@ cf_void_t cf_err_get(cf_errno_t err, cf_char_t* desc, cf_size_t size);
  * @param module        Module number.
  * @param errs          Errors.
  * @param size          Size of 'errs'.
+ * @param reg ok
  */
-cf_void_t cf_err_register(cf_uint32_t module, cf_err_info_t* errs, cf_size_t size);
+cf_void_t cf_err_register(cf_uint32_t module, cf_err_pfn_strerror fn);
+
+cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size);
 
 #endif /* __CF_ERR_H__ */
