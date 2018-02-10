@@ -55,7 +55,7 @@ cf_errno_t  cf_file_close(cf_file_t* f) {
 cf_errno_t  cf_file_write(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt) {
     cf_size_t wsize = 0;
     if(!f || !buff || size == 0 || cnt == 0) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     wsize = fwrite(buff, size, cnt, f->fp);
     if(wsize == 0) return CF_EFWRITE;
     return CF_OK;
@@ -64,7 +64,7 @@ cf_errno_t  cf_file_write(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size
 cf_errno_t  cf_file_read(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt) {
     cf_size_t rsize = 0;
     if(!f || !buff || size == 0 || cnt == 0) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     rsize = fread(buff, size, cnt, f->fp);
     if(rsize == 0) {
         return CF_EFREAD;
@@ -79,14 +79,14 @@ cf_bool_t cf_file_eof(cf_file_t* f) {
 
 cf_errno_t  cf_file_getc(cf_file_t* f, cf_char_t* c) {
     if(!f || !c) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     *c = (cf_char_t)fgetc(f->fp);
     return CF_OK;
 }
 
 cf_errno_t  cf_file_putc(cf_file_t* f, cf_char_t c) {
     if(!f) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     if(c != (cf_char_t)fputc(c, f->fp)) {
         return CF_EFWRITE;
     }
@@ -95,7 +95,7 @@ cf_errno_t  cf_file_putc(cf_file_t* f, cf_char_t c) {
 
 cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size) {
     if(!f || !buff) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     if(!fgets(buff, size, f->fp)) {
         return CF_EFREAD;
     }
@@ -104,7 +104,7 @@ cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size) {
 
 cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff) {
     if(!f || !buff) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     if(fputs(buff, f->fp) <= 0) {
         return CF_EFWRITE;
     }
@@ -115,7 +115,7 @@ cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t ret = 0;
     if(!f || !fmtstr) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     va_start(args, fmtstr);
     ret = vfprintf(f->fp, fmtstr, args);
     va_end(args);
@@ -126,7 +126,7 @@ cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t ret = 0;
     if(!f || !fmtstr) return CF_EPARAM;
-    if(!f->fp) return CF_EFILE_HANDLE;
+    if(!f->fp) return CF_ENULLPTR;
     va_start(args, fmtstr);
     ret = vfscanf(f->fp, fmtstr, args);
     va_end(args);

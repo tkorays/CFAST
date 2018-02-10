@@ -125,7 +125,7 @@ cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
         }
 
         pthread_mutex_unlock(&log->mutex);
-        return CF_ERRNO_OK;
+        return CF_OK;
     }
 
     log->cache_logs = cf_malloc(sizeof(struct cf_log_item_s)*size);

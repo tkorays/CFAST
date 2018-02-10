@@ -55,14 +55,6 @@ typedef uintptr_t       cf_uintptr_t;   /** 指针 */
 typedef int32_t         cf_errno_t;     /** errno */
 
 
-#define CF_ERR_MODULE_COMMON 0
-#define CF_ERRNO_OK             CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 0)
-#define CF_ERRNO_NOK            CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 1)
-#define CF_ERRNO_INVALID_PARAM  CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 2)
-#define CF_ERRNO_MALLOC_ERROR   CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 3)
-#define CF_ERRNO_STATE_ERROR    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 4)
-#define CF_ERRNO_SIZE_OVER      CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 5)
-
 typedef enum {
     CF_RET_SUCCESS = 0,
     CF_RET_FAIL,

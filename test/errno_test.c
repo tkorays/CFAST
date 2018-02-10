@@ -45,5 +45,11 @@ int main() {
 
     cf_err_strerr(CF_ESB_5 + 1, buff, CF_ERR_DESC_MAX_BUFF);
     printf("%s\n", buff);
+
+    cf_err_strerr(CF_EFOPEN, buff, CF_ERR_DESC_MAX_BUFF);
+    printf("%s\n", buff);
+
+    cf_err_strerr(CF_EFOPEN + 6, buff, CF_ERR_DESC_MAX_BUFF);
+    printf("%s\n", buff);
     return 0;
 }
