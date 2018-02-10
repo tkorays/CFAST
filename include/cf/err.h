@@ -52,6 +52,12 @@ cf_void_t cf_err_get(cf_errno_t err, cf_char_t* desc, cf_size_t size);
  */
 cf_void_t cf_err_register(cf_uint32_t module, cf_err_pfn_strerror fn);
 
+/**
+ * strerror.
+ * @param err           errno.
+ * @param msg           error message.
+ * @param size          buff size.
+ */
 cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size);
 
 #endif /* __CF_ERR_H__ */

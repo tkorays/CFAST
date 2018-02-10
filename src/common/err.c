@@ -57,11 +57,19 @@ cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size) {
     cf_uint_t m = (cf_uint_t)CF_ERR_GET_MODULE(err);
     cf_uint_t e = (cf_uint_t)CF_ERR_GET_MERR(err);
 
-    if(!msg || size == 0) return ;
+    if(!msg || size == 0) {
+        cf_strcpy_s(msg, size, "Params' ERROR for cf_err_strerr!");
+        return;
+    }
 
-    if(m >= CF_ERR_MODULE_MAX_NUM) return ;
+    if(m >= CF_ERR_MODULE_MAX_NUM) {
+        cf_strcpy_s(msg, size, "Module NOT FOUND!");
+        return;
+    }
 
     if(g_err4modules[m]) {
         cf_strcpy_s(msg, size, g_err4modules[m](e));
+    } else {
+        cf_strcpy_s(msg, size, "Module NOT REGISTERED!");
     }
 }
