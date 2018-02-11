@@ -85,9 +85,9 @@ cf_errno_t cf_sock_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_sock_len_t addrl
 cf_errno_t cf_sock_listen(cf_socket_t sock, cf_uint_t backlog);
 cf_errno_t cf_sock_accept(cf_socket_t sock, cf_socket_t* new_sock, cf_sockaddr_t* addr, cf_sock_len_t* addrlen);
 cf_errno_t cf_sock_connect(cf_socket_t sock, cf_sockaddr_t* sa, cf_int_t namelen);
-cf_errno_t cf_sock_send(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags);
-cf_errno_t cf_sock_recv(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags);
-cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags, cf_sockaddr_t* sa, cf_sock_len_t addrlen);
-cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags, cf_sockaddr_t* from, cf_sock_len_t* fromlen);
+cf_errno_t cf_sock_send(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags);
+cf_errno_t cf_sock_recv(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags);
+cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags, cf_sockaddr_t* sa, cf_sock_len_t addrlen);
+cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags, cf_sockaddr_t* from, cf_sock_len_t* fromlen);
 
 #endif /* __CF_SOCKET_H__ */
