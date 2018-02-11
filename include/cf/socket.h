@@ -4,33 +4,23 @@
 #include <cf/types.h>
 #include <sys/socket.h>
 
-/**
- * address family
- */
-typedef enum {
-    CF_SOCK_AF_UNSPEC   = 0,
-    CF_SOCK_AF_LOCAL    = 1,
-    CF_SOCK_AF_INET     = 2,
-    CF_SOCK_AF_INET6    = 3,
-} cf_sock_af_t;
 
-/**
- * socket type
- */
-typedef enum {
-    CF_SOCK_STREAM  = 0,
-    CF_SOCK_DGRAM   = 1,
-    CF_SOCK_RAW     = 2,
-} cf_sock_type_t;
+extern const cf_int_t CF_SOCK_AF_UNSPEC;
+extern const cf_int_t CF_SOCK_AF_LOCAL;
+extern const cf_int_t CF_SOCK_AF_INET;
+extern const cf_int_t CF_SOCK_AF_INET6;
 
-/**
- * socket protocol type
- */
-typedef enum {
-    CF_SOCK_PROTO_TCP   = 0,
-    CF_SOCK_PROTO_UDP   = 1,
-    CF_SOCK_PROTO_SCTP  = 2,
-} cf_sock_proto_t;
+extern const cf_int_t CF_SOCK_STREAM;
+extern const cf_int_t CF_SOCK_DGRAM;
+extern const cf_int_t CF_SOCK_RAW;
+
+extern const cf_int_t CF_SOCK_PROTO_TCP;
+extern const cf_int_t CF_SOCK_PROTO_UDP;
+
+typedef union {
+    cf_uint32_t addr_int;
+    cf_uint8_t addr_byte[4];
+} cf_sockaddr_in_t;
 
 typedef struct {
     cf_uint8_t  sa_len;
@@ -71,7 +61,13 @@ typedef struct {
 
 typedef cf_int_t  cf_socket_t;
 
-cf_errno_t cf_socket_create(cf_socket_t* sock, cf_sock_af_t family, cf_sock_type_t type, cf_sock_proto_t protocol);
+cf_uint16_t cf_sock_ntohs(uint16_t n);
+cf_uint16_t cf_sock_htons(uint16_t n);
+cf_uint32_t cf_sock_ntohl(uint32_t n);
+cf_uint32_t cf_sock_htonl(cf_uint32_t n);
+cf_char_t*  cf_sock_inet_ntoa(cf_sockaddr_in_t in);
+
+cf_errno_t cf_socket_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol);
 cf_errno_t cf_socket_close(cf_socket_t sock);
 cf_errno_t cf_socket_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_size_t addrlen);
 cf_errno_t cf_socket_listen(cf_socket_t sock, cf_uint_t backlog);
@@ -81,5 +77,7 @@ cf_errno_t cf_socket_send(cf_socket_t sock, cf_void_t* buff, cf_size_t len);
 cf_errno_t cf_socket_recv(cf_socket_t sock, cf_void_t* buff, cf_size_t* len);
 cf_errno_t cf_socket_sendto();
 cf_errno_t cf_socket_recvfrom();
+
+
 
 #endif /* __CF_SOCKET_H__ */

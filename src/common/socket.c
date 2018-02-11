@@ -1,60 +1,52 @@
 #include <cf/socket.h>
 #include <cf/err.h>
-
+#include <cf/str.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-cf_errno_t cf_socket_create(cf_socket_t* sock, cf_sock_af_t family, cf_sock_type_t type, cf_sock_proto_t protocol) {
-    int af = AF_UNSPEC;
-    int t = SOCK_STREAM;
-    int proto = IPPROTO_TCP;
+const cf_int_t CF_SOCK_AF_UNSPEC = AF_UNSPEC;
+const cf_int_t CF_SOCK_AF_LOCAL = AF_LOCAL;
+const cf_int_t CF_SOCK_AF_INET = AF_INET;
+const cf_int_t CF_SOCK_AF_INET6 = AF_INET6;
+
+const cf_int_t CF_SOCK_STREAM = SOCK_STREAM;
+const cf_int_t CF_SOCK_DGRAM = SOCK_DGRAM;
+const cf_int_t CF_SOCK_RAW = SOCK_RAW;
+
+#ifdef CF_OS_WIN
+const cf_int_t CF_SOCK_PROTO_TCP = IPPROTO_TCP;
+const cf_int_t CF_SOCK_PROTO_UDP = IPPROTO_UDP;
+#else
+const cf_int_t CF_SOCK_PROTO_TCP = 6;
+const cf_int_t CF_SOCK_PROTO_UDP = 17;
+#endif
+
+cf_uint16_t cf_sock_ntohs(uint16_t n) {
+    return CF_SWAP16(n);
+}
+
+cf_uint16_t cf_sock_htons(uint16_t n) {
+    return CF_SWAP16(n);
+}
+
+cf_uint32_t cf_sock_ntohl(uint32_t n) {
+    return CF_SWAP32(n);
+}
+
+cf_uint32_t cf_sock_htonl(cf_uint32_t n) {
+    return CF_SWAP32(n);
+}
+
+cf_char_t*  cf_sock_inet_ntoa(cf_sockaddr_in_t in) {
+    static cf_char_t s[18] = {0};
+
+}
+
+cf_errno_t cf_socket_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol) {
     if(!sock) {
         return CF_EPARAM;
     }
-    switch(family) {
-        case CF_SOCK_AF_LOCAL:
-            af = AF_LOCAL;
-            break;
-        case CF_SOCK_AF_INET:
-            af = AF_INET;
-            break;
-        case CF_SOCK_AF_INET6:
-            af = AF_INET6;
-            break;
-        default:
-            af = AF_UNSPEC;
-            break;
-    }
-
-    switch(type) {
-        case CF_SOCK_STREAM:
-            t = SOCK_STREAM;
-            break;
-        case CF_SOCK_DGRAM:
-            t = SOCK_DGRAM;
-            break;
-        case CF_SOCK_RAW:
-            t = SOCK_RAW;
-            break;
-        default:
-            return CF_NOK;
-    }
-
-    switch(protocol) {
-        case CF_SOCK_PROTO_TCP:
-            proto = IPPROTO_TCP;
-            break;
-        case CF_SOCK_PROTO_UDP:
-            proto = IPPROTO_UDP;
-            break;
-        case CF_SOCK_PROTO_SCTP:
-            proto = IPPROTO_SCTP;
-            break;
-        default:
-            return CF_NOK;
-    }
-
-    *sock = socket(af, t, proto);
+    *sock = socket(family, type, protocol);
     if(!*sock) {
         return CF_NOK;
     }
