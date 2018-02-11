@@ -1,3 +1,13 @@
+/****************************************************
+ * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
+ * All rights reserved.
+ *
+ * @file    socket.h
+ * @brief   socket.
+ * @version 1.0
+ * @author  tkorays<tkorays@hotmail.com>
+ * @date    2018-2-10
+ ****************************************************/
 #ifndef __CF_SOCKET_H__
 #define __CF_SOCKET_H__
 
@@ -79,7 +89,5 @@ cf_errno_t cf_sock_send(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, c
 cf_errno_t cf_sock_recv(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags);
 cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags, cf_sockaddr_t* sa, cf_sock_len_t addrlen);
 cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags, cf_sockaddr_t* from, cf_sock_len_t* fromlen);
-
-
 
 #endif /* __CF_SOCKET_H__ */
