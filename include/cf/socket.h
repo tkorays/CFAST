@@ -20,7 +20,7 @@ extern const cf_int_t CF_SOCK_PROTO_UDP;
 typedef union {
     cf_uint32_t addr_int;
     cf_uint8_t addr_byte[4];
-} cf_sockaddr_in_t;
+} cf_sockaddr_inet_t;
 
 typedef struct {
     cf_uint8_t  sa_len;
@@ -60,23 +60,25 @@ typedef struct {
 } cf_sockaddr_in6_t;
 
 typedef cf_int_t  cf_socket_t;
+typedef cf_uint_t cf_sock_len_t;
 
 cf_uint16_t cf_sock_ntohs(uint16_t n);
 cf_uint16_t cf_sock_htons(uint16_t n);
 cf_uint32_t cf_sock_ntohl(uint32_t n);
 cf_uint32_t cf_sock_htonl(cf_uint32_t n);
-cf_char_t*  cf_sock_inet_ntoa(cf_sockaddr_in_t in);
+cf_char_t* cf_sock_inet_ntoa(cf_sockaddr_inet_t in);
+cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_sockaddr_inet_t* addr);
 
-cf_errno_t cf_socket_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol);
-cf_errno_t cf_socket_close(cf_socket_t sock);
-cf_errno_t cf_socket_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_size_t addrlen);
-cf_errno_t cf_socket_listen(cf_socket_t sock, cf_uint_t backlog);
-cf_errno_t cf_socket_accept(cf_socket_t sock, cf_socket_t* new_sock);
-cf_errno_t cf_socket_connect(cf_socket_t sock, cf_sockaddr_t* sa);
-cf_errno_t cf_socket_send(cf_socket_t sock, cf_void_t* buff, cf_size_t len);
-cf_errno_t cf_socket_recv(cf_socket_t sock, cf_void_t* buff, cf_size_t* len);
-cf_errno_t cf_socket_sendto();
-cf_errno_t cf_socket_recvfrom();
+cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol);
+cf_errno_t cf_sock_close(cf_socket_t sock);
+cf_errno_t cf_sock_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_sock_len_t addrlen);
+cf_errno_t cf_sock_listen(cf_socket_t sock, cf_uint_t backlog);
+cf_errno_t cf_sock_accept(cf_socket_t sock, cf_socket_t* new_sock, cf_sockaddr_t* addr, cf_sock_len_t* addrlen);
+cf_errno_t cf_sock_connect(cf_socket_t sock, cf_sockaddr_t* sa, cf_int_t namelen);
+cf_errno_t cf_sock_send(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags);
+cf_errno_t cf_sock_recv(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags);
+cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags, cf_sockaddr_t* sa, cf_sock_len_t addrlen);
+cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_sock_len_t* len, cf_uint_t flags, cf_sockaddr_t* from, cf_sock_len_t* fromlen);
 
 
 

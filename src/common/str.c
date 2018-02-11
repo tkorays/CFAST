@@ -1,7 +1,7 @@
 #include <cf/str.h>
 #include <cf/memory.h>
-#include <cf/err.h>
-
+#include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 
 cf_size_t cf_strlen(const cf_char_t* s) {
@@ -56,4 +56,17 @@ cf_char_t* cf_strrstr(cf_char_t* s1, cf_char_t* s2) {
 
 cf_char_t* cf_strchr(const cf_char_t* s, cf_char_t c) {
     return (cf_char_t*)strchr(s, c);
+}
+
+
+cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format, ...) {
+    va_list args;
+    int ret;
+#ifdef CF_OS_WIN32
+#define snprintf _snprintf
+#endif
+    va_start(args, format);
+    ret = vsnprintf(dst, dstsize, format, args);
+    va_end(args);
+    return ret;
 }

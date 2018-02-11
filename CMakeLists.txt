@@ -20,6 +20,7 @@ set(SRC_LIST src/common/list.c
     src/common/file.c
     src/common/queue.c
     src/common/config.c
+    src/common/socket.c
     )
 
 add_library(cfast STATIC ${SRC_LIST})
