@@ -21,6 +21,7 @@ set(SRC_LIST src/common/list.c
     src/common/queue.c
     src/common/config.c
     src/common/socket.c
+    src/common/mutex.c
     )
 
 add_library(cfast STATIC ${SRC_LIST})
