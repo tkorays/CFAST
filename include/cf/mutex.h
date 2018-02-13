@@ -1,3 +1,13 @@
+/****************************************************
+ * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
+ * All rights reserved.
+ *
+ * @file    mutex.h
+ * @brief   Configuration for CFAST.
+ * @version 1.0
+ * @author  tkorays<tkorays@hotmail.com>
+ * @date    2018-2-10
+ ****************************************************/
 #ifndef __CF_MUTEX_H__
 #define __CF_MUTEX_H__
 
