@@ -86,7 +86,13 @@ cf_char_t* cf_strrstr(cf_char_t* s1, cf_char_t* s2);
  */
 cf_char_t* cf_strchr(const cf_char_t* s, cf_char_t c);
 
-
+/**
+ * snprintf
+ * @param dst         Destionation address.
+ * @param dstsize     Size of destination buffer.
+ * @param format      format of string.
+ * @return            print size.
+ */
 cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format, ...);
 
 #endif /* __CF_STR_H__ */
