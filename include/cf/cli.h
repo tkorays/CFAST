@@ -14,10 +14,10 @@
 #include <cf/types.h>
 #include <cf/list.h>
 
+#define CF_CLI_MAX_BUFF 1024
 
 #define CF_CLI_INVALID_ID -1
 #define CF_CLI_DEFAULT_GROUP ""
-
 typedef struct cf_cli_cmd_cxt cf_cli_cmd_cxt_t;
 typedef cf_errno_t(*cf_cli_pfn_proc_cmd)(cf_cli_cmd_cxt_t* cxt, cf_char_t* s);
 typedef cf_void_t(*cf_cli_pfn_input)(cf_char_t* buf, cf_size_t bufsize);
@@ -62,6 +62,14 @@ typedef struct cf_cli_s {
     cf_cli_pfn_input    input;          /** input method */
     cf_cli_pfn_output   output;         /** output method */
     cf_char_t           inbuf[1024];    /** input buffer */
+} cf_cli111_t;
+
+
+typedef struct {
+    cf_char_t   rawbuff[CF_CLI_MAX_BUFF];   /** raw buff to process command */
+    cf_char_t*  vcmd;
+    cf_size_t   vcmd_size;
+    cf_size_t   pos;
 } cf_cli_t;
 
 cf_cli_t*   cf_cli_init();
@@ -71,6 +79,16 @@ cf_errno_t  cf_cli_install_all_cmds(cf_cli_t* cli, cf_cli_cmd_t* root);
 cf_errno_t  cf_cli_register_cmds(cf_cli_t* cli, cf_char_t* group, cf_cli_cmd_t* cmds, cf_size_t size);
 cf_errno_t  cf_cli_run_line(cf_cli_t* cli, cf_char_t* line);
 cf_errno_t  cf_cli_run(cf_cli_t* cli);
+
+cf_errno_t  cf_cli_get_char(cf_cli_t* cli, cf_char_t* p);
+cf_errno_t  cf_cli_get_uchar(cf_cli_t* cli, cf_uchar_t* p);
+cf_errno_t  cf_cli_get_short(cf_cli_t* cli, cf_short_t* p);
+cf_errno_t  cf_cli_get_ushort(cf_cli_t* cli, cf_ushort_t* p);
+cf_errno_t  cf_cli_get_int(cf_cli_t* cli, cf_int_t* p);
+cf_errno_t  cf_cli_get_uint(cf_cli_t* cli, cf_uint_t* p);
+cf_errno_t  cf_cli_get_int64(cf_cli_t* cli, cf_int64_t* p);
+cf_errno_t  cf_cli_get_uint16(cf_cli_t* cli, cf_uint64_t* p);
+cf_errno_t  cf_cli_get_str(cf_cli_t* cli, cf_char_t* p, cf_size_t size);
 
 
 
