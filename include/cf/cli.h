@@ -79,7 +79,7 @@ cf_errno_t  cf_cli_install_all_cmds(cf_cli_t* cli, cf_cli_cmd_t* root);
 cf_errno_t  cf_cli_register_cmds(cf_cli_t* cli, cf_char_t* group, cf_cli_cmd_t* cmds, cf_size_t size);
 cf_errno_t  cf_cli_run_line(cf_cli_t* cli, cf_char_t* line);
 cf_errno_t  cf_cli_run(cf_cli_t* cli);
-
+/*
 cf_errno_t  cf_cli_get_char(cf_cli_t* cli, cf_char_t* p);
 cf_errno_t  cf_cli_get_uchar(cf_cli_t* cli, cf_uchar_t* p);
 cf_errno_t  cf_cli_get_short(cf_cli_t* cli, cf_short_t* p);
@@ -89,7 +89,7 @@ cf_errno_t  cf_cli_get_uint(cf_cli_t* cli, cf_uint_t* p);
 cf_errno_t  cf_cli_get_int64(cf_cli_t* cli, cf_int64_t* p);
 cf_errno_t  cf_cli_get_uint16(cf_cli_t* cli, cf_uint64_t* p);
 cf_errno_t  cf_cli_get_str(cf_cli_t* cli, cf_char_t* p, cf_size_t size);
-
+*/
 
 
 #endif /* __CF_CLI_H__ */

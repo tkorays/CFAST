@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-
+#if 0
 cf_void_t _input_func(cf_char_t* buf, cf_size_t bufsize) {
     if(!buf || bufsize == 0) return ;
     fgets(buf, bufsize, stdin);
@@ -69,11 +69,11 @@ cf_errno_t cf_cli_run(cf_cli_t* cli) {
     }
     return CF_OK;
 }
-
+#endif
 #define CHECK_CLI_STATUS(cli, p) do {if(!cli || !p) return CF_EPARAM;\
     if(cli->pos >= cli->vcmd_size) return CF_NOK;\
     if(cli->cmd[cli->pos] == CF_NULL_PTR) return CF_NOK;} while(0)
-
+/*
 cf_errno_t  cf_cli_get_char(cf_cli_t* cli, cf_char_t* p) {
     CHECK_CLI_STATUS(cli, p);
     *p = cli->cmd[0];
@@ -86,7 +86,7 @@ cf_errno_t  cf_cli_get_uchar(cf_cli_t* cli, cf_uchar_t* p) {
 }
 cf_errno_t  cf_cli_get_short(cf_cli_t* cli, cf_short_t* p) {
     CHECK_CLI_STATUS(cli, p);
-
+    
     return CF_OK;
 }
 cf_errno_t  cf_cli_get_ushort(cf_cli_t* cli, cf_ushort_t* p) {
@@ -113,3 +113,4 @@ cf_errno_t  cf_cli_get_str(cf_cli_t* cli, cf_char_t* p, cf_size_t size) {
     if(!cli || !p) return CF_EPARAM;
     if(cli->pos >= cli->vcmd_size) return CF_NOK;
 }
+*/
