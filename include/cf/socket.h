@@ -29,11 +29,6 @@ extern const cf_int_t CF_SOCK_PROTO_AUTO;
 extern const cf_int_t CF_SOCK_PROTO_TCP;
 extern const cf_int_t CF_SOCK_PROTO_UDP;
 
-typedef union {
-    cf_uint32_t addr_int;
-    cf_uint8_t addr_byte[4];
-} cf_sockaddr_inet_t;
-
 typedef struct {
     cf_uint8_t  sa_len;
     cf_uint8_t  sa_family;
