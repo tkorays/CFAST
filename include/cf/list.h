@@ -13,6 +13,8 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
+
 /**
  * Type of free function to free item data of a list.
  */
@@ -109,5 +111,7 @@ cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
  * @return          The result.
  */
 cf_errno_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data);
+
+CF_DECLS_END
 
 #endif /* __CF_LIST_H__ */

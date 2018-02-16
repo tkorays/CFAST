@@ -14,7 +14,10 @@
 #include <cf/types.h>
 #include <sys/socket.h>
 
+CF_DECLS_BEGIN
+
 #define CF_SOCK_INVALID 0
+
 
 extern const cf_int_t CF_SOCK_AF_UNSPEC;
 extern const cf_int_t CF_SOCK_AF_LOCAL;
@@ -83,5 +86,7 @@ cf_errno_t cf_sock_send(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_ui
 cf_errno_t cf_sock_recv(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags);
 cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags, cf_sockaddr_t* sa, cf_sock_len_t addrlen);
 cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags, cf_sockaddr_t* from, cf_sock_len_t* fromlen);
+
+CF_DECLS_END
 
 #endif /* __CF_SOCKET_H__ */

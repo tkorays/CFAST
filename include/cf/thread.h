@@ -4,6 +4,8 @@
 #include <cf/types.h>
 #include <pthread.h>
 
+CF_DECLS_BEGIN
+
 typedef pthread_t cf_thread_t;
 typedef pthread_attr_t cf_thread_attr_t;
 
@@ -20,5 +22,6 @@ cf_errno_t cf_thread_attr_destroy(cf_thread_attr_t* attr);
 cf_uint_t cf_getpid();
 cf_uint_t cf_gettid();
 
+CF_DECLS_END
 
 #endif /* __CF_THREAD_H__ */

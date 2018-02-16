@@ -14,6 +14,8 @@
 #include <cf/types.h>
 #include <pthread.h>
 
+CF_DECLS_BEGIN
+
 typedef pthread_mutex_t cf_mutex_t;
 typedef pthread_mutexattr_t cf_mutex_attr_t;
 
@@ -22,5 +24,7 @@ cf_errno_t cf_mutex_destroy(cf_mutex_t* mutex);
 cf_errno_t cf_mutex_lock(cf_mutex_t* mutex);
 cf_errno_t cf_mutex_trylock(cf_mutex_t* mutex);
 cf_errno_t cf_mutex_unlock(cf_mutex_t* mutex);
+
+CF_DECLS_END
 
 #endif /* __CF_MUTEX_H__ */

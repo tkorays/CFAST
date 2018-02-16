@@ -13,6 +13,8 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
+
 #define CF_IS_ASCII(c) ((c) < 128)
 #define CF_IS_DIGIT(c) ((c) >= '0' && (c) <= '9')
 #define CF_IS_UPPER_ALPHA(c) ((c) >= 'A' && (c) <= 'Z')
@@ -20,6 +22,7 @@
 #define CF_IS_ALPHA(c) (CF_IS_UPPER_ALPHA(c) || CF_IS_LOWER_ALPHA(c))
 #define CF_IS_SPACE(c) ((c) == '\t' || (c) == '\n' || (c) == ' ')
 #define CF_IS_BLANK(c) ((c) == '\t' || (c) == ' ')
+
 
 /**
  * Calculate length of a string.
@@ -94,5 +97,7 @@ cf_char_t* cf_strchr(const cf_char_t* s, cf_char_t c);
  * @return            print size.
  */
 cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format, ...);
+
+CF_DECLS_END
 
 #endif /* __CF_STR_H__ */

@@ -13,8 +13,11 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
 
 cf_errno_t cf_msg_init();
 cf_errno_t cf_msg_deinit();
+
+CF_DECLS_END
 
 #endif /* __CF_MSG_H__ */

@@ -13,6 +13,8 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
+
 /**
  * Allocate memory.
  * @param size       Memory size
@@ -53,5 +55,7 @@ cf_void_t* cf_memcpy_s(cf_void_t* dst, cf_size_t dst_size, const cf_void_t* src,
  * @return          Address of memory.
  */
 cf_void_t* cf_memset_s(cf_void_t* s, cf_size_t smax, cf_char_t c, cf_size_t rsize);
+
+CF_DECLS_END
 
 #endif /* __CF_MEMORY_H__ */

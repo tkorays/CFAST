@@ -13,6 +13,8 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
+
 /**
  * Default block size
  */
@@ -61,5 +63,7 @@ cf_void_t*  cf_mpool_alloc(cf_mpool_t* pool, cf_size_t size);
  * @param stat      Statistics.
  */
 cf_void_t   cf_mpool_get_stat(cf_mpool_t* pool, cf_mpool_stat_t* stat);
+
+CF_DECLS_END
 
 #endif /* __CF_MPOOL_H__ */

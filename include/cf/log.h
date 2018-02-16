@@ -13,6 +13,8 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
+
 /**
  * Log level.
  */
@@ -87,5 +89,7 @@ cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line
 cf_void_t   cf_log_flush(cf_log_t* log);
 
 cf_void_t   cf_log_write_pool_info(cf_log_t* log);
+
+CF_DECLS_END
 
 #endif /* __CF_LOG_H__ */

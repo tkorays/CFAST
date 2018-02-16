@@ -3,6 +3,8 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
+
 /**
  * Errno Description
  */
@@ -64,5 +66,7 @@ cf_void_t cf_err_register(cf_uint32_t module, cf_err_pfn_strerror fn);
  * @param size          buff size.
  */
 cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size);
+
+CF_DECLS_END
 
 #endif /* __CF_ERR_H__ */

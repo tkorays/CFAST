@@ -15,6 +15,8 @@
 #include <cf/err.h>
 #include <stdio.h>
 
+CF_DECLS_BEGIN
+
 #define CF_FILE_SEEK_SET    SEEK_SET
 #define CF_FILE_SEEK_CUR    SEEK_CUR 
 #define CF_FILE_SEEK_END    SEEK_END
@@ -72,5 +74,7 @@ cf_errno_t  cf_file_unlink(const cf_char_t* pathname);
 cf_errno_t  cf_file_get_extension(const cf_char_t* path, cf_char_t* buf, cf_size_t size);
 cf_errno_t  cf_file_get_basedir(const cf_char_t* path, cf_char_t* buf, cf_size_t size);
 cf_errno_t  cf_file_path_join(cf_char_t* buff, cf_size_t size, const cf_char_t* p1, const cf_char_t* p2);
+
+CF_DECLS_END
 
 #endif /* __CF_FILE_H__ */

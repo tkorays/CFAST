@@ -14,6 +14,8 @@
 #include <cf/types.h>
 #include <cf/str.h>
 
+CF_DECLS_BEGIN
+
 /**
  * String.
  */
@@ -46,5 +48,7 @@ inline cf_string_t* cf_string_set(cf_string_t* str, const cf_char_t* s, cf_size_
 inline cf_size_t cf_string_len(cf_string_t* str) {
     return str ? str->len : 0;
 }
+
+CF_DECLS_END
 
 #endif /* __CF_STRING_H__ */

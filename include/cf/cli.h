@@ -14,6 +14,8 @@
 #include <cf/types.h>
 #include <cf/list.h>
 
+CF_DECLS_BEGIN
+
 #define CF_CLI_MAX_BUFF 1024
 
 #define CF_CLI_INVALID_ID -1
@@ -91,5 +93,6 @@ cf_errno_t  cf_cli_get_uint16(cf_cli_t* cli, cf_uint64_t* p);
 cf_errno_t  cf_cli_get_str(cf_cli_t* cli, cf_char_t* p, cf_size_t size);
 */
 
+CF_DECLS_END
 
 #endif /* __CF_CLI_H__ */

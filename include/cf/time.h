@@ -13,6 +13,8 @@
 
 #include <cf/types.h>
 
+CF_DECLS_BEGIN
+
 typedef uint64_t cf_time_t;
 typedef uint64_t cf_time_interval_t;
 
@@ -22,5 +24,6 @@ cf_void_t cf_time_sleep(cf_time_interval_t interval);
 cf_errno_t cf_time_ctime(cf_time_t t, cf_char_t* buff, cf_size_t size);
 //cf_errno_t cf_time_strftime();
 
+CF_DECLS_END
 
 #endif /* __CF_TIME_H__ */

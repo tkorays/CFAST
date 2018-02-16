@@ -11,6 +11,15 @@
 #ifndef __CF_CONFIG_H__
 #define __CF_CONFIG_H__
 
+/** Public API wrap for c++ compilers. */
+#ifdef __cplusplus
+#   define CF_DECLS_BEGIN extern "C" {
+#   define CF_DECLS_END }
+#else
+#   define CF_DECLS_BEGIN 
+#   define CF_DECLS_END 
+#endif
+
 #ifndef CF_API
 #  ifdef _WIN32
 #       define CF_OS_WIN 1
@@ -31,6 +40,27 @@
 #  endif
 #endif
 
+/**
+ * API definations.
+ * not used 
+ */
+#if !defined(CF_OS_WIN)
+#   define CF_DECLARE(type) type
+#   define CF_DECLARE_C(type) type
+#elif defined CF_BUILD_STATIC
+#   define CF_DECLARE(type) type __stdcall
+#   define CF_DECLARE_C(type) type __cdecl
+#elif (defined CF_BUILD_SHARED) && (defined CF_BUILD_EXPORT)
+#   define CF_DECLARE(type) __declspec(dllexport) type __stdcall
+#   define CF_DECLARE_C(type) __declspec(dllexport) type __cdecl
+#elif (defined CF_BUILD_SHARED) && (defined CF_BUILD_IMPORT)
+#   define CF_DECLARE(type) __declspec(dllimport) type __stdcall
+#   define CF_DECLARE_C(type) __declspec(dllimport) type __cdecl
+#else 
+#   define CF_DECLARE(type) type
+#   define CF_DECLARE_C(type) type
+#endif
+
 #ifndef CF_DEBUG
 #  ifndef NDEBUG
 #    define CF_DEBUG 1
@@ -43,11 +73,29 @@
 #  define CF_HAS_ASSERT 1
 #endif
 
+#define CF_FMT_SSZIE_T  "ld"
+#define CF_FMT_SIZE_T   "lu"
+#define CF_FMT_INT64_T  "ld"
+#define CF_FMT_UINT64_T "lu"
+#define CF_FMT_UINT64_T_HEX "lx"
+
+#define CF_MAX_PATH_SIZE 256
+#ifdef CF_OS_WIN
+#   define CF_PATH_SPLIT_CHAR  '\\'
+#   define CF_PATH_SPLIT_STR   "\\"
+#else
+#   define CF_PATH_SPLIT_CHAR  '/'
+#   define CF_PATH_SPLIT_STR   "/"
+#endif
+
 #define CF_VERSION_NUM_MAJOR 1
 #define CF_VERSION_NUM_MINOR 0
 #define CF_VERSION_NUM ((CF_VERSION_MAJOR << 16) | CF_VERSION_MINOR)
 
+CF_DECLS_BEGIN
 
 const char* cf_get_version();
+
+CF_DECLS_END
 
 #endif /* __CF_CONFIG_H__ */
