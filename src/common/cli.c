@@ -65,19 +65,20 @@ static cf_cli_cmd_t* find_cmd_in_child(cf_cli_cmd_t* cmd, cf_char_t* name) {
 static cf_cli_cmd_t* add_child_node(cf_cli_t* cli, cf_cli_cmd_t* cmd, cf_char_t* name) {
     // 内部函数，不检查参数
     cf_cli_cmd_t* prev = CF_NULL_PTR;
-    cmd = cmd->child;
-    while(cmd) {
-        prev = cmd;
-        cmd = cmd->next;
+    cf_cli_cmd_t* cur = cmd->child;
+    while(cur) {
+        prev = cur;
+        cur = cur->next;
     }
     // no child
     if(!prev) {
         cmd->child = cf_mpool_alloc(cli->pool, sizeof(cf_cli_cmd_t));
-        prev->next->next = CF_NULL_PTR;
-        prev->next->prev = CF_NULL_PTR;
-        prev->next->child = CF_NULL_PTR;
-        prev->next->name = name;
-        prev->next->func = CF_NULL_PTR;
+        cmd->child->next = CF_NULL_PTR;
+        cmd->child->prev = CF_NULL_PTR;
+        cmd->child->child = CF_NULL_PTR;
+        cmd->child->name = name;
+        cmd->child->func = CF_NULL_PTR;
+        return cmd->child;
     }
     else {
         // 在最后一个节点后添加
@@ -87,10 +88,33 @@ static cf_cli_cmd_t* add_child_node(cf_cli_t* cli, cf_cli_cmd_t* cmd, cf_char_t*
         prev->next->child = CF_NULL_PTR;
         prev->next->name = name;
         prev->next->func = CF_NULL_PTR;
+        return prev->next;
     }
-    return prev->next;
 }
 
+static cf_char_t* get_cmd_name(const cf_char_t* s, cf_size_t* pos) {
+    cf_size_t start = *pos;
+
+    // 跳过空格
+    while(CF_IS_SPACE(s[start])) {
+        ++start;
+        ++(*pos);
+    }
+
+    while(!CF_IS_SPACE(s + *pos)) ++(*pos);
+    
+    if(*pos <= start) return CF_NULL_PTR;
+
+
+}
+
+static cf_bool_t is_valid_cmd_name(cf_char_t* name) {
+    while(*name) {
+        if(*name != ' ') return CF_TRUE;
+        name += 1;
+    }
+    return CF_FALSE;
+}
 
 static cf_errno_t cf_cli_show_help(cf_char_t* s, cf_void_t* arg) {
     cf_cli_t* cli = (cf_cli_t*)arg;
@@ -154,18 +178,24 @@ CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t
     /* 申请内存用于存储字符串 */
     size = cf_strlen(cmd)+2;
     buf = cf_mpool_alloc(cli->pool, size);
-    (cf_void_t)cf_memset_s(buf, size, 0, size);
-    cf_strcpy_s(buf, size, cmd);
+    (cf_void_t)cf_memset_s(buf, size, ' ', size);
+    cf_memcpy_s(buf, size, cmd, cf_strlen(cmd));
 
     name = buf;
     while(buf[i] != '\0') {
         if(CF_IS_SPACE(buf[i])) {
             buf[i] = '\0';
+            if(!is_valid_cmd_name(name)) {
+                ++i; continue;
+            }
+            printf("get name: %s\n", name);
             c = find_cmd_in_child(root, name);
             if(c == CF_NULL_PTR) {
                 // 子节点中没有找到，则新建一个cmd
                 c = add_child_node(cli, root, name);
+                printf("create cmd: %s\n", name);
             }
+            else {printf("find cmd: %s\n", name);}
             root = c;
             name = buf+i+1;
         }
