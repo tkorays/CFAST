@@ -101,7 +101,7 @@ cf_errno_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) 
     for(index = 0, node = li->head; index < abs_pos && node; index++, node = node->next) ;
     if(CF_NULL_PTR == li->head) {
         data = CF_NULL_PTR;
-        return CF_RET_FAIL;
+        return CF_NOK;
     } else if(index == 0) {
         /* head */
         li->head = node->next;
