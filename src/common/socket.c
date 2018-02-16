@@ -2,6 +2,8 @@
 #include <cf/err.h>
 #include <cf/str.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 
 const cf_int_t CF_SOCK_AF_UNSPEC = AF_UNSPEC;
@@ -13,6 +15,7 @@ const cf_int_t CF_SOCK_STREAM = SOCK_STREAM;
 const cf_int_t CF_SOCK_DGRAM = SOCK_DGRAM;
 const cf_int_t CF_SOCK_RAW = SOCK_RAW;
 
+const cf_int_t CF_SOCK_PROTO_AUTO = 0;
 #ifdef CF_OS_WIN
 const cf_int_t CF_SOCK_PROTO_TCP = IPPROTO_TCP;
 const cf_int_t CF_SOCK_PROTO_UDP = IPPROTO_UDP;
@@ -37,14 +40,18 @@ cf_uint32_t cf_sock_htonl(cf_uint32_t n) {
     return CF_SWAP32(n);
 }
 
-cf_char_t*  cf_sock_inet_ntoa(cf_sockaddr_inet_t in) {
+cf_char_t*  cf_sock_inet_ntoa(cf_in_addr_t in) {
     static cf_char_t s[18] = {0};
-    (cf_void_t)cf_snprintf(s, sizeof(s), "%s.%s.%s.%s", in.addr_byte[0], in.addr_byte[1], in.addr_byte[2], in.addr_byte[3]);
+    cf_char_t* addr = (cf_char_t*)&(in.s_addr);
+    (cf_void_t)cf_snprintf(s, sizeof(s), "%s.%s.%s.%s", addr[0], addr[1], addr[2], addr[3]);
     return s;
 }
 
-cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_sockaddr_inet_t* addr) {
+cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_in_addr_t* addr) {
     if(!s || !addr) return CF_NOK;
+    struct in_addr ia;
+    if(inet_aton(s, &ia) != 0) return CF_NOK;
+    addr->s_addr = (cf_uint32_t)ia.s_addr;
     return CF_OK;
 }
 
