@@ -16,71 +16,19 @@
 
 CF_DECLS_BEGIN
 
+/**
+ * @defgroup CFAST Command Line Interface
+ * @ingroup CF_CLI
+ * @{
+ *
+ * This module provides an interactive Command Line Interface(CLI).
+ */
+
 #define CF_CLI_MAX_BUFF 1024
 
 #define CF_CLI_INVALID_ID -1
 #define CF_CLI_DEFAULT_GROUP ""
-typedef struct cf_cli_cmd_cxt cf_cli_cmd_cxt_t;
-typedef cf_errno_t(*cf_cli_pfn_proc_cmd)(cf_cli_cmd_cxt_t* cxt, cf_char_t* s);
-typedef cf_void_t(*cf_cli_pfn_input)(cf_char_t* buf, cf_size_t bufsize);
-typedef cf_void_t(*cf_cli_pfn_output)(cf_char_t* buf);
 
-/**
- * A command option.
- */
-typedef struct {
-    cf_id_t     id;         /** command id */
-    cf_char_t*  short_name; /** The short name of a command option. */
-    cf_char_t*  long_name;  /** The long name of a command option. */
-    cf_bool_t   optional;   /** Is this option optional? */
-    cf_char_t*  help;       /** Help. */
-} cf_cli_cmdopt_t;
-
-/**
- * A command.
- */
-typedef struct cf_cli_cmd_s {
-    cf_id_t                 id;
-    cf_char_t*              name;
-    cf_size_t               option_cnt;
-    cf_cli_cmdopt_t*        option;
-    cf_size_t               subcmd_cnt;
-    struct cf_cli_cmd_s*    subcmd;
-    cf_char_t*              help;
-    cf_cli_pfn_proc_cmd     proc_cmd;
-} cf_cli_cmd_t;
-
-/**
- * Context for a command.
- */
-typedef struct cf_cli_cmd_cxt {
-    cf_cli_cmd_t*   cmd;
-    cf_void_t*      data;
-} cf_cli_cmd_cxt_t;
-
-typedef struct cf_cli_s {
-    cf_cli_cmd_t*       root;           /* one root, delete! */
-    cf_list_t*          cmds;           /** All commands */
-    cf_cli_pfn_input    input;          /** input method */
-    cf_cli_pfn_output   output;         /** output method */
-    cf_char_t           inbuf[1024];    /** input buffer */
-} cf_cli111_t;
-
-
-typedef struct {
-    cf_char_t   rawbuff[CF_CLI_MAX_BUFF];   /** raw buff to process command */
-    cf_char_t*  vcmd;
-    cf_size_t   vcmd_size;
-    cf_size_t   pos;
-} cf_cli_t;
-
-cf_cli_t*   cf_cli_init();
-cf_void_t   cf_cli_deinit(cf_cli_t* cli);
-cf_errno_t  cf_cli_set_io_func(cf_cli_t* cli, cf_cli_pfn_input input, cf_cli_pfn_output output);
-cf_errno_t  cf_cli_install_all_cmds(cf_cli_t* cli, cf_cli_cmd_t* root);
-cf_errno_t  cf_cli_register_cmds(cf_cli_t* cli, cf_char_t* group, cf_cli_cmd_t* cmds, cf_size_t size);
-cf_errno_t  cf_cli_run_line(cf_cli_t* cli, cf_char_t* line);
-cf_errno_t  cf_cli_run(cf_cli_t* cli);
 /*
 cf_errno_t  cf_cli_get_char(cf_cli_t* cli, cf_char_t* p);
 cf_errno_t  cf_cli_get_uchar(cf_cli_t* cli, cf_uchar_t* p);
@@ -92,6 +40,36 @@ cf_errno_t  cf_cli_get_int64(cf_cli_t* cli, cf_int64_t* p);
 cf_errno_t  cf_cli_get_uint16(cf_cli_t* cli, cf_uint64_t* p);
 cf_errno_t  cf_cli_get_str(cf_cli_t* cli, cf_char_t* p, cf_size_t size);
 */
+
+typedef struct cf_mpool cf_mpool_t;
+
+typedef struct cf_cli_cfg {
+    cf_void_t(*output)(cf_char_t*);
+} cf_cli_cfg_t;
+
+typedef struct cf_cli_cmd {
+    struct cf_cli_cmd*      prev;
+    struct cf_cli_cmd*      next;
+
+    struct cf_cli_cmd*      child;
+
+    cf_char_t*              name;
+    cf_errno_t(*func)(cf_char_t*, cf_void_t*); // process function
+} cf_cli_cmd_t;
+
+typedef struct cf_cli {
+    cf_void_t(*output)(cf_char_t*);
+    cf_cli_cmd_t* cmds;
+    cf_mpool_t* pool;
+} cf_cli_t;
+
+CF_DECLARE(cf_errno_t) cf_cli_init(cf_cli_t* cli, cf_cli_cfg_t* cfg);
+CF_DECLARE(cf_errno_t) cf_cli_uninit(cf_cli_t* cli);
+CF_DECLARE(cf_void_t)  cf_cli_cfg_default(cf_cli_cfg_t* cfg);
+CF_DECLARE(cf_errno_t) cf_cli_input(cf_cli_t* cli, cf_char_t* line);
+CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t(*func)(cf_char_t*, cf_void_t*));
+
+/** @} */
 
 CF_DECLS_END
 
