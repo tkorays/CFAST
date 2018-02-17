@@ -15,8 +15,8 @@
 
 CF_DECLS_BEGIN
 
-typedef uint64_t cf_time_t;
-typedef uint64_t cf_time_interval_t;
+typedef cf_uint64_t cf_time_t;
+typedef cf_uint64_t cf_time_interval_t;
 
 
 cf_time_t cf_time_now(cf_void_t);
