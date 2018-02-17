@@ -26,21 +26,6 @@ CF_DECLS_BEGIN
 
 #define CF_CLI_MAX_BUFF 1024
 
-#define CF_CLI_INVALID_ID -1
-#define CF_CLI_DEFAULT_GROUP ""
-
-/*
-cf_errno_t  cf_cli_get_char(cf_cli_t* cli, cf_char_t* p);
-cf_errno_t  cf_cli_get_uchar(cf_cli_t* cli, cf_uchar_t* p);
-cf_errno_t  cf_cli_get_short(cf_cli_t* cli, cf_short_t* p);
-cf_errno_t  cf_cli_get_ushort(cf_cli_t* cli, cf_ushort_t* p);
-cf_errno_t  cf_cli_get_int(cf_cli_t* cli, cf_int_t* p);
-cf_errno_t  cf_cli_get_uint(cf_cli_t* cli, cf_uint_t* p);
-cf_errno_t  cf_cli_get_int64(cf_cli_t* cli, cf_int64_t* p);
-cf_errno_t  cf_cli_get_uint16(cf_cli_t* cli, cf_uint64_t* p);
-cf_errno_t  cf_cli_get_str(cf_cli_t* cli, cf_char_t* p, cf_size_t size);
-*/
-
 typedef struct cf_mpool cf_mpool_t;
 typedef struct cf_cli cf_cli_t;
 

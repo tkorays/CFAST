@@ -6,49 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/*
-cf_errno_t  cf_cli_get_char(cf_cli_t* cli, cf_char_t* p) {
-    CHECK_CLI_STATUS(cli, p);
-    *p = cli->cmd[0];
-    return CF_OK;
-}
-cf_errno_t  cf_cli_get_uchar(cf_cli_t* cli, cf_uchar_t* p) {
-    CHECK_CLI_STATUS(cli, p);
-    *p = (cf_uchar_t)cli->cmd[0];
-    return CF_OK;
-}
-cf_errno_t  cf_cli_get_short(cf_cli_t* cli, cf_short_t* p) {
-    CHECK_CLI_STATUS(cli, p);
-    
-    return CF_OK;
-}
-cf_errno_t  cf_cli_get_ushort(cf_cli_t* cli, cf_ushort_t* p) {
-    if(!cli || !p) return CF_EPARAM;
-    if(cli->pos >= cli->vcmd_size) return CF_NOK;
-}
-cf_errno_t  cf_cli_get_int(cf_cli_t* cli, cf_int_t* p) {
-    if(!cli || !p) return CF_EPARAM;
-    if(cli->pos >= cli->vcmd_size) return CF_NOK;
-}
-cf_errno_t  cf_cli_get_uint(cf_cli_t* cli, cf_uint_t* p) {
-    if(!cli || !p) return CF_EPARAM;
-    if(cli->pos >= cli->vcmd_size) return CF_NOK;
-}
-cf_errno_t  cf_cli_get_int64(cf_cli_t* cli, cf_int64_t* p) {
-    if(!cli || !p) return CF_EPARAM;
-    if(cli->pos >= cli->vcmd_size) return CF_NOK;
-}
-cf_errno_t  cf_cli_get_uint16(cf_cli_t* cli, cf_uint64_t* p) {
-    if(!cli || !p) return CF_EPARAM;
-    if(cli->pos >= cli->vcmd_size) return CF_NOK;
-}
-cf_errno_t  cf_cli_get_str(cf_cli_t* cli, cf_char_t* p, cf_size_t size) {
-    if(!cli || !p) return CF_EPARAM;
-    if(cli->pos >= cli->vcmd_size) return CF_NOK;
-}
-*/
-
-
 static cf_cli_cmd_t* find_cmd_in_child(cf_cli_cmd_t* cmd, cf_char_t* name) {
     cf_cli_cmd_t* c = cmd->child;
     // 内部函数，不检查参数
