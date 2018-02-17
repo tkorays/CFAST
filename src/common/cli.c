@@ -6,9 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define CHECK_CLI_STATUS(cli, p) do {if(!cli || !p) return CF_EPARAM;\
-    if(cli->pos >= cli->vcmd_size) return CF_NOK;\
-    if(cli->cmd[cli->pos] == CF_NULL_PTR) return CF_NOK;} while(0)
 /*
 cf_errno_t  cf_cli_get_char(cf_cli_t* cli, cf_char_t* p) {
     CHECK_CLI_STATUS(cli, p);
@@ -112,10 +109,8 @@ static cf_char_t* get_cmd_name(cf_mpool_t* pool, cf_char_t* s, cf_size_t* pos) {
     return name;
 }
 
-static cf_errno_t cf_cli_show_help(cf_char_t* s, cf_void_t* arg) {
-    cf_cli_t* cli = (cf_cli_t*)arg;
-    if(!cli->output) return CF_OK;
-    cli->output("help:\n");
+static cf_errno_t cf_cli_god_cmd(cf_size_t argc, cf_char_t* argv[]) {
+    // do nothing
     return CF_OK;
 }
 
@@ -136,8 +131,8 @@ CF_DECLARE(cf_errno_t) cf_cli_init(cf_cli_t* cli, cf_cli_cfg_t* cfg) {
     cmd->prev = CF_NULL_PTR;
     cmd->next = CF_NULL_PTR;
     cmd->child = CF_NULL_PTR;
-    cmd->name = "?";
-    cmd->func = cf_cli_show_help;
+    cmd->name = "";
+    cmd->func = cf_cli_god_cmd;
     
     cli->cmds = cmd;
     return CF_OK;
@@ -173,12 +168,12 @@ CF_DECLARE(cf_errno_t) cf_cli_input(cf_cli_t* cli, cf_size_t argc, cf_char_t* ar
     if(!root->func) {
         cli->output("Command Not Fit!");
         return CF_NOK;
-    } else
-    {
-        return root->func("abc", cli);
+    } else {
+        return root->func(argc - i, argv + i);
     }
 }
-CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t(*func)(cf_char_t*, cf_void_t*)) {
+
+CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t(*func)(cf_size_t argc, cf_char_t* argv[])) {
     cf_char_t* buf;
     cf_char_t* name;
     cf_cli_cmd_t* c = CF_NULL_PTR;
@@ -188,12 +183,10 @@ CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t
     if(!cli || !cmd || !func) return CF_EPARAM;
 
     while((name = get_cmd_name(cli->pool, cmd, &pos))) {
-        printf("name: %s\n", name);
         c = find_cmd_in_child(root, name);
         if(c == CF_NULL_PTR) {
             // 子节点中没有找到，则新建一个cmd
             c = add_child_node(cli, root, name);
-            printf("create cmd: %s\n", name);
         }
         root = c;
     }

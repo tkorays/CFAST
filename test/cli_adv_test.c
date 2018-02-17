@@ -11,8 +11,12 @@ cf_log_t* glog = CF_NULL_PTR;
 #define CF_LOG_FATAL(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_FATAL, fmtstr, ##__VA_ARGS__)
 #define CF_LOG_MPOOL()              CF_LOG_POOL_STAT(glog)
 
-cf_errno_t cmd_func1(cf_char_t* a, cf_void_t*b) {
-    printf("cmd fuck!!!\n");
+cf_errno_t cmd_func1(cf_size_t argc, cf_char_t* argv[]) {
+    cf_size_t i;
+    printf("cmd:::\n");
+    for(i = 0; i < argc; i++) {
+        printf("p(%s)", argv[i]);
+    }
     return CF_OK;
 }
 
@@ -24,6 +28,7 @@ int main(int argc, char* argv[]) {
     cf_cli_cfg_default(&cfg);
     if(CF_OK != cf_cli_init(&cli, &cfg)) CF_LOG_ERROR("fail to init cli!");
 
+    cf_cli_register(&cli, "abc efg", cmd_func1);
     cf_cli_register(&cli, "abc efg kkk", cmd_func1);
 
     cf_cli_input(&cli, argc - 1, argv + 1);
