@@ -22,7 +22,7 @@ CF_DECLARE(cf_errno_t) cf_dso_unload(cf_dso_handle_t* handle) {
     return CF_OK;
 }
 
-CF_DECLARE(cf_errno_t) cf_dso_get_sym(cf_dso_handle_t* handle, const cf_char_t* name, cf_dso_sym_t* symbol) {
+CF_DECLARE(cf_errno_t) cf_dso_sym(cf_dso_handle_t* handle, const cf_char_t* name, cf_dso_sym_t* symbol) {
     if(!handle || !name || !symbol) return CF_EPARAM;
 
     *symbol = 0;
