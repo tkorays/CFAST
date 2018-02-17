@@ -20,7 +20,7 @@ CF_DECLS_BEGIN
 #define CF_IS_UPPER_ALPHA(c) ((c) >= 'A' && (c) <= 'Z')
 #define CF_IS_LOWER_ALPHA(c) ((c) >= 'a' && (c) <= 'z')
 #define CF_IS_ALPHA(c) (CF_IS_UPPER_ALPHA(c) || CF_IS_LOWER_ALPHA(c))
-#define CF_IS_SPACE(c) ((c) == '\t' || (c) == '\n' || (c) == ' ')
+#define CF_IS_SPACE(c) ((cf_char_t)(c) == '\t' || (cf_char_t)(c) == '\n' || (cf_char_t)(c) == ' ')
 #define CF_IS_BLANK(c) ((c) == '\t' || (c) == ' ')
 
 
