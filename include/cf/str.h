@@ -19,6 +19,8 @@ CF_DECLS_BEGIN
 #define CF_IS_DIGIT(c) ((c) >= '0' && (c) <= '9')
 #define CF_IS_UPPER_ALPHA(c) ((c) >= 'A' && (c) <= 'Z')
 #define CF_IS_LOWER_ALPHA(c) ((c) >= 'a' && (c) <= 'z')
+#define CF_TO_LOWER_ALPHA(c) (CF_IS_UPPER_ALPHA(c) ? (c - 'A' + 'a') : (c))
+#define CF_TO_UPPER_ALPHA(c) (CF_IS_LOWER_ALPHA(c) ? (c - 'a' + 'A') : (c))
 #define CF_IS_ALPHA(c) (CF_IS_UPPER_ALPHA(c) || CF_IS_LOWER_ALPHA(c))
 #define CF_IS_SPACE(c) ((cf_char_t)(c) == '\t' || (cf_char_t)(c) == '\n' || (cf_char_t)(c) == ' ')
 #define CF_IS_BLANK(c) ((c) == '\t' || (c) == ' ')
@@ -45,7 +47,7 @@ cf_int32_t cf_strcmp(const cf_char_t* s1, const cf_char_t* s2);
  * @param s2        String.
  * @return          Compararision result.
  */
-cf_int32_t cf_strcasecmp(const cf_char_t* s1, const cf_char_t* s2);
+cf_int32_t cf_stricmp(const cf_char_t* s1, const cf_char_t* s2);
 
 /**
  * Link two strings.
@@ -64,6 +66,16 @@ cf_char_t* cf_strcat_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src);
  * @return          Pointer to destination if link successfully.
  */
 cf_char_t* cf_strcpy_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src);
+
+/**
+ * Copy string to another one.
+ * @param dst       Destination string.
+ * @param dstsize   Size of destination string.
+ * @param src       Source string.
+ * @param srcmax    Size to be copy.
+ * @return          Pointer to destination if link successfully.
+ */
+cf_char_t* cf_strncpy_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src, cf_size_t srcmax);
 
 /**
  * Substring of a string.
