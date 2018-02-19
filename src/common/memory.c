@@ -23,3 +23,18 @@ cf_void_t* cf_memset_s(cf_void_t* s, cf_size_t smax, cf_char_t c, cf_size_t rsiz
     if(smax < rsize) return CF_NULL_PTR;
     return memset(s, c, rsize);
 }
+
+cf_void_t* cf_memchr(const cf_void_t* s, cf_char_t c, cf_size_t n) {
+    cf_char_t* ss = (cf_char_t*)s;
+    if(!s || !n) return CF_NULL_PTR;
+    while(n > 0 && *ss != c) ss++, n--;
+    return (n == 0 ? CF_NULL_PTR : ss);
+}
+
+cf_void_t cf_membzero(cf_void_t* dst, cf_size_t n) {
+#ifdef __GLIBC__
+    bzero(dst, n);
+#else
+    cf_memset_s(dst, n, 0, n);
+#endif
+}

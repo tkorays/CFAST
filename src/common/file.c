@@ -275,6 +275,11 @@ cf_errno_t  cf_file_unlink(const cf_char_t* pathname) {
     return unlink(pathname) == 0 ? CF_OK : CF_NOK;
 }
 
+cf_errno_t  cf_file_get_filename(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
+    if(!path || !buf) return CF_EPARAM;
+    return CF_OK;
+}
+
 cf_errno_t  cf_file_get_extension(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
     return CF_OK;
 }

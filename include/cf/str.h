@@ -94,12 +94,20 @@ cf_char_t* cf_strstr(cf_char_t* s1, cf_char_t* s2);
 cf_char_t* cf_strrstr(cf_char_t* s1, cf_char_t* s2);
 
 /**
- * Index of a char.
+ * Index of a character.
  * @param s         Source string to search into.
  * @param c         Char to search.
  * @return          Pointer to start if search successfully.
  */
 cf_char_t* cf_strchr(const cf_char_t* s, cf_char_t c);
+
+/**
+ * Index of a character in reverse order.
+ * @param s         Source string to search into.
+ * @param c         Char to search.
+ * @return          Pointer to start if search successfully.
+ */
+cf_char_t* cf_strrchr(const cf_char_t* s, cf_char_t c);
 
 /**
  * snprintf
