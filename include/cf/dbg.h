@@ -15,6 +15,14 @@
 
 CF_DECLS_BEGIN
 
+/**
+ * Dump memory as hex format.
+ * @param m         Memory address.
+ * @param n         How many bytes to dump.
+ * @param buf       Buffer to save hex string.
+ * @param size      Size of buffer.
+ * @return          Out size.
+ */
 CF_DECLARE(cf_size_t) cf_dbg_mem2hex(cf_void_t* m, cf_size_t n, cf_char_t* buf, cf_size_t size);
 
 CF_DECLS_END
