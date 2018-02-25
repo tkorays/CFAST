@@ -5,6 +5,7 @@
 #ifdef CF_OS_WIN
 //#include <winsock.h>
 #include <WinSock2.h>
+#include <WS2tcpip.h>
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -58,8 +59,19 @@ cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_in_addr_t* addr) {
     //struct in_addr ia;
     //if(inet_aton(s, &ia) != 0) return CF_NOK;
     //addr->S_addr = (cf_uint32_t)ia.s_addr;
-    addr->S_addr = inet_addr(s);
-    return CF_OK;
+    return inet_pton(CF_SOCK_AF_INET, s, addr) == 0 ? CF_OK : CF_NOK;
+    //addr->S_addr = inet_addr(s);
+}
+
+
+cf_errno_t cf_sock_pton(cf_int_t af, const cf_char_t* src, cf_void_t* dst) {
+    if (!src || !dst) return CF_EPARAM;
+    return inet_pton(af, src, dst) == 0 ? CF_OK : CF_NOK;
+}
+
+cf_errno_t cf_sock_ntop(cf_int_t af, const cf_void_t* src, cf_char_t* dst, cf_size_t dstsize) {
+    if (!src || !dst) return CF_EPARAM;
+    return inet_ntop(af, src, dst, dstsize) == 0 ? CF_OK : CF_NOK;
 }
 
 cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol) {

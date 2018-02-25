@@ -74,6 +74,8 @@ cf_uint32_t cf_sock_ntohl(uint32_t n);
 cf_uint32_t cf_sock_htonl(cf_uint32_t n);
 cf_char_t* cf_sock_inet_ntoa(cf_in_addr_t in);
 cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_in_addr_t* addr);
+cf_errno_t cf_sock_pton(cf_int_t af, const cf_char_t* src, cf_void_t* dst);
+cf_errno_t cf_sock_ntop(cf_int_t af, const cf_void_t* src, cf_char_t* dst, cf_size_t dstsize);
 
 cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol);
 cf_errno_t cf_sock_close(cf_socket_t sock);

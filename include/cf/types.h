@@ -1,13 +1,13 @@
 /****************************************************
- * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
- * All rights reserved.
- * 
- * @file    types.h
- * @brief   CFASTåŸºç¡€çš„å®šä¹‰
- * @version 1.0
- * @author  tkorays<tkorays@hotmail.com>
- * @date    2018-1-3
- ****************************************************/
+* Copyright (c) 2018, tkorays <tkorays@hotmail.com>
+* All rights reserved.
+*
+* @file    types.h
+* @brief   CFAST»ù´¡µÄ¶¨Òå
+* @version 1.0
+* @author  tkorays<tkorays@hotmail.com>
+* @date    2018-1-3
+****************************************************/
 #ifndef __CF_TYPES_H__
 #define __CF_TYPES_H__
 
@@ -19,8 +19,8 @@
 #define CF_NULL (void*)0
 #define CF_TRUE 1
 #define CF_FALSE 0
-#define CF_MIN(a, b) ((a) > (b) ? (b) : (a))
-#define CF_MAX(a, b) ((a) > (b) ? (a) : (b))
+#define CF_MIN2(a, b) ((a) > (b) ? (b) : (a))
+#define CF_MAX2(a, b) ((a) > (b) ? (a) : (b))
 #define CF_SWAP16(a) (cf_uint16_t)((((cf_uint16_t)(a) & 0xFF) << 8) | (((cf_uint16_t)(a) & 0xFF00) >> 8))
 #define CF_SWAP32(a) ((((a) & 0xFF) << 24) | (((a) & 0xFF00) << 8) | (((a) & 0xFF0000) >> 8) | (((a) & 0xFF000000) >> 24))
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
@@ -46,15 +46,15 @@ typedef unsigned char   cf_uint8_t;
 typedef short           cf_int16_t;
 typedef unsigned short  cf_uint16_t;
 typedef int32_t         cf_int32_t;
-typedef uint32_t        cf_uint32_t;  
+typedef uint32_t        cf_uint32_t;
 typedef int64_t         cf_int64_t;
-typedef uint64_t        cf_uint64_t;  
+typedef uint64_t        cf_uint64_t;
 typedef void            cf_void_t;      /** void* */
-typedef uint32_t        cf_id_t;        /** ç”¨äºè¡¨ç¤ºid */
-typedef void*           cf_handle_t;    /** ç”¨äºè¡¨ç¤ºå¥æŸ„ */
-typedef size_t          cf_size_t;      /** ç”¨äºè¡¨ç¤ºå¤§å° */
-typedef uint32_t        cf_bool_t;      /** boolå‹å˜é‡ */
-typedef uintptr_t       cf_uintptr_t;   /** æŒ‡é’ˆ */
+typedef uint32_t        cf_id_t;        /** ÓÃÓÚ±íÊ¾id */
+typedef void*           cf_handle_t;    /** ÓÃÓÚ±íÊ¾¾ä±ú */
+typedef size_t          cf_size_t;      /** ÓÃÓÚ±íÊ¾´óĞ¡ */
+typedef uint32_t        cf_bool_t;      /** boolĞÍ±äÁ¿ */
+typedef uintptr_t       cf_uintptr_t;   /** Ö¸Õë */
 typedef int32_t         cf_errno_t;     /** errno */
 
 
