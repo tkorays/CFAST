@@ -1,4 +1,4 @@
-#include <cf/log.h>
+﻿#include <cf/log.h>
 #include <cf/str.h>
 #include <cf/memory.h>
 #include <cf/thread.h>

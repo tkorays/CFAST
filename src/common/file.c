@@ -35,11 +35,15 @@ typedef struct __dirent_s {
 
 cf_errno_t  cf_file_open(cf_file_t* f, const cf_char_t* filename, const cf_char_t* mode) {
     if(!f || !filename || !mode) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    return fopen_s(&f->fp, filename, mode) == 0 ? CF_OK : CF_NOK;
+#else
     f->fp = fopen(filename, mode);
     if(!f->fp) {
         return CF_EFOPEN;
     }
     return CF_OK;
+#endif
 }
 
 cf_errno_t  cf_file_close(cf_file_t* f) {
@@ -186,7 +190,11 @@ cf_errno_t cf_file_readdir(cf_file_dir_t* dir, cf_file_dirent_t* dirinfo) {
 
 cf_bool_t   cf_file_exist(const cf_char_t* filename) {
     if(!filename) return CF_FALSE;
+#ifdef CF_OS_WIN
+    return _access(filename, 0) == 0 ? CF_TRUE : CF_FALSE;
+#else
     return access(filename, 0) == 0 ? CF_TRUE : CF_FALSE;
+#endif
 }
 
 cf_errno_t  cf_file_rmdir(const cf_char_t* dirname) {
@@ -267,12 +275,20 @@ cf_errno_t  cf_file_mkdir(const cf_char_t* path) {
 
 cf_errno_t  cf_file_link(const cf_char_t* from_path, const cf_char_t* to_path) {
     if(!from_path || !to_path) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    return CF_NOK;
+#else
     return link(from_path, to_path) == 0 ? CF_OK : CF_NOK;
+#endif
 }
 
 cf_errno_t  cf_file_unlink(const cf_char_t* pathname) {
     if(!pathname) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    return _unlink(pathname) == 0 ? CF_OK : CF_NOK;
+#else
     return unlink(pathname) == 0 ? CF_OK : CF_NOK;
+#endif
 }
 
 cf_errno_t  cf_file_get_filename(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
