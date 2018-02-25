@@ -12,7 +12,6 @@
 #define __CF_SOCKET_H__
 
 #include <cf/types.h>
-#include <sys/socket.h>
 
 CF_DECLS_BEGIN
 
@@ -39,7 +38,7 @@ typedef struct {
 } cf_sockaddr_t;
 
 typedef struct{
-    cf_uint32_t s_addr;
+    cf_uint32_t S_addr;
 } cf_in_addr_t;
 
 typedef struct {

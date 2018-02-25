@@ -131,7 +131,6 @@ CF_DECLARE(cf_errno_t) cf_cli_input(cf_cli_t* cli, cf_size_t argc, cf_char_t* ar
 }
 
 CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t(*func)(cf_size_t argc, cf_char_t* argv[])) {
-    cf_char_t* buf;
     cf_char_t* name;
     cf_cli_cmd_t* c = CF_NULL_PTR;
     cf_size_t pos = 0;

@@ -1,13 +1,19 @@
 #include <cf/socket.h>
 #include <cf/err.h>
 #include <cf/str.h>
+
+#ifdef CF_OS_WIN
+//#include <winsock.h>
+#include <WinSock2.h>
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#endif
 
 const cf_int_t CF_SOCK_AF_UNSPEC = AF_UNSPEC;
-const cf_int_t CF_SOCK_AF_LOCAL = AF_LOCAL;
+const cf_int_t CF_SOCK_AF_LOCAL = AF_UNIX;
 const cf_int_t CF_SOCK_AF_INET = AF_INET;
 const cf_int_t CF_SOCK_AF_INET6 = AF_INET6;
 
@@ -42,16 +48,17 @@ cf_uint32_t cf_sock_htonl(cf_uint32_t n) {
 
 cf_char_t*  cf_sock_inet_ntoa(cf_in_addr_t in) {
     static cf_char_t s[18] = {0};
-    cf_char_t* addr = (cf_char_t*)&(in.s_addr);
+    cf_char_t* addr = (cf_char_t*)&(in.S_addr);
     (cf_void_t)cf_snprintf(s, sizeof(s), "%s.%s.%s.%s", addr[0], addr[1], addr[2], addr[3]);
     return s;
 }
 
 cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_in_addr_t* addr) {
     if(!s || !addr) return CF_NOK;
-    struct in_addr ia;
-    if(inet_aton(s, &ia) != 0) return CF_NOK;
-    addr->s_addr = (cf_uint32_t)ia.s_addr;
+    //struct in_addr ia;
+    //if(inet_aton(s, &ia) != 0) return CF_NOK;
+    //addr->S_addr = (cf_uint32_t)ia.s_addr;
+    addr->S_addr = inet_addr(s);
     return CF_OK;
 }
 
@@ -68,7 +75,11 @@ cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_
 
 cf_errno_t cf_sock_close(cf_socket_t sock) {
     if(!sock) return CF_EPARAM;
+#ifdef CF_OS_WIN
+    if (0 != closesocket(sock)) return CF_NOK;
+#else
     if(0 != close(sock)) return CF_NOK;
+#endif
     return CF_OK;
 }
 
