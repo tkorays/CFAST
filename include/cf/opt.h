@@ -2,7 +2,6 @@
 #define __CF_OPT_H__
 
 #include <cf/types.h>
-#include <cf/string.h>
 
 CF_DECLS_BEGIN
 
