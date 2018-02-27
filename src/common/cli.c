@@ -112,7 +112,6 @@ CF_DECLARE(cf_void_t)  cf_cli_cfg_default(cf_cli_cfg_t* cfg) {
 CF_DECLARE(cf_errno_t) cf_cli_input(cf_cli_t* cli, cf_size_t argc, cf_char_t* argv[]) {
     cf_cli_cmd_t* root = cli->cmds;
     cf_cli_cmd_t* c = CF_NULL_PTR;
-    cf_cli_cmd_t* pc = CF_NULL_PTR; // parent command
     cf_size_t i;
     if(!cli || !argc || !argv) return CF_EPARAM;
 
