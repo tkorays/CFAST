@@ -17,7 +17,7 @@ CF_DECLARE(cf_size_t) cf_dbg_mem2hex(cf_void_t* m, cf_size_t n, cf_char_t* buf, 
             if(cnt <= 0) return 0;
             wrt_cnt += cnt;
         }
-        cnt = cf_snprintf(buf + wrt_cnt, size - wrt_cnt, "%X", *s);
+        cnt = cf_snprintf(buf + wrt_cnt, size - wrt_cnt, "%2X", (*s) & 0xFF);
         if(cnt <= 0) return 0;
         wrt_cnt += cnt;
         
