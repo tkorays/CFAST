@@ -24,6 +24,7 @@ set(SRC_LIST src/common/list.c
     src/common/mutex.c
     src/common/dso.c
     src/common/dbg.c
+    src/common/select.c
     )
 
 add_library(cfast STATIC ${SRC_LIST})
