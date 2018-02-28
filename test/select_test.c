@@ -6,7 +6,7 @@
 int main() {
     cf_fdset_t reads;
     cf_errno_t status;
-    struct timeval timeout;
+    cf_timeval_t timeout;
     cf_size_t str_len;
     cf_char_t buf[1024];
 

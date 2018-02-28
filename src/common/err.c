@@ -25,7 +25,6 @@ const cf_char_t* __common_strerr(cf_uint_t eid) {
     return __strerror(eid, common_err_str, CF_ARRAY_SIZE(common_err_str));
 }
 
-
 cf_err_info_t file_err_str[] = {
     CF_ERR_STR_BUILD(CF_EFOPEN, "fopen error."),
     CF_ERR_STR_BUILD(CF_EFCLOSE, "fclose error."),
@@ -47,11 +46,30 @@ const cf_char_t* __mem_strerr(cf_uint_t eid) {
     return __strerror(eid, mem_err_str, CF_ARRAY_SIZE(mem_err_str));
 }
 
+cf_err_info_t dso_err_str[] = {
+    CF_ERR_STR_BUILD(CF_EDSO_OPEN, "dso open error."),
+    CF_ERR_STR_BUILD(CF_EDSO_GETSYM, "fail to get dso symbol.")
+};
+
+const cf_char_t* __dso_strerr(cf_uint_t eid) {
+    return __strerror(eid, dso_err_str, CF_ARRAY_SIZE(dso_err_str));
+}
+
+cf_err_info_t select_err_str[] = {
+    CF_ERR_STR_BUILD(CF_ESELECT_TOUT, "select timeout."),
+};
+
+const cf_char_t* __select_strerr(cf_uint_t eid) {
+    return __strerror(eid, select_err_str, CF_ARRAY_SIZE(select_err_str));
+}
+
 /** 各个模块需要注册错误码描述 */
 static cf_err_pfn_strerror g_err4modules[CF_ERR_MODULE_MAX_NUM] = {
     __common_strerr,
     __file_strerr,
     __mem_strerr,
+    __dso_strerr,
+    __select_strerr,
     0
 };
 

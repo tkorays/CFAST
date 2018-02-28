@@ -27,6 +27,7 @@ typedef const cf_char_t*(*cf_err_pfn_strerror)(cf_uint_t eid);
 #define CF_ERR_MODULE_MEM       2
 #define CF_ERR_MODULE_SOCKET    3
 #define CF_ERR_MODULE_DSO       4
+#define CF_ERR_MODULE_SELECT    5
 
 
 #define CF_EOK          CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 0)
@@ -50,6 +51,8 @@ typedef const cf_char_t*(*cf_err_pfn_strerror)(cf_uint_t eid);
 
 #define CF_EDSO_OPEN    CF_MAKE_ERRNO(CF_ERR_MODULE_DSO, 0)
 #define CF_EDSO_GETSYM  CF_MAKE_ERRNO(CF_ERR_MODULE_DSO, 1)
+
+#define CF_ESELECT_TOUT CF_MAKE_ERRNO(CF_ERR_MODULE_SELECT, 0)
 
 #define CF_OK   CF_EOK
 #define CF_NOK  CF_ENOK

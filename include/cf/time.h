@@ -15,9 +15,13 @@
 
 CF_DECLS_BEGIN
 
-typedef cf_uint64_t cf_time_t;
-typedef cf_uint64_t cf_time_interval_t;
+typedef cf_uint32_t cf_time_t;
+typedef cf_uint32_t cf_time_interval_t;
 
+typedef struct {
+    cf_uint32_t tv_sec;
+    cf_uint32_t tv_usec;
+} cf_timeval_t;
 
 cf_time_t cf_time_now(cf_void_t);
 cf_void_t cf_time_sleep(cf_time_interval_t interval);
