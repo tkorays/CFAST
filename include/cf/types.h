@@ -16,7 +16,7 @@
 #include <cf/config.h>
 
 #define CF_NULL_PTR 0
-#define CF_NULL (void*)0
+#define CF_VOID_PTR (void*)0
 #define CF_TRUE 1
 #define CF_FALSE 0
 #define CF_MIN2(a, b) ((a) > (b) ? (b) : (a))

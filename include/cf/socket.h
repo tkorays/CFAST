@@ -32,8 +32,12 @@ extern const cf_int_t CF_SOCK_PROTO_TCP;
 extern const cf_int_t CF_SOCK_PROTO_UDP;
 
 typedef struct {
+#ifdef CF_OS_WIN
+    cf_uint16_t sa_family;
+#else
     cf_uint8_t  sa_len;
     cf_uint8_t  sa_family;
+#endif
     cf_char_t   sa_data[14];
 } cf_sockaddr_t;
 
@@ -42,8 +46,12 @@ typedef struct{
 } cf_in_addr_t;
 
 typedef struct {
+#ifdef CF_OS_WIN
+    cf_int16_t      sin_family;
+#else
     cf_uint8_t      sin_len;
     cf_uint8_t      sin_family;
+#endif
     cf_uint16_t     sin_port;
     cf_in_addr_t    sin_addr;
     char		    sin_zero[8];
