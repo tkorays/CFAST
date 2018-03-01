@@ -13,6 +13,10 @@
 
 #include <cf/types.h>
 
+#ifdef CF_OS_WIN
+#pragma comment(lib, "WS2_32.lib")
+#endif
+
 CF_DECLS_BEGIN
 
 #define CF_SOCK_INVALID 0

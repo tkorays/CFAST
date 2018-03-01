@@ -4,7 +4,10 @@
 #include <cf/thread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef CF_OS_WIN
+#else
 #include <unistd.h>
+#endif
 
 void error_exit(cf_char_t* msg, cf_errno_t status) {
     cf_char_t buff[1024] = {0};
@@ -37,11 +40,15 @@ int main() {
     cf_thread_t tid;
     cf_thread_attr_t tattr;
 
+#ifdef CF_OS_WIN
+    cf_sock_startup(2, 0);
+#endif
+
     status = cf_sock_create(&sock, CF_SOCK_AF_INET, CF_SOCK_STREAM, CF_SOCK_PROTO_AUTO);
     if(status != CF_OK) error_exit("cf_sock_create fail!", status);
     cf_memset_s(&servaddr, sizeof(cf_sockaddr_in_t), 0, sizeof(cf_sockaddr_in_t));
     servaddr.sin_family = CF_SOCK_AF_INET;
-    servaddr.sin_addr.s_addr = cf_sock_htonl(0);
+    servaddr.sin_addr.S_addr = cf_sock_htonl(0);
     servaddr.sin_port = cf_sock_htons(9876);
 
     status = cf_sock_bind(sock, (cf_sockaddr_t*)&servaddr, sizeof(servaddr));
@@ -62,5 +69,9 @@ int main() {
         status = cf_thread_create(&tid, &tattr, sock_accept_process, (cf_void_t*)&sockcli);
         //cf_sock_close(sockcli);
     }
+
+#ifdef CF_OS_WIN
+    cf_sock_cleanup();
+#endif
     return 0;
 }
