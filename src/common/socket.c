@@ -96,6 +96,15 @@ cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_
     return CF_OK;
 }
 
+cf_errno_t cf_sock_shutdown(cf_socket_t sock, cf_bool_t snd, cf_bool_t rcv) {
+    cf_int_t how;
+    if (!sock || (!snd && !rcv)) return CF_EPARAM;
+    if (snd && rcv) how = SD_BOTH;
+    else if (snd) how = SD_SEND;
+    else how = SD_RECEIVE;
+    return shutdown(sock, how) == 0 ? CF_OK : CF_NOK;
+}
+
 cf_errno_t cf_sock_close(cf_socket_t sock) {
     if(!sock) return CF_EPARAM;
 #ifdef CF_OS_WIN

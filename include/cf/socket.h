@@ -90,6 +90,7 @@ cf_errno_t cf_sock_startup(cf_int_t ver_major, cf_int_t ver_minor);
 cf_errno_t cf_sock_cleanup();
 #endif
 cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol);
+cf_errno_t cf_sock_shutdown(cf_socket_t sock, cf_bool_t snd, cf_bool_t rcv);
 cf_errno_t cf_sock_close(cf_socket_t sock);
 cf_errno_t cf_sock_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_sock_len_t addrlen);
 cf_errno_t cf_sock_listen(cf_socket_t sock, cf_uint_t backlog);
