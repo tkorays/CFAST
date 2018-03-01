@@ -1,6 +1,10 @@
 #include <cf/select.h>
 #include <cf/err.h>
+#ifdef CF_OS_WIN
+#include <Windows.h>
+#else
 #include <sys/time.h>
+#endif
 
 
 const cf_size_t CF_FD_SETSIZE = FD_SETSIZE;
