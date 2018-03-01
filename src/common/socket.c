@@ -26,9 +26,17 @@ const cf_int_t CF_SOCK_PROTO_AUTO = 0;
 #ifdef CF_OS_WIN
 const cf_int_t CF_SOCK_PROTO_TCP = IPPROTO_TCP;
 const cf_int_t CF_SOCK_PROTO_UDP = IPPROTO_UDP;
+
+const cf_int_t CF_SOCK_SHUTDOWN_SEND = SD_SEND;
+const cf_int_t CF_SOCK_SHUTDOWN_RECV = SD_RECEIVE;
+const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SD_BOTH;
 #else
 const cf_int_t CF_SOCK_PROTO_TCP = 6;
 const cf_int_t CF_SOCK_PROTO_UDP = 17;
+
+const cf_int_t CF_SOCK_SHUTDOWN_SEND = SHUT_WR;
+const cf_int_t CF_SOCK_SHUTDOWN_RECV = SHUT_RD;
+const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SHUT_RDWR;
 #endif
 
 cf_uint16_t cf_sock_ntohs(uint16_t n) {
@@ -96,12 +104,7 @@ cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_
     return CF_OK;
 }
 
-cf_errno_t cf_sock_shutdown(cf_socket_t sock, cf_bool_t snd, cf_bool_t rcv) {
-    cf_int_t how;
-    if (!sock || (!snd && !rcv)) return CF_EPARAM;
-    if (snd && rcv) how = SD_BOTH;
-    else if (snd) how = SD_SEND;
-    else how = SD_RECEIVE;
+cf_errno_t cf_sock_shutdown(cf_socket_t sock, cf_int_t how) {
     return shutdown(sock, how) == 0 ? CF_OK : CF_NOK;
 }
 
