@@ -74,6 +74,17 @@ cf_errno_t cf_sock_ntop(cf_int_t af, const cf_void_t* src, cf_char_t* dst, cf_si
     return inet_ntop(af, src, dst, dstsize) == 0 ? CF_OK : CF_NOK;
 }
 
+#ifdef CF_OS_WIN
+cf_errno_t cf_sock_startup(cf_int_t ver_major, cf_int_t ver_minor) {
+    WSADATA wsd;
+    return WSAStartup(MAKEWORD(ver_major, ver_minor), &wsd) == 0 ? CF_OK : CF_NOK;
+}
+
+cf_errno_t cf_sock_cleanup() {
+    return WSACleanup() == 0 ? CF_OK : CF_NOK;
+}
+#endif
+
 cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol) {
     if(!sock) {
         return CF_EPARAM;
