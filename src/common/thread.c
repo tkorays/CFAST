@@ -30,13 +30,14 @@ cf_void_t cf_thread_exit(cf_uint32_t code) {
 
 cf_errno_t cf_thread_join(cf_thread_t t, cf_uint32_t* retval) {
 #ifdef CF_OS_WIN
-    // retval !!!!
-    if (WAIT_OBJECT_0 == WaitForSingleObject(t, INFINITE)) return CF_OK;
+    cf_uint32_t ret = WaitForSingleObject(t, INFINITE);
+    if(retval) (cf_void_t)GetExitCodeThread(t, retval);
+    if (WAIT_OBJECT_0 == ret) return CF_OK;
     else return CF_NOK;
 #else
     cf_void_t* ret = 0;
     if(pthread_join(t, &ret) == 0) {
-        if(ret) *retval = (cf_uint32_t)ret;
+        if(retval) *retval = (cf_uint32_t)ret;
         return CF_OK;
     }
     else return CF_NOK;

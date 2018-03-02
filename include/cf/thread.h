@@ -14,7 +14,7 @@ CF_DECLS_BEGIN
 #define CF_THREAD_DEF_PROC(name, arg) cf_uint32_t WINAPI name(cf_void_t* arg)
 typedef HANDLE cf_thread_t;
 typedef SECURITY_ATTRIBUTES cf_thread_attr_t;
-typedef cf_uint32_t*(WINAPI *cf_thread_proc_t)(cf_void_t*);
+typedef cf_uint32_t(WINAPI *cf_thread_proc_t)(cf_void_t*);
 #else
 #define CF_THREAD_DEF_PROC(name, arg) cf_void_t* name(cf_void_t* arg)
 typedef pthread_t cf_thread_t;
