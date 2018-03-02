@@ -151,3 +151,69 @@ CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t
     }
     return CF_OK;
 }
+
+static cf_char_t* _seek_arg(cf_char_t* arg, cf_char_t** out) {
+    cf_size_t cnt = 0;
+    cf_char_t *p, *start;
+    cf_uint_t i;
+    p = arg;
+    while (CF_IS_SPACE(*p)) *(p++) = '\0'; /* start */
+    if (*p == '"') {
+        *(p++) = '\0';
+        start = p;
+        while (*p) {
+            if (*p == '\\' && *(p+1)) p += 2;
+            else if (*p == '"') break; 
+            else ++p;
+            ++cnt;
+        }
+    } else {
+        while (*p && !CF_IS_SPACE(*p)) {
+            if (*p == '\\' && *(p + 1)) p += 2;
+            else ++p;
+            cnt++; /* arg string */
+        }
+    }
+
+    *p = '\0';
+    if (cnt == 0) {
+        *out = CF_NULL_PTR;
+    }
+    else {
+        *out = start;
+        while (*start) {
+            if (*start == '\\' && *(start+1)) *(start++) = *(start+1);
+            start++;
+        }
+    }
+    return *p ? p : CF_NULL_PTR;
+}
+
+CF_DECLARE(cf_errno_t) cf_cli_parse_arg(const cf_char_t* s, cf_cliarg_t* arg) {
+    cf_char_t* next, *out;
+    cf_size_t len;
+    if (!s || !arg) return CF_EPARAM;
+
+    arg->argc = 0;
+    len = cf_strlen(s) + 1;
+    arg->_buff = cf_malloc(len);
+    arg->argv = (cf_char_t**)cf_malloc(sizeof(cf_char_t*)*(CF_CLI_MAX_ARG + 1));
+    cf_strcpy_s(arg->_buff, len, s);
+
+    next = arg->_buff;
+    while ((next = _seek_arg(next, &out))) {
+        if (arg->argc == CF_CLI_MAX_ARG) break;
+        arg->argv[arg->argc++] = out;
+    }
+    arg->argv[arg->argc] = CF_NULL_PTR;
+    
+    return CF_OK;
+}
+
+CF_DECLARE(cf_errno_t) cf_cli_destroy_arg(cf_cliarg_t* arg) {
+    if (!arg) return CF_EPARAM;
+    if (arg->argv) cf_free(arg->argv);
+    if (arg->_buff) cf_free(arg->_buff);
+    return CF_OK;
+}
+
