@@ -14,7 +14,7 @@ cf_errno_t cf_thread_create(cf_thread_t* t, const cf_thread_attr_t* attr,
     if (*t == NULL) return CF_NOK;
     else return CF_OK;
 #else
-    if(pthread_create(t, attr, call_func, arg) == 0) return CF_OK;
+    if(pthread_create(t, attr, proc, arg) == 0) return CF_OK;
     else return CF_NOK;
 #endif
 }
@@ -23,7 +23,8 @@ cf_void_t cf_thread_exit(cf_uint32_t code) {
 #ifdef CF_OS_WIN
     ExitThread(code);
 #else
-    thread_exit((cf_void_t*)code);
+    /* 为了和windows保持一致 */
+    pthread_exit((cf_void_t*)(cf_uintptr_t)code);
 #endif
 }
 
@@ -33,7 +34,11 @@ cf_errno_t cf_thread_join(cf_thread_t t, cf_uint32_t* retval) {
     if (WAIT_OBJECT_0 == WaitForSingleObject(t, INFINITE)) return CF_OK;
     else return CF_NOK;
 #else
-    if(pthread_join(t, retval) == 0) return CF_OK;
+    cf_void_t* ret = 0;
+    if(pthread_join(t, &ret) == 0) {
+        if(ret) *retval = (cf_uint32_t)ret;
+        return CF_OK;
+    }
     else return CF_NOK;
 #endif
 }
