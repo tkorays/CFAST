@@ -5,11 +5,11 @@
 #include <cf/mpool.h>
 #include <cf/list.h>
 #include <cf/err.h>
+#include <cf/mutex.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
 
-#include "pthread.h"
 
 #define CFAST_LOG_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s]"
 
@@ -30,7 +30,7 @@ typedef struct cf_log_item_s {
 typedef struct cf_log_s {
     cf_char_t       filename[256];
     FILE            *fp;
-    pthread_mutex_t mutex;
+    cf_mutex_t      mutex;
     cf_char_t       wbuf[1024];
     cf_log_level_t  level;
 
@@ -75,7 +75,7 @@ cf_log_t*   cf_log_create(const cf_char_t* filename) {
     log = cf_malloc(sizeof(struct cf_log_s));
     if(!log) return CF_NULL_PTR;
 
-    (cf_void_t)pthread_mutex_init(&log->mutex, CF_NULL_PTR);
+    (cf_void_t)cf_mutex_init(&log->mutex, CF_NULL_PTR);
     
     log->fp = fp;
     log->level = CF_LOG_LEVEL_DEBUG;
@@ -89,26 +89,26 @@ cf_void_t cf_log_destroy(cf_log_t* log) {
     if(!log) return ;
     cf_log_flush(log);
 
-    pthread_mutex_lock(&log->mutex);
+    cf_mutex_lock(&log->mutex);
     if(log->cache_logs) cf_free(log->cache_logs);
     if(log->pool) cf_mpool_destroy(log->pool);
-    pthread_mutex_unlock(&log->mutex);
-    (cf_void_t)pthread_mutex_destroy(&log->mutex);
+    cf_mutex_unlock(&log->mutex);
+    (cf_void_t)cf_mutex_destroy(&log->mutex);
     fclose(log->fp);
     cf_free(log);
 }
 
 cf_void_t cf_log_set_level(cf_log_t* log, cf_log_level_t level) {
     if(!log) return;
-    pthread_mutex_lock(&log->mutex);
+    cf_mutex_lock(&log->mutex);
     ((struct cf_log_s*)log)->level = level;
-    pthread_mutex_unlock(&log->mutex);
+    cf_mutex_unlock(&log->mutex);
 }
 
 cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
     if(!log) return CF_EPARAM;
 
-    pthread_mutex_lock(&log->mutex);
+    cf_mutex_lock(&log->mutex);
 
     if(!size) {
         /* 关闭前刷入日志 */
@@ -124,7 +124,7 @@ cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
             log->pool = CF_NULL_PTR;
         }
 
-        pthread_mutex_unlock(&log->mutex);
+        cf_mutex_unlock(&log->mutex);
         return CF_OK;
     }
 
@@ -139,11 +139,11 @@ cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
         log->cache_logs = CF_NULL_PTR;
         log->cache_size = 0;
 
-        pthread_mutex_unlock(&log->mutex);
+        cf_mutex_unlock(&log->mutex);
         return CF_OK;
     } 
 
-    pthread_mutex_unlock(&log->mutex);
+    cf_mutex_unlock(&log->mutex);
     return CF_OK;
 }
 
@@ -166,7 +166,7 @@ cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line
         cf_log_flush(log);
     }
 
-    pthread_mutex_lock(&log->mutex);
+    cf_mutex_lock(&log->mutex);
     if(log->cache_size && log->cache_count < log->cache_size) {
         /* 日志缓存 */
         item = &log->cache_logs[log->cache_count];
@@ -201,7 +201,7 @@ cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line
         fwrite(log->wbuf, cf_strlen(log->wbuf), 1, log->fp);
     }
 
-    pthread_mutex_unlock(&log->mutex);
+    cf_mutex_unlock(&log->mutex);
 }
 
 cf_void_t _cf_log_put_item(cf_log_t* log, cf_log_item_t* item) {
@@ -221,7 +221,7 @@ cf_void_t cf_log_flush(cf_log_t* log) {
     cf_size_t i;
     if(!log) return ;
     /* 释放内存，并申请新的 */
-    pthread_mutex_lock(&log->mutex);
+    cf_mutex_lock(&log->mutex);
     
     for(i = 0; i < log->cache_count; i++) {
         _cf_log_put_item(log, log->cache_logs + i);
@@ -231,7 +231,7 @@ cf_void_t cf_log_flush(cf_log_t* log) {
     log->pool = cf_mpool_create(1024);
     log->cache_count = 0;
 
-    pthread_mutex_unlock(&log->mutex);
+    cf_mutex_unlock(&log->mutex);
 }
 
 cf_void_t cf_log_write_pool_info(cf_log_t* log) 

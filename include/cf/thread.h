@@ -2,16 +2,30 @@
 #define __CF_THREAD_H__
 
 #include <cf/types.h>
+#ifdef CF_OS_WIN
+#include <Windows.h>
+#else
 #include <pthread.h>
+#endif
 
 CF_DECLS_BEGIN
 
+#ifdef CF_OS_WIN
+#define CF_THREAD_DEF_PROC(name, arg) cf_uint32_t WINAPI name(cf_void_t* arg)
+typedef HANDLE cf_thread_t;
+typedef SECURITY_ATTRIBUTES cf_thread_attr_t;
+typedef cf_uint32_t*(WINAPI *cf_thread_proc_t)(cf_void_t*);
+#else
+#define CF_THREAD_DEF_PROC(name, arg) cf_void_t* name(cf_void_t* arg)
 typedef pthread_t cf_thread_t;
 typedef pthread_attr_t cf_thread_attr_t;
+typedef cf_void_t*(*cf_thread_proc_t)(cf_void_t*);
+#endif
 
 cf_errno_t cf_thread_create(cf_thread_t* t, const cf_thread_attr_t* attr,
-    cf_void_t*(*call_func)(cf_void_t*), cf_void_t* arg);
-cf_errno_t cf_thread_join(cf_thread_t t, void** arg);
+    cf_thread_proc_t proc, cf_void_t* arg);
+cf_void_t cf_thread_exit(cf_uint32_t code);
+cf_errno_t cf_thread_join(cf_thread_t t, cf_uint32_t* retval);
 cf_errno_t cf_thread_detach(cf_thread_t t);
 cf_errno_t cf_thread_cancel(cf_thread_t t);
 cf_bool_t cf_thread_equal(cf_thread_t t1, cf_thread_t t2);
