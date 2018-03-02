@@ -14,6 +14,8 @@
 #include <cf/types.h>
 #include <cf/assert.h>
 #include <cf/cli.h>
+#include <cf/dbg.h>
+#include <cf/dso.h>
 #include <cf/err.h>
 #include <cf/file.h>
 #include <cf/list.h>
@@ -21,9 +23,12 @@
 #include <cf/memory.h>
 #include <cf/mpool.h>
 #include <cf/msg.h>
+#include <cf/mutex.h>
 #include <cf/opt.h>
 #include <cf/plugin.h>
 #include <cf/queue.h>
+#include <cf/select.h>
+#include <cf/socket.h>
 #include <cf/str.h>
 #include <cf/string.h>
 #include <cf/thread.h>
