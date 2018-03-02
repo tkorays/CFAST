@@ -155,6 +155,7 @@ CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_errno_t
 static cf_char_t* _seek_arg(cf_char_t* arg, cf_char_t** out) {
     cf_size_t cnt = 0;
     cf_char_t *p, *start;
+    cf_bool_t eos;
     cf_uint_t i;
     p = arg;
     while (CF_IS_SPACE(*p)) *(p++) = '\0'; /* start */
@@ -162,31 +163,22 @@ static cf_char_t* _seek_arg(cf_char_t* arg, cf_char_t** out) {
         *(p++) = '\0';
         start = p;
         while (*p) {
-            if (*p == '\\' && *(p+1)) p += 2;
-            else if (*p == '"') break; 
+            if (*p == '"') break; 
             else ++p;
             ++cnt;
         }
     } else {
+        start = p;
         while (*p && !CF_IS_SPACE(*p)) {
-            if (*p == '\\' && *(p + 1)) p += 2;
-            else ++p;
-            cnt++; /* arg string */
+            ++p;
+            cnt++; 
         }
     }
 
+    eos = *p ? CF_FALSE : CF_TRUE;
     *p = '\0';
-    if (cnt == 0) {
-        *out = CF_NULL_PTR;
-    }
-    else {
-        *out = start;
-        while (*start) {
-            if (*start == '\\' && *(start+1)) *(start++) = *(start+1);
-            start++;
-        }
-    }
-    return *p ? p : CF_NULL_PTR;
+    *out = cnt ? start : CF_NULL_PTR;
+    return !eos ? p+1 : CF_NULL_PTR;
 }
 
 CF_DECLARE(cf_errno_t) cf_cli_parse_arg(const cf_char_t* s, cf_cliarg_t* arg) {
