@@ -1,10 +1,10 @@
 # CFAST
-CFAST, a C library for writing client or server applications.
+CFAST, a cross-platform C library for writing client and server applications.
 
 ## Features
 This library is a cross-platform library, which support many features.
 
-* Base types definations.
+* Base types definitions.
 * Assert.
 * A simple `Command Line Interface`.
 * Dynamic Symbol Object.
