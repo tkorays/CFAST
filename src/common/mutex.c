@@ -4,7 +4,7 @@
 cf_errno_t cf_mutex_init(cf_mutex_t* mutex, const cf_mutex_attr_t* attr) {
 #ifdef CF_OS_WIN
     if (!mutex) return CF_EPARAM;
-    *mutex = CreateMutex(NULL, TRUE, NULL);
+    *mutex = CreateMutex(NULL, FALSE, NULL);
     if (*mutex == NULL) return CF_NOK;
     else return CF_OK;
 #else
