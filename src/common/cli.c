@@ -158,7 +158,8 @@ static cf_char_t* _seek_arg(cf_char_t* arg, cf_char_t** out) {
     cf_bool_t eos;
     cf_uint_t i;
     p = arg;
-    while (CF_IS_SPACE(*p)) *(p++) = '\0'; /* start */
+    while(*p && CF_IS_SPACE(*p)) *(p++) = '\0'; /* start */
+    if(!*p) return CF_NULL_PTR;
     if (*p == '"') {
         *(p++) = '\0';
         start = p;
@@ -178,7 +179,7 @@ static cf_char_t* _seek_arg(cf_char_t* arg, cf_char_t** out) {
     eos = *p ? CF_FALSE : CF_TRUE;
     *p = '\0';
     *out = cnt ? start : CF_NULL_PTR;
-    return !eos ? p+1 : CF_NULL_PTR;
+    return eos ? p : p+1;
 }
 
 CF_DECLARE(cf_errno_t) cf_cli_parse_arg(const cf_char_t* s, cf_cliarg_t* arg) {
