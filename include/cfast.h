@@ -30,9 +30,11 @@
 #include <cf/select.h>
 #include <cf/socket.h>
 #include <cf/str.h>
-#include <cf/string.h>
 #include <cf/thread.h>
 #include <cf/time.h>
+#ifndef CF_OS_WIN
+#include <cf/poll.h>
+#endif
 
 
 #endif /* __CFAST_H__ */

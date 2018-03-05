@@ -156,7 +156,6 @@ static cf_char_t* _seek_arg(cf_char_t* arg, cf_char_t** out) {
     cf_size_t cnt = 0;
     cf_char_t *p, *start;
     cf_bool_t eos;
-    cf_uint_t i;
     p = arg;
     while(*p && CF_IS_SPACE(*p)) *(p++) = '\0'; /* start */
     if(!*p) return CF_NULL_PTR;
