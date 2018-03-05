@@ -16,7 +16,7 @@ static cf_cli_cmd_t* find_cmd_in_child(cf_cli_cmd_t* cmd, cf_char_t* name) {
     return CF_NULL_PTR;
 }
 
-static cf_cli_cmd_t* add_child_node(cf_cli_t* cli, cf_cli_cmd_t* cmd, cf_char_t* name, cf_char_t* desc) {
+static cf_cli_cmd_t* add_child_node(cf_cli_t* cli, cf_cli_cmd_t* cmd, const cf_char_t* name, const cf_char_t* desc) {
     // 内部函数，不检查参数
     cf_cli_cmd_t* prev = CF_NULL_PTR;
     cf_cli_cmd_t* cur = cmd->child;
@@ -47,7 +47,7 @@ static cf_cli_cmd_t* add_child_node(cf_cli_t* cli, cf_cli_cmd_t* cmd, cf_char_t*
     }
 }
 
-static cf_char_t* get_cmd_name(cf_mpool_t* pool, cf_char_t* s, cf_size_t* pos) {
+static cf_char_t* get_cmd_name(cf_mpool_t* pool, const cf_char_t* s, cf_size_t* pos) {
     cf_size_t start = *pos;
     cf_char_t* name = CF_NULL_PTR;
 
@@ -130,7 +130,7 @@ CF_DECLARE(cf_errno_t) cf_cli_input(cf_cli_t* cli, cf_size_t argc, cf_char_t* ar
     }
 }
 
-CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, cf_char_t* cmd, cf_char_t* desc, cf_cli_cmd_func func) {
+CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, const cf_char_t* cmd, const cf_char_t* desc, cf_cli_cmd_func func) {
     cf_char_t* name;
     cf_cli_cmd_t* c = CF_NULL_PTR;
     cf_size_t pos = 0;
