@@ -85,9 +85,16 @@ cf_errno_t  cf_log_set_cache(cf_log_t* log, cf_size_t size);
  */
 cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...);
 
-
+/**
+ * flush log right now.
+ * @param log           Log instance.
+ */
 cf_void_t   cf_log_flush(cf_log_t* log);
 
+/**
+ * write pool info to log.
+ * @param log           Log instance.
+ */
 cf_void_t   cf_log_write_pool_info(cf_log_t* log);
 
 CF_DECLS_END
