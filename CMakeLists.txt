@@ -25,8 +25,13 @@ set(SRC_LIST src/common/list.c
     src/common/dso.c
     src/common/dbg.c
     src/common/select.c
-    src/common/poll.c
     )
+if(WIN32)
+
+else()
+    set(SRC_LIST ${SRC_LIST}
+        src/common/poll.c)
+endif()
 
 add_library(cfast STATIC ${SRC_LIST})
 if(WIN32)
