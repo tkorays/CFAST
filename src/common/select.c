@@ -31,7 +31,7 @@ CF_DECLARE(cf_errno_t) cf_select(int maxfdp, cf_fdset_t* rfds, cf_fdset_t* wfds,
     t.tv_sec = timeout->tv_sec;
     t.tv_usec = timeout->tv_usec;
     
-    ret = select(maxfdp, rfds, wfds, efds, &t);
+    ret = select(maxfdp, (struct fd_set*)rfds, (struct fd_set*)wfds, (struct fd_set*)efds, &t);
     if(ret == 0) return CF_ESELECT_TOUT;
     else if(ret < 0) return CF_NOK;
     return CF_OK;
