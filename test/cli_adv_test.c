@@ -32,9 +32,12 @@ int main(int argc, char* argv[]) {
     cf_cli_cfg_default(&cfg);
     if(CF_OK != cf_cli_init(&cli, &cfg)) CF_LOG_ERROR("fail to init cli!");
 
-    cf_cli_register(&cli, "abc efg", "help for abc efg", cmd_func1);
+    cf_cli_register(&cli, "abc efg", "abc efg的帮助", cmd_func1);
     cf_cli_register(&cli, "abc efg kkk", "help for abc efg kkk", cmd_func1);
     cf_cli_register(&cli, "abc", "group of abc", CF_NULL_PTR);
+    cf_cli_register(&cli, "aaa", "group of aaa", CF_NULL_PTR);
+    cf_cli_register(&cli, "cao", "group of cao", CF_NULL_PTR);
+    cf_cli_register(&cli, "abc aaaa", "group of cao", CF_NULL_PTR);
 
     #if 0
     cf_cli_parse_arg(s, &arg);

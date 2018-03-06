@@ -33,7 +33,7 @@ typedef struct cf_cli cf_cli_t;
 typedef cf_errno_t(*cf_cli_cmd_func)(const cf_cli_t* cli, cf_size_t argc, cf_char_t* argv[]);
 
 typedef struct cf_cli_cfg {
-    cf_void_t(*output)(cf_char_t*);
+    cf_void_t(*output)(const cf_char_t*, ...);
 } cf_cli_cfg_t;
 
 typedef struct cf_cli_cmd {
@@ -47,7 +47,7 @@ typedef struct cf_cli_cmd {
 } cf_cli_cmd_t;
 
 typedef struct cf_cli {
-    cf_void_t(*output)(cf_char_t*);
+    cf_void_t(*output)(const cf_char_t*, ...);
     cf_cli_cmd_t* cmds;
     cf_mpool_t* pool;
 } cf_cli_t;
