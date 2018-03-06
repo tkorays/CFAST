@@ -11,7 +11,7 @@ cf_log_t* glog = CF_NULL_PTR;
 #define CF_LOG_FATAL(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_FATAL, fmtstr, ##__VA_ARGS__)
 #define CF_LOG_MPOOL()              CF_LOG_POOL_STAT(glog)
 
-cf_errno_t cmd_func1(cf_size_t argc, cf_char_t* argv[]) {
+cf_errno_t cmd_func1(const cf_cli_t* cli, cf_size_t argc, cf_char_t* argv[]) {
     cf_size_t i;
     printf("cmd:::\n");
     for(i = 0; i < argc; i++) {
@@ -23,7 +23,8 @@ cf_errno_t cmd_func1(cf_size_t argc, cf_char_t* argv[]) {
 int main(int argc, char* argv[]) {
     cf_cli_cfg_t cfg;
     cf_cli_t cli;
-    const cf_char_t* s = "   abc efg 134 \"abc efg\"  ";
+    //const cf_char_t* s = "   abc efg 134 \"abc efg\"  ";
+    const cf_char_t*s = " abc ";
     cf_cliarg_t arg;
     cf_size_t i;
     glog = cf_log_create("abc.log");
@@ -33,13 +34,16 @@ int main(int argc, char* argv[]) {
 
     cf_cli_register(&cli, "abc efg", "help for abc efg", cmd_func1);
     cf_cli_register(&cli, "abc efg kkk", "help for abc efg kkk", cmd_func1);
+    cf_cli_register(&cli, "abc", "group of abc", CF_NULL_PTR);
 
+    #if 0
     cf_cli_parse_arg(s, &arg);
     for (i = 0; i < arg.argc; i++) {
         printf("^^^^^%s\n", arg.argv[i]);
     }
     cf_cli_input(&cli, arg.argc, arg.argv);
-    //cf_cli_input(&cli, argc - 1, argv + 1);
+    #endif
+    cf_cli_input(&cli, argc - 1, argv + 1);
 
     cf_cli_uninit(&cli);
     return 0;

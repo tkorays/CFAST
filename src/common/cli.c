@@ -67,8 +67,18 @@ static cf_char_t* get_cmd_name(cf_mpool_t* pool, const cf_char_t* s, cf_size_t* 
     return name;
 }
 
-static cf_errno_t cf_cli_god_cmd(cf_size_t argc, cf_char_t* argv[]) {
-    // do nothing
+static cf_errno_t cf_cli_help(const cf_cli_t* cli, cf_size_t argc, cf_char_t* argv[]) {
+    cf_size_t i;
+    if(!cli || !cli->output) return CF_NOK;
+    for(i = 0; i < argc; i++) {
+        cli->output(argv[i]);
+    }
+    cli->output("help info...\n");
+    return CF_OK;
+}
+static cf_errno_t cf_cli_show_version(const cf_cli_t* cli, cf_size_t argc, cf_char_t* argv[]) {
+    if(!cli || !cli->output) return CF_NOK;
+    cli->output(CF_CLI_VERSION_INFO);
     return CF_OK;
 }
 
@@ -89,8 +99,8 @@ CF_DECLARE(cf_errno_t) cf_cli_init(cf_cli_t* cli, cf_cli_cfg_t* cfg) {
     cmd->prev = CF_NULL_PTR;
     cmd->next = CF_NULL_PTR;
     cmd->child = CF_NULL_PTR;
-    cmd->name = "";
-    cmd->func = cf_cli_god_cmd;
+    cmd->name = "?";
+    cmd->func = cf_cli_help;
     
     cli->cmds = cmd;
     return CF_OK;
@@ -103,7 +113,7 @@ CF_DECLARE(cf_errno_t) cf_cli_uninit(cf_cli_t* cli) {
 }
 
 static cf_void_t output_str(cf_char_t* s) {
-    printf("%s", s);
+    printf("%s\n", s);
 }
 CF_DECLARE(cf_void_t)  cf_cli_cfg_default(cf_cli_cfg_t* cfg) {
     if(!cfg) return ;
@@ -114,7 +124,7 @@ CF_DECLARE(cf_errno_t) cf_cli_input(cf_cli_t* cli, cf_size_t argc, cf_char_t* ar
     cf_cli_cmd_t* root = cli->cmds;
     cf_cli_cmd_t* c = CF_NULL_PTR;
     cf_size_t i;
-    if(!cli || !argc || !argv) return CF_EPARAM;
+    if(!cli) return CF_EPARAM;
 
     for(i = 0; i < argc; i++) {
         c = find_cmd_in_child(root, argv[i]);
@@ -122,11 +132,17 @@ CF_DECLARE(cf_errno_t) cf_cli_input(cf_cli_t* cli, cf_size_t argc, cf_char_t* ar
         root = c;
     }
 
-    if(!root->func) {
-        cli->output("Command Not Fit!");
+    if(i < argc && cf_strcmp(argv[i], "?") == 0) return cf_cli_help(cli, i, argv);
+
+    if(root == cli->cmds) {
+        if(argc) cli->output("Command Not Fit!");
+        else cf_cli_show_version(cli, 0, CF_NULL_PTR);
+        return CF_NOK;
+    } else if(!root->func) {
+        cli->output("Not fully matched!");
         return CF_NOK;
     } else {
-        return root->func(argc - i, argv + i);
+        return root->func(cli, argc - i, argv + i);
     }
 }
 
@@ -136,7 +152,7 @@ CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, const cf_char_t* cmd, cons
     cf_size_t pos = 0;
 
     cf_cli_cmd_t* root = cli->cmds;
-    if(!cli || !cmd || !func) return CF_EPARAM;
+    if(!cli || !cmd) return CF_EPARAM;
 
     while((name = get_cmd_name(cli->pool, cmd, &pos))) {
         c = find_cmd_in_child(root, name);
