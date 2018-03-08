@@ -56,6 +56,9 @@ cf_errno_t cf_thread_detach(cf_thread_t t) {
 cf_errno_t cf_thread_cancel(cf_thread_t t) {
 #ifdef CF_OS_WIN
     return TerminateThread(t, 0) ? CF_OK : CF_NOK;
+#elif defined CF_OS_ANDROID
+    /* NOT SUPPORTED! */
+    return CF_NOK;
 #else
     if(pthread_cancel(t) == 0) return CF_OK;
     else return CF_NOK;
