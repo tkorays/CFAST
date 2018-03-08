@@ -199,6 +199,7 @@ cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line
         log->wbuf[n] = '\n';
         log->wbuf[n+1] = '\0';
         fwrite(log->wbuf, cf_strlen(log->wbuf), 1, log->fp);
+        fflush(log->fp);
     }
 
     cf_mutex_unlock(&log->mutex);
