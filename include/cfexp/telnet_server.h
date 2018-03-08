@@ -9,13 +9,11 @@ CF_DECLS_BEGIN
 
 #define CF_TELNET_SERV_MAX_USER 5
 
-/**
- * Telnet server's attributes.
- */
 typedef struct {
-    cf_bool_t has_log;
-    cf_char_t logaddr[128];
-} cf_telnet_server_attr;
+    cf_socket_t sock;
+    cf_sockaddr_in_t addr;
+    cf_bool_t inuse;
+} cf_telnet_client_t;
 
 /**
  * Telnet server.
@@ -25,7 +23,9 @@ typedef struct {
     cf_char_t   host[16];   /** server ip address */
     cf_uint16_t port;       /** server port */
     cf_thread_t thr;        /** thread to process accept and read & write */
+    cf_telnet_client_t client[CF_TELNET_SERV_MAX_USER];
 } cf_telnet_server_t;
+
 
 CF_DECLARE(cf_errno_t) cf_telnet_server_create(
     cf_telnet_server_t* serv, 

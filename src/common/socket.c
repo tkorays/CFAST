@@ -155,14 +155,16 @@ cf_errno_t cf_sock_recv(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_ui
 
 cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_size_t *len, cf_uint_t flags,
                           cf_sockaddr_t* sa, cf_sock_len_t addrlen) {
-    *len = sendto(sock, buff, *len, flags, (struct sockaddr*)sa, addrlen);
-    if(*len > 0) return CF_OK;
-    else return CF_NOK;
+    cf_int_t rl = sendto(sock, buff, *len, flags, (struct sockaddr*)sa, addrlen);
+    if(rl <= 0) return CF_NOK;                         
+    *len = rl;
+    return CF_OK;
 }
 
 cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_size_t *len, cf_uint_t flags,
                             cf_sockaddr_t* from, cf_sock_len_t* fromlen) {
-    *len = recvfrom(sock, buff, *len, flags, (struct sockaddr*)from, fromlen);
-    if(*len > 0) return CF_OK;
-    else return CF_NOK;
+    cf_int_t rl = recvfrom(sock, buff, *len, flags, (struct sockaddr*)from, fromlen);    
+    if(rl <= 0) return CF_NOK;                         
+    *len = rl;
+    return CF_OK;
 }
