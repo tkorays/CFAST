@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 project(cfast C)
 
+option(USE_CFEXP_LIBTELNET_SERVER "use libtelnet server in cfexp"  ON)
+
 include_directories(./include)
 
 if(NOT CMAKE_INSTALL_PREFIX)
@@ -26,6 +28,13 @@ set(SRC_LIST src/common/list.c
     src/common/dbg.c
     src/common/select.c
     )
+
+if(USE_CFEXP_LIBTELNET_SERVER)
+    set(SRC_LIST ${SRC_LIST}   
+        src/cfexp/telnet_server.c
+        3rdparty/libtelnet/libtelnet.c)
+endif()
+
 if(WIN32)
 
 else()

@@ -1,0 +1,44 @@
+#ifndef __CFEXP_TELNET_SERVER_H__
+#define __CFEXP_TELNET_SERVER_H__
+
+#include <cf/types.h>
+#include <cf/socket.h>
+#include <cf/thread.h>
+
+CF_DECLS_BEGIN
+
+#define CF_TELNET_SERV_MAX_USER 5
+
+/**
+ * Telnet server's attributes.
+ */
+typedef struct {
+    cf_bool_t has_log;
+    cf_char_t logaddr[128];
+} cf_telnet_server_attr;
+
+/**
+ * Telnet server.
+ */
+typedef struct {
+    cf_socket_t sock;       /** server socket */
+    cf_char_t   host[16];   /** server ip address */
+    cf_uint16_t port;       /** server port */
+    cf_thread_t thr;        /** thread to process accept and read & write */
+} cf_telnet_server_t;
+
+CF_DECLARE(cf_errno_t) cf_telnet_server_create(
+    cf_telnet_server_t* serv, 
+    const cf_char_t* host, 
+    cf_uint16_t port
+);
+
+CF_DECLARE(cf_errno_t) cf_telnet_server_destroy(
+    cf_telnet_server_t* serv
+);
+
+
+
+CF_DECLS_END
+
+#endif /* __CFEXP_TELNET_SERVER_H__ */
