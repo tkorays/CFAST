@@ -4,6 +4,7 @@
 #include <cf/str.h>
 #include <cf/select.h>
 #include <cf/memory.h>
+#include <stdarg.h>
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -32,9 +33,10 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
     cf_socket_t nsock;
     cf_sockaddr_in_t addr;
     cf_sock_len_t len = sizeof(addr);
-    cf_uint_t i;
+    cf_uint_t i, j;
     cf_char_t buff[1024] = {0};
     cf_size_t bsize;
+    cf_cliarg_t cliarg;
 
     if(!serv || !serv->sock) return CF_THREAD_RET(CF_NOK);
     cf_thread_detach(cf_thread_self());
@@ -78,9 +80,13 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
             if(serv->client[i].inuse) {
                 bsize = 1024;
                 if(CF_OK == cf_sock_recv(serv->client[i].sock, buff, &bsize, 0)) {
+                    j = 0;
+                    while(buff[j] && buff[j] != '\n' && buff[j] != '\r') ++j;
+                    buff[j] = '\0';
                     printf("recv: %s\n", buff);
-                    bsize = 16;
-                    cf_sock_send(serv->client[i].sock, "recv your word\n", &bsize, 0);
+                    cf_cli_parse_arg(buff, &cliarg);
+                    cf_cli_input(&serv->cli, &serv->client[i].sock, cliarg.argc, cliarg.argv);
+                    cf_cli_destroy_arg(&cliarg);
                 }
             }
         }
@@ -90,6 +96,23 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
     return CF_THREAD_RET(0);
 }
 
+cf_void_t _cli_sock_send(cf_void_t* p, const cf_char_t* s, ...) {
+    cf_socket_t sock = *(cf_socket_t*)p;cf_char_t buf[1024];
+    va_list args;
+    cf_size_t len;
+
+    if(!p) return ;
+
+    va_start(args, s);
+    vsprintf(buf, s, args);
+    va_end(args);
+    len = cf_strlen(buf);
+    cf_sock_send(sock, buf, &len, 0);
+
+    len = 5;
+    cf_sock_send(sock, "\r\n$ ", &len, 0);
+}
+
 CF_DECLARE(cf_errno_t) cf_telnet_server_create(
     cf_telnet_server_t* serv, 
     const cf_char_t* host, 
@@ -97,9 +120,16 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_create(
 ) {
     cf_sockaddr_in_t servaddr;
     cf_thread_attr_t attr;
+    cf_cli_cfg_t clicfg;
     if(!serv || !host || !port) return CF_NOK;
 
     cf_memset_s(serv, sizeof(cf_telnet_server_t), 0, sizeof(cf_telnet_server_t));
+
+    cf_cli_cfg_default(&clicfg);
+    clicfg.output = _cli_sock_send; // 设置服务器通过socket输出到客户端
+    if(CF_OK != cf_cli_init(&serv->cli, &clicfg)) {
+        return CF_NOK;
+    }
 
     /* 服务器端socket创建 */
     if(CF_OK != cf_sock_create(&serv->sock, CF_SOCK_AF_INET, CF_SOCK_STREAM, CF_SOCK_PROTO_AUTO)) {

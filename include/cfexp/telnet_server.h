@@ -4,6 +4,7 @@
 #include <cf/types.h>
 #include <cf/socket.h>
 #include <cf/thread.h>
+#include <cf/cli.h>
 
 CF_DECLS_BEGIN
 
@@ -24,6 +25,7 @@ typedef struct {
     cf_uint16_t port;       /** server port */
     cf_thread_t thr;        /** thread to process accept and read & write */
     cf_telnet_client_t client[CF_TELNET_SERV_MAX_USER];
+    cf_cli_t    cli;
 } cf_telnet_server_t;
 
 
