@@ -111,7 +111,6 @@ cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_
 cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags, cf_sockaddr_t* from, cf_sock_len_t* fromlen);
 
 cf_errno_t cf_sock_set_nonblock(cf_socket_t sock, cf_bool_t nonblock);
-cf_bool_t cf_sock_is_block(cf_socket_t sock);
 
 CF_DECLS_END
 
