@@ -10,7 +10,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <unistd.h> /* POSIX's ioctl */
+#include <sys/ioctl.h> /* BSD's ioctl, e.g. Mac OSX */
+#include <fcntl.h>
 #endif
 
 const cf_int_t CF_SOCK_AF_UNSPEC = AF_UNSPEC;
@@ -38,6 +40,7 @@ const cf_int_t CF_SOCK_SHUTDOWN_SEND = SHUT_WR;
 const cf_int_t CF_SOCK_SHUTDOWN_RECV = SHUT_RD;
 const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SHUT_RDWR;
 #endif
+
 
 cf_uint16_t cf_sock_ntohs(uint16_t n) {
     return CF_SWAP16(n);
@@ -167,4 +170,24 @@ cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_size_t *len, c
     if(rl <= 0) return CF_NOK;                         
     *len = rl;
     return CF_OK;
+}
+
+cf_errno_t cf_sock_set_nonblock(cf_socket_t sock, cf_bool_t nonblock) {
+    cf_int_t flags;
+	flags = fcntl(sock, F_GETFL, 0);
+	if (flags < 0) {
+		return CF_NOK;
+	}
+    if(nonblock) flags |= O_NONBLOCK;
+    else flags &= ~O_NONBLOCK;
+	if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0) {
+		return CF_NOK;
+	}
+    return CF_OK;
+}
+
+cf_bool_t cf_sock_is_block(cf_socket_t sock) {
+    cf_int_t flags;
+	flags = fcntl(sock, F_GETFL, 0);
+    return (flags | O_NONBLOCK) ? CF_TRUE : CF_FALSE;
 }

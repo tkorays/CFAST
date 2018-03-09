@@ -8,18 +8,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-//函数：设置sock为non-blocking mode
-void setSockNonBlock(int sock) {
-	int flags;
-	flags = fcntl(sock, F_GETFL, 0);
-	if (flags < 0) {
-		return;
-	}
-	if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0) {
-		return ;
-	}
-}
-
 static cf_bool_t _add_client(cf_telnet_server_t* serv, 
 cf_socket_t sock,
 cf_sockaddr_in_t* addr) {
@@ -81,7 +69,7 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
                     cf_sock_close(nsock);
                 } else {
                     printf("add connection.\n");
-                    setSockNonBlock(nsock);
+                    cf_sock_set_nonblock(nsock, CF_TRUE);
                 }
             }
         }
@@ -117,7 +105,7 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_create(
     if(CF_OK != cf_sock_create(&serv->sock, CF_SOCK_AF_INET, CF_SOCK_STREAM, CF_SOCK_PROTO_AUTO)) {
         return CF_NOK;
     }
-    setSockNonBlock(serv->sock);
+    cf_sock_set_nonblock(serv->sock, CF_TRUE);
     cf_memset_s(&servaddr, sizeof(cf_sockaddr_in_t), 0, sizeof(cf_sockaddr_in_t));
     servaddr.sin_family = CF_SOCK_AF_INET;
     cf_sock_pton(CF_SOCK_AF_INET, host, &servaddr.sin_addr);
