@@ -80,13 +80,13 @@ static cf_errno_t cf_cli_help(const cf_cli_t* cli, cf_void_t* sess, cf_size_t ar
     for(i = 0; i < argc; i++) {
         c = find_cmd_in_child(root, argv[i]);
         if(c == CF_NULL_PTR) break;
-        else cli->output("%s ", argv[i]);
+        else cli->output(sess, "%s ", argv[i]);
         root = c;
     }
     cli->output(sess, "\nhelp: \n");
     c = root->child;
     while(c) {
-        cli->output("    %-10s%s\n", c->name, (c->desc ? c->desc : "No informations"));
+        cli->output(sess, "    %-10s%s\n", c->name, (c->desc ? c->desc : "No informations"));
         c = c->next;
     }
 

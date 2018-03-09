@@ -9,6 +9,11 @@
 #include <stdio.h>
 #include <fcntl.h>
 
+typedef struct {
+    cf_telnet_server_t* serv;
+    cf_int_t idx;
+} cli_session_t;
+
 static cf_bool_t _add_client(cf_telnet_server_t* serv, 
 cf_socket_t sock,
 cf_sockaddr_in_t* addr) {
@@ -37,6 +42,7 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
     cf_char_t buff[1024] = {0};
     cf_size_t bsize;
     cf_cliarg_t cliarg;
+    cli_session_t sess;
 
     if(!serv || !serv->sock) return CF_THREAD_RET(CF_NOK);
     cf_thread_detach(cf_thread_self());
@@ -60,14 +66,14 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
         if(status != CF_OK) {
             continue;
         }
-        printf("select ok\n");
+        //printf("select ok\n");
 
         // server的socket表示是连接请求
         if(cf_fd_isset(serv->sock, &rfd)) {
             if(CF_OK == cf_sock_accept(serv->sock, &nsock, (cf_sockaddr_t*)&addr, &len)) {
                 // 将新的socket加入socket集合
                 if(!_add_client(serv, nsock, &addr)) {
-                    printf("connetion is up to 5.\n");
+                    //printf("connetion is up to 5.\n");
                     cf_sock_close(nsock);
                 } else {
                     printf("add connection.\n");
@@ -83,10 +89,15 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
                     j = 0;
                     while(buff[j] && buff[j] != '\n' && buff[j] != '\r') ++j;
                     buff[j] = '\0';
-                    printf("recv: %s\n", buff);
+                    //printf("recv: %s\n", buff);
                     cf_cli_parse_arg(buff, &cliarg);
-                    cf_cli_input(&serv->cli, &serv->client[i].sock, cliarg.argc, cliarg.argv);
+                    sess.serv = serv;
+                    sess.idx = i;
+                    cf_cli_input(&serv->cli, &sess, cliarg.argc, cliarg.argv);
                     cf_cli_destroy_arg(&cliarg);
+
+                    bsize = 5;
+                    cf_sock_send(serv->client[i].sock, "\r\n$ ", &bsize, 0);
                 }
             }
         }
@@ -97,22 +108,33 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
 }
 
 cf_void_t _cli_sock_send(cf_void_t* p, const cf_char_t* s, ...) {
-    cf_socket_t sock = *(cf_socket_t*)p;cf_char_t buf[1024];
+    cli_session_t *sess = (cli_session_t*)p;
+    cf_socket_t sock = 0;
+    cf_char_t buf[1024] = {0};
     va_list args;
     cf_size_t len;
 
     if(!p) return ;
+    sock = sess->serv->client[sess->idx].sock;
+    if(!sock) return ;
 
     va_start(args, s);
     vsprintf(buf, s, args);
     va_end(args);
-    len = cf_strlen(buf);
+    len = cf_strlen(buf) + 1;
     cf_sock_send(sock, buf, &len, 0);
-
-    len = 5;
-    cf_sock_send(sock, "\r\n$ ", &len, 0);
 }
 
+CF_CLI_CMD_FUNC(cli_quit_func, cli, sess, argc, argv) {
+    cli_session_t *s = (cli_session_t*)sess;
+    cf_socket_t sock = s->serv->client[s->idx].sock;
+    int i;
+    if(!cli || !sess) return CF_NOK;
+    cf_sock_shutdown(sock, CF_SOCK_SHUTDOWN_BOTH);
+    s->serv->client[s->idx].sock = 0;
+    s->serv->client[s->idx].inuse = CF_FALSE;
+    return CF_OK;
+}
 CF_DECLARE(cf_errno_t) cf_telnet_server_create(
     cf_telnet_server_t* serv, 
     const cf_char_t* host, 
@@ -130,6 +152,7 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_create(
     if(CF_OK != cf_cli_init(&serv->cli, &clicfg)) {
         return CF_NOK;
     }
+    cf_cli_register(&serv->cli, "quit", "quit the program", cli_quit_func);
 
     /* 服务器端socket创建 */
     if(CF_OK != cf_sock_create(&serv->sock, CF_SOCK_AF_INET, CF_SOCK_STREAM, CF_SOCK_PROTO_AUTO)) {

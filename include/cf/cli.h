@@ -27,6 +27,8 @@ CF_DECLS_BEGIN
 #define CF_CLI_MAX_BUFF 1024
 #define CF_CLI_MAX_ARG  32
 #define CF_CLI_VERSION_INFO "CFAST CLI v1.0, Author(tkorays), All right reserved!\n"
+#define CF_CLI_CMD_FUNC(name, cli, sess, argc, argv) cf_errno_t\
+    name(const cf_cli_t* cli, cf_void_t* sess, cf_size_t argc, cf_char_t* argv[])
 
 typedef struct cf_mpool cf_mpool_t;
 typedef struct cf_cli cf_cli_t;
