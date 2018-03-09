@@ -175,7 +175,7 @@ cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_size_t *len, c
 cf_errno_t cf_sock_set_nonblock(cf_socket_t sock, cf_bool_t nonblock) {
 #ifdef CF_OS_WIN
     unsigned long mode = (nonblock ? 1 : 0);
-    return ioctlsocket(s,FIONBIO,&mode) == 0 ? CF_OK : CF_NOK;
+    return ioctlsocket(sock, FIONBIO,&mode) == 0 ? CF_OK : CF_NOK;
 #else
     cf_int_t flags;
 	flags = fcntl(sock, F_GETFL, 0);
@@ -188,16 +188,5 @@ cf_errno_t cf_sock_set_nonblock(cf_socket_t sock, cf_bool_t nonblock) {
 		return CF_NOK;
 	}
     return CF_OK;
-#endif
-}
-
-cf_bool_t cf_sock_is_block(cf_socket_t sock) {
-#ifdef CF_OS_WIN
-    // TODO: 
-    return CF_TRUE;
-#else
-    cf_int_t flags;
-	flags = fcntl(sock, F_GETFL, 0);
-    return (flags | O_NONBLOCK) ? CF_TRUE : CF_FALSE;
 #endif
 }

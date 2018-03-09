@@ -24,7 +24,7 @@ typedef pthread_attr_t cf_thread_attr_t;
 typedef cf_void_t*(*cf_thread_proc_t)(cf_void_t*);
 #endif
 
-cf_errno_t cf_thread_create(cf_thread_t* t, const cf_thread_attr_t* attr,
+cf_errno_t cf_thread_create(cf_thread_t* t, cf_thread_attr_t* attr,
     cf_thread_proc_t proc, cf_void_t* arg);
 cf_void_t cf_thread_exit(cf_uint32_t code);
 cf_errno_t cf_thread_join(cf_thread_t t, cf_uint32_t* retval);

@@ -6,7 +6,7 @@
 #include <unistd.h>
 #endif
 
-cf_errno_t cf_thread_create(cf_thread_t* t, const cf_thread_attr_t* attr,
+cf_errno_t cf_thread_create(cf_thread_t* t, cf_thread_attr_t* attr,
                             cf_thread_proc_t proc, cf_void_t* arg) {
 #ifdef CF_OS_WIN
     cf_uint32_t tid = 0;
