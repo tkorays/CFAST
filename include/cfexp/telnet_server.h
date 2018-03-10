@@ -20,6 +20,7 @@ typedef struct {
  * Telnet server.
  */
 typedef struct {
+    cf_bool_t   stop;       /** stop the server */
     cf_socket_t sock;       /** server socket */
     cf_char_t   host[16];   /** server ip address */
     cf_uint16_t port;       /** server port */

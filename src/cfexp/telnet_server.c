@@ -7,7 +7,6 @@
 #include <stdarg.h>
 
 #include <stdio.h>
-#include <fcntl.h>
 
 typedef struct {
     cf_telnet_server_t* serv;
@@ -51,7 +50,7 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
     cf_fd_zero(&rfd);
     cf_fd_set(serv->sock, &rfd);
 
-    for(;;) {
+    while(!serv->stop) {
         cf_fd_zero(&rfd);
         cf_fd_set(serv->sock, &rfd);
         maxfd = CF_MAX2(maxfd, serv->sock);
@@ -76,7 +75,7 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
                     //printf("connetion is up to 5.\n");
                     cf_sock_close(nsock);
                 } else {
-                    printf("add connection.\n");
+                    //printf("add connection.\n");
                     cf_sock_set_nonblock(nsock, CF_TRUE);
                 }
             }
@@ -103,7 +102,8 @@ CF_THREAD_DEF_PROC(telnet_proc_func, arg) {
         }
 
     }
-    
+
+    cf_sock_shutdown(serv->sock, CF_SOCK_SHUTDOWN_BOTH);
     return CF_THREAD_RET(0);
 }
 
@@ -172,11 +172,21 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_create(
         return CF_NOK;
     }
 
+    serv->stop = CF_FALSE;
     /* 新建一个线程处理连接和输入输出任务 */
     cf_thread_attr_init(&attr);
     if(CF_OK != cf_thread_create(&serv->thr, &attr, telnet_proc_func, serv)) {
         cf_sock_close(serv->sock);
     }
 
+    return CF_OK;
+}
+
+CF_DECLARE(cf_errno_t) cf_telnet_server_destroy(
+    cf_telnet_server_t* serv
+) {
+    if(serv) {
+        serv->stop = CF_TRUE;
+    }
     return CF_OK;
 }
