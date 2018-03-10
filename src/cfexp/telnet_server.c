@@ -190,3 +190,13 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_destroy(
     }
     return CF_OK;
 }
+
+CF_DECLARE(cf_void_t) cf_telnet_server_register_cmd(
+    cf_telnet_server_t* serv,
+    const cf_char_t* cmd,
+    const cf_char_t* desc,
+    cf_errno_t(*func)(const cf_cli_t* cli, cf_void_t* sess, cf_size_t argc, cf_char_t* argv[])
+) {
+    if(!serv || !cmd || !desc) return ;
+    cf_cli_register(&serv->cli, cmd, desc, func);
+}
