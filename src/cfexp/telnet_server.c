@@ -8,8 +8,6 @@
 
 #include <stdio.h>
 
-#define TELNET_DEBUG(s, ...) printf(s, __VA_ARGS__)
-
 typedef struct {
     cf_telnet_server_t* serv;
     cf_int_t idx;
@@ -160,7 +158,6 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_create(
 
     /* 服务器端socket创建 */
     if(CF_OK != cf_sock_create(&serv->sock, CF_SOCK_AF_INET, CF_SOCK_STREAM, CF_SOCK_PROTO_AUTO)) {
-        TELNET_DEBUG("Fail to create socket\n");
         return CF_NOK;
     }
     cf_sock_set_nonblock(serv->sock, CF_TRUE);
@@ -169,13 +166,11 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_create(
     cf_sock_pton(CF_SOCK_AF_INET, host, &servaddr.sin_addr);
     servaddr.sin_port = cf_sock_htons(port);
     if(CF_OK != cf_sock_bind(serv->sock, (cf_sockaddr_t*)(&servaddr), sizeof(servaddr))) {
-        TELNET_DEBUG("Fail to bind socket, %u\n", servaddr.sin_addr.S_addr);
         return CF_NOK;
     }
     cf_strcpy_s(serv->host, sizeof(serv->host), host);
     serv->port = port;
     if(CF_OK != cf_sock_listen(serv->sock, CF_TELNET_SERV_MAX_USER)) {
-        TELNET_DEBUG("Fail to listen socket\n");
         return CF_NOK;
     }
 
@@ -183,7 +178,6 @@ CF_DECLARE(cf_errno_t) cf_telnet_server_create(
     /* 新建一个线程处理连接和输入输出任务 */
     cf_thread_attr_init(&attr);
     if(CF_OK != cf_thread_create(&serv->thr, &attr, telnet_proc_func, serv)) {
-        TELNET_DEBUG("Fail to create thread for socket\n");
         cf_sock_close(serv->sock);
     }
 
