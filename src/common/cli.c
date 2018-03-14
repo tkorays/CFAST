@@ -180,13 +180,14 @@ CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, const cf_char_t* cmd, cons
         c = find_cmd_in_child(root, name);
         if(c == CF_NULL_PTR) {
             // 子节点中没有找到，则新建一个cmd
-            c = add_child_node(cli, root, name, desc);
+            c = add_child_node(cli, root, name, "");
         }
         root = c;
     }
 
     if(root) {
         root->func = func;
+        root->desc = desc;
     }
     return CF_OK;
 }
