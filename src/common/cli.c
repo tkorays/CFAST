@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+#define CLI_GROUP_CMD_DESC "<GROUP>No descriptions."
+
 static cf_cli_cmd_t* find_cmd_in_child(cf_cli_cmd_t* cmd, cf_char_t* name) {
     cf_cli_cmd_t* c = cmd->child;
     // 内部函数，不检查参数
@@ -180,7 +182,7 @@ CF_DECLARE(cf_errno_t) cf_cli_register(cf_cli_t* cli, const cf_char_t* cmd, cons
         c = find_cmd_in_child(root, name);
         if(c == CF_NULL_PTR) {
             // 子节点中没有找到，则新建一个cmd
-            c = add_child_node(cli, root, name, "");
+            c = add_child_node(cli, root, name, CLI_GROUP_CMD_DESC);
         }
         root = c;
     }
