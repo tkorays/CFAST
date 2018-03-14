@@ -1,5 +1,5 @@
-#include <cfast/cf_log_if.h>
-#include <cfast/cf_mpool_if.h>
+#include <cf/log.h>
+#include <cf/mpool.h>
 #include <stdio.h>
 
 cf_log_t* glog = CF_NULL_PTR;
@@ -11,8 +11,8 @@ cf_log_t* glog = CF_NULL_PTR;
 #define CF_LOG_MPOOL()              CF_LOG_POOL_STAT(glog)
 
 int main() {
-    cf_log_t* log = cf_log_create("abc.log");
-    
+    //cf_log_t* log = cf_log_create("abc.log");
+    cf_log_t* log = cf_log_create_on_file(stdout);
 
     glog = log;
 

@@ -63,26 +63,32 @@ static const cf_char_t* _cf_log_get_level_name(cf_log_level_t level) {
     return _unknown_level_name;
 }
 
-
-cf_log_t*   cf_log_create(const cf_char_t* filename) {
+cf_log_t*   cf_log_create_on_file(FILE* f) {
     struct cf_log_s* log = CF_NULL_PTR;
-    FILE *fp = CF_NULL_PTR;
-    if(!filename || cf_strlen(filename) == 0) return CF_NULL_PTR;
-
-    fp = fopen(filename, "a+");
-    if(!fp) return CF_NULL_PTR;
+    if(!f) return CF_NULL_PTR;
 
     log = cf_malloc(sizeof(struct cf_log_s));
     if(!log) return CF_NULL_PTR;
 
     (cf_void_t)cf_mutex_init(&log->mutex, CF_NULL_PTR);
     
-    log->fp = fp;
+    log->fp = f;
     log->level = CF_LOG_LEVEL_DEBUG;
     log->cache_size = 0;
     log->cache_logs = CF_NULL_PTR;
     log->pool = CF_NULL_PTR;
     return (cf_log_t*)log;
+}
+
+
+cf_log_t*   cf_log_create(const cf_char_t* filename) {
+    FILE *fp = CF_NULL_PTR;
+    if(!filename || cf_strlen(filename) == 0) return CF_NULL_PTR;
+
+    fp = fopen(filename, "a+");
+    if(!fp) return CF_NULL_PTR;
+
+    return cf_log_create_on_file(fp);
 }
 
 cf_void_t cf_log_destroy(cf_log_t* log) {
@@ -94,7 +100,7 @@ cf_void_t cf_log_destroy(cf_log_t* log) {
     if(log->pool) cf_mpool_destroy(log->pool);
     cf_mutex_unlock(&log->mutex);
     (cf_void_t)cf_mutex_destroy(&log->mutex);
-    fclose(log->fp);
+    if(log->fp != CF_LOG_STDOUT && log->fp != CF_LOG_STDERR) fclose(log->fp);
     cf_free(log);
 }
 

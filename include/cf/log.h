@@ -12,8 +12,12 @@
 #define __CF_LOG_H__
 
 #include <cf/types.h>
+#include <stdio.h>
 
 CF_DECLS_BEGIN
+
+#define CF_LOG_STDOUT stdout
+#define CF_LOG_STDERR stderr
 
 /**
  * Log level.
@@ -46,6 +50,12 @@ typedef struct cf_log_s cf_log_t;
 #define CF_LOG_FATAL(fmtstr, ...)   CF_LOG(glog, CF_LOG_LEVEL_FATAL, fmtstr, __VA_ARGS__)
 */
 
+/**
+ * Create a log instance.
+ * @param file          File instance.
+ * @return              Log handle.
+ */
+cf_log_t*   cf_log_create_on_file(FILE* f);
 
 /**
  * Create a log instance.
