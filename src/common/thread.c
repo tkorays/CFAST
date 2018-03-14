@@ -10,7 +10,7 @@ cf_errno_t cf_thread_create(cf_thread_t* t, cf_thread_attr_t* attr,
                             cf_thread_proc_t proc, cf_void_t* arg) {
 #ifdef CF_OS_WIN
     cf_uint32_t tid = 0;
-    *t = CreateThread(attr, 0, (LPTHREAD_START_ROUTINE)proc, arg, 0, &tid);
+    *t = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)proc, arg, 0, &tid);
     if (*t == NULL) return CF_NOK;
     else return CF_OK;
 #else
