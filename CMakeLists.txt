@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 
 project(cfast C)
 
-option(USE_CFEXP_LIBTELNET_SERVER "use libtelnet server in cfexp"  ON)
+option(USE_CFEXP_LIBTELNET_SERVER "use libtelnet server in cfexp"  OFF)
 
 include_directories(./include)
 
