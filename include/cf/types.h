@@ -3,7 +3,7 @@
 * All rights reserved.
 *
 * @file    types.h
-* @brief   CFAST基础的定义
+* @brief   CFAST types.
 * @version 1.0
 * @author  tkorays<tkorays@hotmail.com>
 * @date    2018-1-3
@@ -53,15 +53,15 @@ typedef __int64         cf_uint64_t;
 typedef long long       cf_int64_t;
 typedef unsigned long long cf_uint64_t;
 #endif
-typedef void            cf_void_t;      /** void* */
-typedef unsigned int    cf_id_t;        /** 用于表示id */
-typedef void*           cf_handle_t;    /** 用于表示句柄 */
-typedef size_t          cf_size_t;      /** 用于表示大小 */
-typedef unsigned int    cf_bool_t;      /** bool型变量 */
+typedef void            cf_void_t;
+typedef unsigned int    cf_id_t;        
+typedef void*           cf_handle_t; 
+typedef size_t          cf_size_t;
+typedef unsigned int    cf_bool_t;
 #if CF_WORDSIZE == 32
 typedef int             cf_uintptr_t;
 #else
-typedef cf_int64_t      cf_uintptr_t;   /** 指针 */
+typedef cf_int64_t      cf_uintptr_t; 
 #endif
 typedef int             cf_errno_t;     /** errno */
 
