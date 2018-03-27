@@ -6,6 +6,7 @@
 #include <cf/err.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <time.h>
 
 /*
 F	 B
@@ -18,10 +19,17 @@ F	 B
 36      46      靛藍
 37      47      白 
 */
-#define CF_LOG_COMMON_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\n"
-#define CF_LOG_CLR_I_FORMAT "\e[32;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
-#define CF_LOG_CLR_E_FORMAT "\e[31;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
-#define CF_LOG_CLR_W_FORMAT "\e[33;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
+#ifdef CF_OS_WIN
+#   define CF_LOG_COMMON_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\n"
+#   define CF_LOG_CLR_I_FORMAT CF_LOG_COMMON_FORMAT
+#   define CF_LOG_CLR_E_FORMAT CF_LOG_COMMON_FORMAT
+#   define CF_LOG_CLR_W_FORMAT CF_LOG_COMMON_FORMAT
+#else
+#   define CF_LOG_COMMON_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\n"
+#   define CF_LOG_CLR_I_FORMAT "\e[32;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
+#   define CF_LOG_CLR_E_FORMAT "\e[31;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
+#   define CF_LOG_CLR_W_FORMAT "\e[33;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
+#endif
 
 typedef struct {
     cf_int_t    level;

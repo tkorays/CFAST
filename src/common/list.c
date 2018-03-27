@@ -1,4 +1,4 @@
-﻿#include <cf/types.h>
+#include <cf/types.h>
 #include <cf/list.h>
 #include <cf/memory.h>
 #include <cf/err.h>

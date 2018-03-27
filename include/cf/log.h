@@ -20,7 +20,12 @@ CF_DECLS_BEGIN
 #define CF_LOG_MAX_BUFF_SIZE 1024
 #define CF_LOG_FILE_DEF_SIZE 1 /* 1M */
 #define CF_LOG_FILE_DEF_NUM  3
-#define CF_LOG(log, level, fmt, ...)  cf_log_output(log, __FILE__, __LINE__, __FUNCTION__, level, fmt, ##__VA_ARGS__)
+#if (defined _MSC_VER) && (_MSC_VER < 1300)
+/* vc 6 */
+#define define CF_LOG(log, level, fmt, ...)
+#else
+#   define CF_LOG(log, level, fmt, ...)  cf_log_output(log, __FILE__, __LINE__, __FUNCTION__, level, fmt, ##__VA_ARGS__)
+#endif
 
 /**
  * Log level

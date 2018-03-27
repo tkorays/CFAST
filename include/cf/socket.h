@@ -79,15 +79,15 @@ typedef struct {
     cf_uint16_t sin6_port;     /* port number */
     cf_uint32_t sin6_flowinfo; /* IPv6 flow information */
     cf_in6_addr_t sin6_addr;     /* IPv6 address */
-    uint32_t        sin6_scope_id; /* Scope ID (new in 2.4) */
+    cf_uint32_t sin6_scope_id; /* Scope ID (new in 2.4) */
 } cf_sockaddr_in6_t;
 
 typedef cf_int_t  cf_socket_t;
 typedef cf_uint_t cf_sock_len_t;
 
-cf_uint16_t cf_sock_ntohs(uint16_t n);
-cf_uint16_t cf_sock_htons(uint16_t n);
-cf_uint32_t cf_sock_ntohl(uint32_t n);
+cf_uint16_t cf_sock_ntohs(cf_uint16_t n);
+cf_uint16_t cf_sock_htons(cf_uint16_t n);
+cf_uint32_t cf_sock_ntohl(cf_uint32_t n);
 cf_uint32_t cf_sock_htonl(cf_uint32_t n);
 cf_char_t* cf_sock_inet_ntoa(cf_in_addr_t in);
 cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_in_addr_t* addr);

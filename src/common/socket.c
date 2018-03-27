@@ -42,15 +42,15 @@ const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SHUT_RDWR;
 #endif
 
 
-cf_uint16_t cf_sock_ntohs(uint16_t n) {
+cf_uint16_t cf_sock_ntohs(cf_uint16_t n) {
     return CF_SWAP16(n);
 }
 
-cf_uint16_t cf_sock_htons(uint16_t n) {
+cf_uint16_t cf_sock_htons(cf_uint16_t n) {
     return CF_SWAP16(n);
 }
 
-cf_uint32_t cf_sock_ntohl(uint32_t n) {
+cf_uint32_t cf_sock_ntohl(cf_uint32_t n) {
     return CF_SWAP32(n);
 }
 

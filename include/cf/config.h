@@ -61,6 +61,18 @@
 #   define CF_DECLARE_C(type) type
 #endif
 
+#define CF_WORDSIZE 32
+/* gcc */
+#if (defined __WORDSIZE) && (__WORDSIZE == 64)
+#    undef CF_WORDSIZE
+#    define CF_WORDSIZE 64
+#endif
+#if (defined __LP64__) || (defined __x86_64__) || (defined __amd64) || (defined __WIN64)
+#    undef CF_WORDSIZE
+#    define CF_WORDSIZE 64
+#endif
+
+
 #ifndef CF_DEBUG
 #  ifndef NDEBUG
 #    define CF_DEBUG 1

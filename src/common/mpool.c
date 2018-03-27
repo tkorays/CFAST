@@ -1,4 +1,4 @@
-﻿#include <cf/mpool.h>
+#include <cf/mpool.h>
 #include <cf/memory.h>
 
 #define CF_ALIGN_SIZE 4

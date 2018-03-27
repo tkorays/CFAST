@@ -11,7 +11,6 @@
 #ifndef __CF_TYPES_H__
 #define __CF_TYPES_H__
 
-#include <stdint.h>
 #include <stddef.h>
 #include <cf/config.h>
 
@@ -45,17 +44,26 @@ typedef char            cf_int8_t;
 typedef unsigned char   cf_uint8_t;
 typedef short           cf_int16_t;
 typedef unsigned short  cf_uint16_t;
-typedef int32_t         cf_int32_t;
-typedef uint32_t        cf_uint32_t;
-typedef int64_t         cf_int64_t;
-typedef uint64_t        cf_uint64_t;
+typedef int             cf_int32_t;
+typedef unsigned int    cf_uint32_t;
+#if (defined _MSC_VER) && (_MSC_VER < 1300)
+typedef __int64         cf_int64_t;
+typedef __int64         cf_uint64_t;
+#else
+typedef long long       cf_int64_t;
+typedef unsigned long long cf_uint64_t;
+#endif
 typedef void            cf_void_t;      /** void* */
-typedef uint32_t        cf_id_t;        /** 用于表示id */
+typedef unsigned int    cf_id_t;        /** 用于表示id */
 typedef void*           cf_handle_t;    /** 用于表示句柄 */
 typedef size_t          cf_size_t;      /** 用于表示大小 */
-typedef uint32_t        cf_bool_t;      /** bool型变量 */
-typedef uintptr_t       cf_uintptr_t;   /** 指针 */
-typedef int32_t         cf_errno_t;     /** errno */
+typedef unsigned int    cf_bool_t;      /** bool型变量 */
+#if CF_WORDSIZE == 32
+typedef int             cf_uintptr_t;
+#else
+typedef cf_int64_t      cf_uintptr_t;   /** 指针 */
+#endif
+typedef int             cf_errno_t;     /** errno */
 
 
 #endif /* __CF_TYPES_H__ */
