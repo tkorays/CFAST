@@ -78,8 +78,8 @@ cf_char_t* cf_strrchr(const cf_char_t* s, cf_char_t c) {
 cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format, ...) {
     va_list args;
     int ret;
-#ifdef CF_OS_WIN32
-#define snprintf _snprintf
+#ifdef CF_OS_WIN
+#define vsnprintf _vsnprintf
 #endif
     va_start(args, format);
     ret = vsnprintf(dst, dstsize, format, args);
