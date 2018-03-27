@@ -1,58 +1,40 @@
-﻿#include <cf/log.h>
-#include <cf/str.h>
+#include <cf/log.h>
+#include <cf/types.h>
 #include <cf/memory.h>
 #include <cf/thread.h>
-#include <cf/mpool.h>
-#include <cf/list.h>
+#include <cf/str.h>
 #include <cf/err.h>
-#include <cf/mutex.h>
-#include <stdio.h>
 #include <stdarg.h>
-#include <time.h>
+#include <stdio.h>
 
-
-#define CFAST_LOG_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s]"
-
-/**
- * 单个log日志记录
- */
-typedef struct cf_log_item_s {
-    time_t          ts;
-    cf_uint_t       pid;
-    cf_uint_t       tid;
-    cf_char_t*      filename;
-    cf_uint_t       line;
-    cf_char_t*      funcname;
-    cf_log_level_t  level;
-    cf_char_t*      logstr;
-} cf_log_item_t;
-
-typedef struct cf_log_s {
-    cf_char_t       filename[256];
-    FILE            *fp;
-    cf_mutex_t      mutex;
-    cf_char_t       wbuf[1024];
-    cf_log_level_t  level;
-
-    cf_mpool_t      *pool;      /* 缓存周期内使用一个内存池申请内存 */
-    cf_size_t       cache_count;  /* 缓存计数 */
-    cf_size_t       cache_size;
-    cf_log_item_t   *cache_logs;      /* 历史日志使用链表链接 */
-} cf_log_t;
-
+/*
+F	 B
+30      40      黑
+31      41      紅
+32      42      綠
+33      43      黃
+34      44      藍
+35      45      紫紅
+36      46      靛藍
+37      47      白 
+*/
+#define CF_LOG_COMMON_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\n"
+#define CF_LOG_CLR_I_FORMAT "\e[32;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
+#define CF_LOG_CLR_E_FORMAT "\e[31;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
+#define CF_LOG_CLR_W_FORMAT "\e[33;1m[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\e[0m\n"
 
 typedef struct {
     cf_int_t    level;
     cf_char_t*  name;
 } cf_log_level_info_t;
 
-static cf_char_t* _unknown_level_name = "UNKNOWN";
+static cf_char_t* _unknown_level_name = "U";
 static cf_log_level_info_t _log_info[] = {
-    {CF_LOG_LEVEL_DEBUG, "DEBUG"},
-    {CF_LOG_LEVEL_INFO, "INFO"},
-    {CF_LOG_LEVEL_WARNING, "WARN"},
-    {CF_LOG_LEVEL_ERROR, "ERROR"},
-    {CF_LOG_LEVEL_FATAL, "FATAL"}
+    {CF_LOG_LEVEL_DEBUG, "D"},
+    {CF_LOG_LEVEL_INFO, "I"},
+    {CF_LOG_LEVEL_WARNING, "W"},
+    {CF_LOG_LEVEL_ERROR, "E"},
+    {CF_LOG_LEVEL_FATAL, "F"}
 };
 
 static const cf_char_t* _cf_log_get_level_name(cf_log_level_t level) {
@@ -63,198 +45,152 @@ static const cf_char_t* _cf_log_get_level_name(cf_log_level_t level) {
     return _unknown_level_name;
 }
 
-cf_log_t*   cf_log_create_on_file(FILE* f) {
-    struct cf_log_s* log = CF_NULL_PTR;
-    if(!f) return CF_NULL_PTR;
+static cf_void_t _general_output_func(struct cf_log_writer_s* log, 
+                                const cf_char_t* fn, 
+                                cf_int_t line, 
+                                const cf_char_t* func,
+                                cf_log_level_t level,
+                                const cf_char_t* buf) {
+    cf_char_t ts[32] = {0};
+    time_t t = time(CF_NULL_PTR);
+    cf_char_t* pt = ctime(&t);
+    const cf_char_t* fmt = CF_LOG_COMMON_FORMAT;
 
-    log = cf_malloc(sizeof(struct cf_log_s));
-    if(!log) return CF_NULL_PTR;
-
-    (cf_void_t)cf_mutex_init(&log->mutex, CF_NULL_PTR);
+    if(level < log->level) return ;
     
-    log->fp = f;
-    log->level = CF_LOG_LEVEL_DEBUG;
-    log->cache_size = 0;
-    log->cache_logs = CF_NULL_PTR;
-    log->pool = CF_NULL_PTR;
-    return (cf_log_t*)log;
+
+    cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 1); /* rm \n */
+    if(log->logto == CF_LOG_TO_TERMINAL && log->color) {
+        switch(level) {
+        case CF_LOG_LEVEL_INFO:
+            fmt = CF_LOG_CLR_I_FORMAT;
+            break;
+        case CF_LOG_LEVEL_ERROR:
+            fmt = CF_LOG_CLR_E_FORMAT;
+            break;
+        case CF_LOG_LEVEL_FATAL:
+            fmt = CF_LOG_CLR_E_FORMAT;
+            break;
+        case CF_LOG_LEVEL_WARNING:
+            fmt = CF_LOG_CLR_W_FORMAT;
+            break;
+        default:
+            break;
+        }
+    } 
+    if(log->uselock) cf_mutex_lock(&log->lock);
+    fprintf((FILE*)log->fp, fmt, ts,
+        cf_getpid(), cf_gettid(),
+        _cf_log_get_level_name(level),
+        fn, line, func,
+        buf);
+    if(log->logto == CF_LOG_TO_FILE) fflush(log->fp);
+    if(log->uselock) cf_mutex_unlock(&log->lock);
 }
 
-
-cf_log_t*   cf_log_create(const cf_char_t* filename) {
-    FILE *fp = CF_NULL_PTR;
-    if(!filename || cf_strlen(filename) == 0) return CF_NULL_PTR;
-
-    fp = fopen(filename, "a+");
-    if(!fp) return CF_NULL_PTR;
-
-    return cf_log_create_on_file(fp);
-}
-
-cf_void_t cf_log_destroy(cf_log_t* log) {
-    if(!log) return ;
-    cf_log_flush(log);
-
-    cf_mutex_lock(&log->mutex);
-    if(log->cache_logs) cf_free(log->cache_logs);
-    if(log->pool) cf_mpool_destroy(log->pool);
-    cf_mutex_unlock(&log->mutex);
-    (cf_void_t)cf_mutex_destroy(&log->mutex);
-    if(log->fp != CF_LOG_STDOUT && log->fp != CF_LOG_STDERR) fclose(log->fp);
-    cf_free(log);
-}
-
-cf_void_t cf_log_set_level(cf_log_t* log, cf_log_level_t level) {
-    if(!log) return;
-    cf_mutex_lock(&log->mutex);
-    ((struct cf_log_s*)log)->level = level;
-    cf_mutex_unlock(&log->mutex);
-}
-
-cf_errno_t cf_log_set_cache(cf_log_t* log, cf_size_t size) {
+CF_DECLARE(cf_errno_t) cf_log_create(cf_log_writer_t** log) {
     if(!log) return CF_EPARAM;
 
-    cf_mutex_lock(&log->mutex);
+    *log = (cf_log_writer_t*)cf_malloc(sizeof(cf_log_writer_t));
+    if(!*log) return CF_EMALLOC;
 
-    if(!size) {
-        /* 关闭前刷入日志 */
-        cf_log_flush(log);
-
-        cf_free(log->cache_logs);
-        log->cache_logs = CF_NULL_PTR;
-        log->cache_size = 0;
-        log->cache_count = 0;
-
-        if(log->pool) {
-            cf_mpool_destroy(log->pool);
-            log->pool = CF_NULL_PTR;
-        }
-
-        cf_mutex_unlock(&log->mutex);
-        return CF_OK;
-    }
-
-    log->cache_logs = cf_malloc(sizeof(struct cf_log_item_s)*size);
-    if(!log->cache_logs) return CF_EMALLOC;
-    log->cache_size = size;
-    log->cache_count = 0;
-
-    log->pool = cf_mpool_create(1024);
-    if(!log->pool) {
-        cf_free(log->cache_logs);
-        log->cache_logs = CF_NULL_PTR;
-        log->cache_size = 0;
-
-        cf_mutex_unlock(&log->mutex);
-        return CF_OK;
+    cf_memset_s(*log, sizeof(cf_log_writer_t), 0, sizeof(cf_log_writer_t));
+    (*log)->logto   = CF_LOG_TO_TERMINAL;
+    (*log)->fp      = (cf_void_t*)stdout;
+    (*log)->level   = CF_LOG_LEVEL_DEBUG;
+    (*log)->nocache = CF_TRUE;
+    (*log)->color   = CF_FALSE;
+    (*log)->output  = _general_output_func;
+    (*log)->start   = CF_TRUE;
+    (*log)->uselock = CF_FALSE;
+    (*log)->filesize= CF_LOG_FILE_DEF_SIZE;
+    return CF_OK;
+}
+CF_DECLARE(cf_errno_t) cf_log_destroy(cf_log_writer_t* log) {
+    if(!log) return CF_EPARAM;
+    if(log->logto == CF_LOG_TO_FILE && log->fp) {
+        fclose((FILE*)log->fp);
     } 
-
-    cf_mutex_unlock(&log->mutex);
+    if(log->uselock) cf_mutex_destroy(&log->lock);
+    cf_memset_s(log, sizeof(cf_log_writer_t), 0, sizeof(cf_log_writer_t));
     return CF_OK;
 }
 
-cf_void_t   cf_log_write(cf_log_t* log, const cf_char_t* filename, cf_int_t line, const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmtstr, ...) {
+CF_DECLARE(cf_errno_t) cf_log_output(cf_log_writer_t* log, const cf_char_t* fn, cf_int_t line, 
+    const cf_char_t* func, cf_log_level_t level, const cf_char_t* fmt, ...) {
     va_list args;
-    cf_int_t n = 0;
-    time_t t = time(CF_NULL_PTR);
-    cf_char_t* pt = ctime(&t);
-    cf_char_t ts[32] = {0};
-    cf_log_item_t* item;
+    cf_char_t buf[1024] = {0};
+    cf_bool_t overlap;
 
-    if(!log || !filename || !line || !fmtstr || !pt) return ;
-    /* 日志级别不够，则不记录 */
-    if(((struct cf_log_s*)log)->level > level) return ;
+    if(!log || !fmt) return CF_EPARAM;
+    if(!log->output) return CF_NOK;
 
-    cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 1);
+    va_start(args, fmt);
+    vsprintf(buf, fmt, args);
+    va_end(args);
 
-    if(log->cache_size && log->cache_count >= log->cache_size) {
-        /* 将日志立即刷到文件中 */
-        cf_log_flush(log);
+    if(log->uselock) cf_mutex_lock(&log->lock);
+    if(log->logto == CF_LOG_TO_FILE && (cf_strlen(buf) + ftell(log->fp)) > log->filesize*1000000) {
+        overlap = CF_TRUE;
+        fclose(log->fp);
+        // 重新写
+        log->fp = fopen(log->path, "w+");
     }
+    log->output(log, fn, line, func, level, buf);
+    if(log->uselock) cf_mutex_unlock(&log->lock);
 
-    cf_mutex_lock(&log->mutex);
-    if(log->cache_size && log->cache_count < log->cache_size) {
-        /* 日志缓存 */
-        item = &log->cache_logs[log->cache_count];
-        /* 假设缓存池申请内存都是成功的！ */
-        item->ts = t;
-        item->pid = cf_getpid();
-        item->tid = cf_gettid();
-        item->level = level;
-        item->filename = cf_mpool_alloc(log->pool, cf_strlen(filename) + 1);
-        cf_strcpy_s(item->filename, cf_strlen(filename) + 1, filename);
-        item->line = (cf_uint_t)line;
-        item->funcname = cf_mpool_alloc(log->pool, cf_strlen(func) + 1);
-        cf_strcpy_s(item->funcname, cf_strlen(func) + 1, func);
-
-        va_start(args, fmtstr);
-        vsprintf(log->wbuf, fmtstr, args);
-        va_end(args);
-
-        item->logstr = cf_mpool_alloc(log->pool, cf_strlen(log->wbuf) + 1);
-        cf_strcpy_s(item->logstr, cf_strlen(log->wbuf) + 1, log->wbuf);
-
-        log->cache_count++;
-    } else {
-        n = sprintf(log->wbuf, CFAST_LOG_FORMAT, ts, cf_getpid(), cf_gettid(), _cf_log_get_level_name(level), filename, line, func);
-
-        va_start(args, fmtstr); 
-        n += vsprintf(log->wbuf + n, fmtstr, args);
-        va_end(args); 
-
-        log->wbuf[n] = '\n';
-        log->wbuf[n+1] = '\0';
-        fwrite(log->wbuf, cf_strlen(log->wbuf), 1, log->fp);
-        fflush(log->fp);
-    }
-
-    cf_mutex_unlock(&log->mutex);
+    return CF_OK;
 }
 
-cf_void_t _cf_log_put_item(cf_log_t* log, cf_log_item_t* item) {
-    // no lock
-    cf_char_t* pt;
-    cf_char_t ts[32] = {0};
-    if(!log || !item) return ;
-    pt = ctime(&item->ts);
-    cf_memcpy_s(ts, sizeof(ts), pt, cf_strlen(pt) - 1);
-    sprintf(log->wbuf, CFAST_LOG_FORMAT "%s\n", ts, 
-        item->pid, item->tid, _cf_log_get_level_name(item->level), 
-        item->filename, item->line, item->funcname, item->logstr);
-    fwrite(log->wbuf, cf_strlen(log->wbuf), 1, log->fp);
-}
+CF_DECLARE(cf_errno_t) cf_log_to_file(cf_log_writer_t* log, const cf_char_t* fn) {
+    FILE* f = CF_NULL_PTR;
+    if(!log || !fn) return CF_EPARAM;
 
-cf_void_t cf_log_flush(cf_log_t* log) {
-    cf_size_t i;
-    if(!log) return ;
-    /* 释放内存，并申请新的 */
-    cf_mutex_lock(&log->mutex);
+    if(log->uselock) cf_mutex_lock(&log->lock);
+
+    if(log->logto == CF_LOG_TO_FILE) {
+        fclose(log->fp);
+        log->fp = CF_NULL_PTR;
+    }
+
+    f = fopen(fn, "a+");
+    if(!f) return CF_NOK;
+    log->fp = (cf_void_t*)f;
+    log->logto = CF_LOG_TO_FILE;
+    cf_strcpy_s(log->path, sizeof(log->path), fn);
     
-    for(i = 0; i < log->cache_count; i++) {
-        _cf_log_put_item(log, log->cache_logs + i);
-    }
-
-    cf_mpool_destroy(log->pool);
-    log->pool = cf_mpool_create(1024);
-    log->cache_count = 0;
-
-    cf_mutex_unlock(&log->mutex);
+    if(log->uselock) cf_mutex_unlock(&log->lock);
+    return CF_OK;
 }
 
-cf_void_t cf_log_write_pool_info(cf_log_t* log) 
-{
-    cf_mpool_stat_t stat = { 0 };
-    if(!log || !log->pool) return;
-    cf_mpool_get_stat(log->pool, &stat);
-    cf_log_write(log, __FILE__, __LINE__, __FUNCTION__, CF_LOG_LEVEL_INFO, "Pool Statistics: " \
-    "block size(%u),"\
-    "block num(%u),"\
-    "large block num(%u),"\
-    "used(%u),"\
-    "unused(%u)",
-    stat.blksize,
-    stat.blknum,
-    stat.lgblknum,
-    stat.used,
-    stat.unused );
+CF_DECLARE(cf_errno_t) cf_log_to_terminal(cf_log_writer_t* log) {
+    return log ? (log->fp = (cf_void_t*)stdout), CF_OK : CF_NOK;
+}
+
+CF_DECLARE(cf_errno_t) cf_log_set_level(cf_log_writer_t* log, cf_log_level_t level) {
+    return log ? ((log->level = level), CF_OK) : CF_NOK;
+}
+
+CF_DECLARE(cf_errno_t) cf_log_set_nocache(cf_log_writer_t* log, cf_bool_t nocache) {
+    return log ? ((log->nocache = nocache), CF_OK) : CF_NOK;
+}
+
+CF_DECLARE(cf_errno_t) cf_log_with_color(cf_log_writer_t* log, cf_bool_t color) {
+    return log ? ((log->color = color), CF_OK) : CF_NOK;
+}
+
+CF_DECLARE(cf_errno_t) cf_log_with_lock(cf_log_writer_t* log, cf_bool_t lck) {
+    if(!log) return CF_EPARAM;
+    if(log->uselock) return CF_OK;
+    (cf_void_t)cf_mutex_init(&log->lock, CF_NULL_PTR);
+    log->uselock = lck;
+    return CF_OK;
+}
+
+CF_DECLARE(cf_errno_t) cf_log_set_file_size(cf_log_writer_t* log, cf_uint_t size) {
+    if(!log) return CF_EPARAM;
+    if(log->uselock) cf_mutex_lock(&log->lock);
+    log->filesize = size;
+    if(log->uselock) cf_mutex_unlock(&log->lock);
+    return CF_OK;
 }
