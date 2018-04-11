@@ -87,9 +87,15 @@
 
 #define CF_FMT_SSZIE_T  "ld"
 #define CF_FMT_SIZE_T   "lu"
-#define CF_FMT_INT64_T  "ld"
-#define CF_FMT_UINT64_T "lu"
-#define CF_FMT_UINT64_T_HEX "lx"
+#ifdef CF_OS_WIN
+#   define CF_FMT_INT64_T   "I64d"
+#   define CF_FMT_UINT64_T  "I64u"
+#   define CF_FMT_UINT64_T_HEX  "I64x"
+#else
+#   define CF_FMT_INT64_T  "lld"
+#   define CF_FMT_UINT64_T "llu"
+#   define CF_FMT_UINT64_T_HEX "llx"
+#endif
 
 #define CF_MAX_PATH_SIZE 256
 #ifdef CF_OS_WIN

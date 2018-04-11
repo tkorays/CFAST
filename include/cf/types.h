@@ -46,9 +46,10 @@ typedef short           cf_int16_t;
 typedef unsigned short  cf_uint16_t;
 typedef int             cf_int32_t;
 typedef unsigned int    cf_uint32_t;
-#if (defined _MSC_VER) && (_MSC_VER < 1300)
+/* long long is not supported by VC6 */
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
 typedef __int64         cf_int64_t;
-typedef __int64         cf_uint64_t;
+typedef unsigned __int64 cf_uint64_t;
 #else
 typedef long long       cf_int64_t;
 typedef unsigned long long cf_uint64_t;
