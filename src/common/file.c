@@ -36,103 +36,95 @@ typedef struct __dirent_s {
 cf_errno_t  cf_file_open(cf_file_t* f, const cf_char_t* filename, const cf_char_t* mode) {
     if(!f || !filename || !mode) return CF_EPARAM;
 #ifdef CF_OS_WIN
-    return fopen_s(&f->fp, filename, mode) == 0 ? CF_OK : CF_NOK;
+    return fopen_s(f, filename, mode) == 0 ? CF_OK : CF_NOK;
 #else
-    f->fp = fopen(filename, mode);
-    if(!f->fp) {
+    *f = fopen(filename, mode);
+    if(!*f) {
         return CF_EFOPEN;
     }
     return CF_OK;
 #endif
 }
 
-cf_errno_t  cf_file_close(cf_file_t* f) {
+cf_errno_t  cf_file_close(cf_file_t f) {
     if(!f) {
         return CF_EPARAM;
     }
-    if(fclose(f->fp) != 0) {
+    if(fclose(f) != 0) {
         return CF_EFCLOSE;
     }
     return CF_OK;
 }
 
-cf_errno_t  cf_file_write(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt) {
+cf_errno_t  cf_file_write(cf_file_t f, cf_char_t* buff, cf_size_t size, cf_size_t cnt) {
     cf_size_t wsize = 0;
     if(!f || !buff || size == 0 || cnt == 0) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
-    wsize = fwrite(buff, size, cnt, f->fp);
+    wsize = fwrite(buff, size, cnt, f);
     if(wsize == 0) return CF_EFWRITE;
     return CF_OK;
 }
 
-cf_errno_t  cf_file_read(cf_file_t* f, cf_char_t* buff, cf_size_t size, cf_size_t cnt) {
+cf_errno_t  cf_file_read(cf_file_t f, cf_char_t* buff, cf_size_t size, cf_size_t cnt) {
     cf_size_t rsize = 0;
     if(!f || !buff || size == 0 || cnt == 0) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
-    rsize = fread(buff, size, cnt, f->fp);
+    rsize = fread(buff, size, cnt, f);
     if(rsize == 0) {
         return CF_EFREAD;
     }
     return CF_OK;
 }
 
-cf_bool_t cf_file_eof(cf_file_t* f) {
-    if(!f || !f->fp) return CF_TRUE;
-    return feof(f->fp) ? CF_TRUE : CF_FALSE;
+cf_bool_t cf_file_eof(cf_file_t f) {
+    if(!f) return CF_TRUE;
+    return feof(f) ? CF_TRUE : CF_FALSE;
 }
 
-cf_errno_t  cf_file_getc(cf_file_t* f, cf_char_t* c) {
+cf_errno_t  cf_file_getc(cf_file_t f, cf_char_t* c) {
     if(!f || !c) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
-    *c = (cf_char_t)fgetc(f->fp);
+    *c = (cf_char_t)fgetc(f);
     return CF_OK;
 }
 
-cf_errno_t  cf_file_putc(cf_file_t* f, cf_char_t c) {
+cf_errno_t  cf_file_putc(cf_file_t f, cf_char_t c) {
     if(!f) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
-    if(c != (cf_char_t)fputc(c, f->fp)) {
+    if(c != (cf_char_t)fputc(c, f)) {
         return CF_EFWRITE;
     }
     return CF_OK;
 }
 
-cf_errno_t  cf_file_gets(cf_file_t* f, cf_char_t* buff, cf_size_t size) {
+cf_errno_t  cf_file_gets(cf_file_t f, cf_char_t* buff, cf_size_t size) {
     if(!f || !buff) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
-    if(!fgets(buff, size, f->fp)) {
+    if(!fgets(buff, size, f)) {
         return CF_EFREAD;
     }
     return CF_OK;
 }
 
-cf_errno_t  cf_file_puts(cf_file_t* f, const cf_char_t* buff) {
+cf_errno_t  cf_file_puts(cf_file_t f, const cf_char_t* buff) {
     if(!f || !buff) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
-    if(fputs(buff, f->fp) <= 0) {
+    if(fputs(buff, f) <= 0) {
         return CF_EFWRITE;
     }
     return CF_OK;
 }
 
-cf_errno_t  cf_file_printf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
+cf_errno_t  cf_file_printf(cf_file_t f, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t ret = 0;
     if(!f || !fmtstr) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
     va_start(args, fmtstr);
-    ret = vfprintf(f->fp, fmtstr, args);
+    ret = vfprintf(f, fmtstr, args);
     va_end(args);
     return (ret == -1) ? CF_EFWRITE : CF_OK;
 }
 
-cf_errno_t  cf_file_scanf(cf_file_t* f, const cf_char_t* fmtstr, ...) {
+cf_errno_t  cf_file_scanf(cf_file_t f, const cf_char_t* fmtstr, ...) {
     va_list args;
     cf_int_t ret = 0;
     if(!f || !fmtstr) return CF_EPARAM;
-    if(!f->fp) return CF_ENULLPTR;
     va_start(args, fmtstr);
-    ret = vfscanf(f->fp, fmtstr, args);
+    ret = vfscanf(f, fmtstr, args);
     va_end(args);
     return (ret == -1) ? CF_EFWRITE : CF_OK;
 }
