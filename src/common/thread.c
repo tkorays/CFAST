@@ -1,4 +1,4 @@
-#include <cf/thread.h>
+﻿#include <cf/thread.h>
 #include <cf/err.h>
 #ifdef CF_OS_WIN
 #include <process.h>

@@ -51,7 +51,7 @@ cf_errno_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
         abs_pos = li->number + 1 - abs_pos;
     }
 
-    /* 往前插入 */
+    /* insert front */
     for(index = 0, tmp = li->head; index < abs_pos && tmp; index++, tmp = tmp->next) ;
     if(CF_NULL_PTR == li->head) {
         /* empty */

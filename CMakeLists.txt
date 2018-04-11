@@ -44,10 +44,7 @@ endif()
 
 add_library(cfast STATIC ${SRC_LIST})
 if(WIN32)
-    #include_directories(3rdparty/pthread2.9.1/include)
-    #link_directories(3rdparty/pthread2.9.1/lib/x86)
     add_definitions("-DHAVE_STRUCT_TIMESPEC")
-    #target_link_libraries(cfast)
 else()
 target_link_libraries(cfast pthread)
 endif()
@@ -59,5 +56,5 @@ install(TARGETS cfast
 install(DIRECTORY include DESTINATION .)
 
 if(WIN32)
-install(DIRECTORY 3rdparty/pthread2.9.1/dll/x86 DESTINATION bin)
+install(DIRECTORY DESTINATION bin)
 endif()

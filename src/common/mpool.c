@@ -1,4 +1,4 @@
-#include <cf/mpool.h>
+﻿#include <cf/mpool.h>
 #include <cf/memory.h>
 
 #define CF_ALIGN_SIZE 4
@@ -70,7 +70,7 @@ cf_void_t*  cf_mpool_alloc(cf_mpool_t* pool, cf_size_t size) {
     /* 字节对齐 */
     addr = (cf_char_t*)CF_ADDR_ALIGN((cf_uintptr_t)p->ptr->start, CF_ALIGN_SIZE);
 
-    if((p->ptr->end - addr) < size) {
+    if((cf_size_t)(p->ptr->end - addr) < size) {
         /* 当前内存分配块不够，则创建一个新的块 */
         blk = cf_mpool_block_create(p->blk_size);
         if(!blk) return CF_NULL_PTR;
