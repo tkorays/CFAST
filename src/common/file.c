@@ -283,19 +283,28 @@ cf_errno_t  cf_file_unlink(const cf_char_t* pathname) {
 #endif
 }
 
-cf_errno_t  cf_file_get_filename(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
-    if(!path || !buf) return CF_EPARAM;
-    return CF_OK;
-}
+cf_filetype_t cf_file_type(const cf_char_t* path) {
+    struct stat st;
+    if(!path) return CF_FILE_TYPE_UNKNOWN;
 
-cf_errno_t  cf_file_get_extension(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
-    return CF_OK;
-}
-
-cf_errno_t  cf_file_get_basedir(const cf_char_t* path, cf_char_t* buf, cf_size_t size) {
-    return CF_OK;
-}
-
-cf_errno_t  cf_file_path_join(cf_char_t* buff, cf_size_t size, const cf_char_t* p1, const cf_char_t* p2) {
-    return CF_OK;
+    if(stat(path, &st) != 0) return CF_FILE_TYPE_UNKNOWN;
+    
+    switch(st.st_mode & S_IFMT) {
+    case S_IFSOCK:
+        return CF_FILE_TYPE_SOCK;
+    case S_IFLNK: 
+        return CF_FILE_TYPE_LINK;
+    case S_IFREG: 
+        return CF_FILE_TYPE_REGULAR;
+    case S_IFBLK: 
+        return CF_FILE_TYPE_BLOCK;
+    case S_IFDIR: 
+        return CF_FILE_TYPE_DIR;
+    case S_IFCHR: 
+        return CF_FILE_TYPE_CHAR;
+    case S_IFIFO: 
+        return CF_FILE_TYPE_PIPE;
+    default: 
+        return CF_FILE_TYPE_NOT_DEF;
+    }
 }
