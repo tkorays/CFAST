@@ -27,6 +27,7 @@ set(SRC_LIST src/common/list.c
     src/common/dso.c
     src/common/dbg.c
     src/common/select.c
+    src/common/path.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)

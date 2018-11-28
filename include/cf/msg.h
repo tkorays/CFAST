@@ -25,7 +25,8 @@ typedef enum {
 } cf_msg_prio_t;
 
 typedef struct cf_msg {
-    cf_msg_uid_t    uid;
+    cf_msg_uid_t    from;
+    cf_msg_uid_t    to;
     cf_msg_id_t     id;
     cf_msg_prio_t   priority;
     cf_uint32_t     param1;
@@ -44,7 +45,8 @@ cf_errno_t cf_msgq_init(cf_msgq_t que, cf_uint32_t quesize);
 cf_errno_t cf_msgq_deinit(cf_msgq_t* que);
 cf_errno_t cf_msgq_send_sync(
     cf_msgq_t*      que, 
-    cf_msg_uid_t    uid,
+    cf_msg_uid_t    from,
+    cf_msg_uid_t    to,
     cf_msg_id_t     id,
     cf_msg_prio_t   priority,
     cf_uint32_t     param1,
@@ -56,7 +58,8 @@ cf_errno_t cf_msgq_send_sync(
 
 cf_errno_t cf_msgq_send_async(
     cf_msgq_t*      que, 
-    cf_msg_uid_t    uid,
+    cf_msg_uid_t    from,
+    cf_msg_uid_t    to,
     cf_msg_id_t     id,
     cf_msg_prio_t   priority,
     cf_uint32_t     param1,

@@ -35,6 +35,7 @@
 #ifndef CF_OS_WIN
 #include <cf/poll.h>
 #endif
+#include <cf/path.h>
 
 
 #endif /* __CFAST_H__ */
