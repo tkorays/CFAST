@@ -32,7 +32,7 @@ typedef struct cf_msg {
     cf_uint32_t     param1;
     cf_uint32_t     param2;
     cf_uint32_t     param3;
-    cf_uint16_t     datalen;
+    cf_uint16_t     size;
     cf_char_t       data[1];
 } cf_msg_t;
 
@@ -53,7 +53,7 @@ cf_errno_t cf_msgq_send_sync(
     cf_uint32_t     param2,
     cf_uint32_t     param3,
     cf_void_t*      data,
-    cf_uint16_t     datalen
+    cf_uint16_t     size
     );
 
 cf_errno_t cf_msgq_send_async(
@@ -66,7 +66,7 @@ cf_errno_t cf_msgq_send_async(
     cf_uint32_t     param2,
     cf_uint32_t     param3,
     cf_void_t*      data,
-    cf_uint16_t     datalen
+    cf_uint16_t     size
     );
 
 CF_DECLS_END
