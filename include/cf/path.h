@@ -30,12 +30,13 @@ CF_DECLS_BEGIN
 
 CF_DECLARE(cf_errno_t) cf_path_append(cf_char_t* path, cf_size_t size, const cf_char_t* p);
 CF_DECLARE(cf_errno_t) cf_path_getcwd(cf_char_t* path, cf_size_t size);
-CF_DECLARE(cf_errno_t) cf_path_realpath(const cf_char_t* org, cf_char_t* path, cf_size_t size);
+CF_DECLARE(cf_errno_t) cf_path_realpath(const cf_char_t* org, cf_char_t* out, cf_size_t size);
 CF_DECLARE(cf_errno_t) cf_path_basename(const cf_char_t* org, cf_char_t* path, cf_size_t size);
 CF_DECLARE(cf_errno_t) cf_path_dirname(const cf_char_t* org, cf_char_t* path, cf_size_t size);
 CF_DECLARE(cf_bool_t)  cf_path_exist(const cf_char_t* path);
 CF_DECLARE(cf_bool_t)  cf_path_isfile(const cf_char_t* path);
 CF_DECLARE(cf_bool_t)  cf_path_isdir(const cf_char_t* path);
+CF_DECLARE(cf_bool_t)  cf_path_isabs(const cf_char_t* path);
 CF_DECLARE(cf_bool_t)  cf_path_walk(const cf_char_t* path, cf_bool_t(*walk_func)(const cf_char_t*));
 
 CF_DECLS_END

@@ -36,5 +36,18 @@ int main() {
     cf_path_isfile("a.out"),
     cf_path_isdir("/"),
     cf_path_isfile("/"));
+
+    printf("is abs: %d, %d, %d\n", cf_path_isabs("/abc/"),
+        cf_path_isabs("../a"),
+        cf_path_isabs("abc"));
+    *p = 0;
+    cf_path_realpath("../b/../c/abc", p, 256);
+    printf("realpath: %s\n", p);
+
+    if(CF_EOK != cf_path_realpath("/../b/../c//abc", p, 256)) {
+        printf("realpath fail\n");
+    }else {
+        printf("realpath: %s\n", p);
+    }
     return 0;
 }
