@@ -29,6 +29,7 @@ set(SRC_LIST src/common/list.c
     src/common/select.c
     src/common/path.c
     src/common/env.c
+    src/common/time.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
