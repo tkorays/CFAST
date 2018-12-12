@@ -13,6 +13,8 @@
 
 #include <cf/types.h>
 
+#define CF_IS_LEAP_YEAR(y) (((y) % 4 == 0) && ((y) % 100 != 0))
+
 CF_DECLS_BEGIN
 
 typedef cf_uint32_t cf_time_t;
@@ -25,19 +27,14 @@ typedef struct {
 } cf_timeval_t;
 
 typedef struct cf_datetime {
-	int	sec;		/* seconds after the minute [0-60] */
-	int	min;		/* minutes after the hour [0-59] */
-	int	hour;	/* hours since midnight [0-23] */
-	int	mday;	/* day of the month [1-31] */
-	int	mon;		/* months since January [0-11] */
-	int	year;	/* years since 1900 */
-	int	wday;	/* days since Sunday [0-6] */
-	int	yday;	/* days since January 1 [0-365] */
-	//int	tm_isdst;	/* Daylight Savings Time flag */
-	//long	tm_gmtoff;	/* offset from UTC in seconds */
-	//char	*tm_zone;	/* timezone abbreviation */
-    cf_time_t   e_sec; 
-    cf_uint32_t e_usec;
+	cf_uint32_t	sec;		/* seconds after the minute [0-60] */
+    cf_uint32_t	min;		/* minutes after the hour [0-59] */
+    cf_uint32_t	hour;	/* hours since midnight [0-23] */
+    cf_uint32_t	mday;	/* day of the month [1-31] */
+    cf_uint32_t	mon;		/* months since January [0-11] */
+    cf_uint32_t	year;	/* years since 1900 */
+    cf_uint32_t	wday;	/* days since Sunday [0-6] */
+    cf_uint32_t msec;
 } cf_timeinfo_t;
 
 cf_clock_t cf_clock_get();
@@ -46,6 +43,8 @@ cf_void_t cf_time_sleep(cf_uint32_t ms);
 cf_errno_t cf_time_now(cf_timeinfo_t* ti);
 cf_errno_t cf_time_str(const cf_timeinfo_t* ti, cf_char_t* buf, cf_size_t size);
 cf_errno_t cf_time_strYMDHMS(const cf_timeinfo_t* ti, cf_char_t* buf, cf_size_t size);
+cf_int32_t cf_day_of_year(const cf_timeinfo_t* ti);
+cf_bool_t cf_time_is_valid(const cf_timeinfo_t* ti);
 
 
 

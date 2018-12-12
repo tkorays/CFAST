@@ -7,6 +7,7 @@
     #include <windows.h>
     #include <io.h>
     #include <direct.h>
+    #include <sys/stat.h>
 #else 
     #include <sys/types.h>
     #include <sys/stat.h>
@@ -30,7 +31,11 @@ CF_DECLARE(cf_errno_t) cf_path_append(cf_char_t* path, cf_size_t size, const cf_
 }
 
 CF_DECLARE(cf_errno_t) cf_path_getcwd(cf_char_t* path, cf_size_t size) {
+#ifdef CF_OS_WIN
+    if (_getcwd(path, size)) return CF_EOK;
+#else 
     if(getcwd(path, size)) return CF_EOK;
+#endif
     else return CF_ENOK;
 }
 
@@ -128,7 +133,7 @@ CF_DECLARE(cf_errno_t) cf_path_basename(const cf_char_t* org, cf_char_t* path, c
         }
     }
 
-    if(stop - start + 2 > size) return CF_ENOK;
+    if((cf_size_t)(stop - start + 2) > size) return CF_ENOK;
 
     while(start <= stop) *(path++) = org[start++];
     *path = 0;
@@ -203,7 +208,7 @@ CF_DECLARE(cf_bool_t)  cf_path_isdir(const cf_char_t* path) {
 
 CF_DECLARE(cf_bool_t)  cf_path_isabs(const cf_char_t* path) {
 #ifdef CF_OS_WIN
-    if(path && (*path >= 'a' && *path <=z) || (*path >= 'A' && *path <= 'Z') && path[1] == ':') 
+    if(path && (*path >= 'a' && *path <='z') || (*path >= 'A' && *path <= 'Z') && path[1] == ':') 
         return CF_TRUE;
     else return CF_FALSE;
 

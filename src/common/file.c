@@ -8,6 +8,7 @@
     #include <windows.h>
     #include <io.h>
     #include <direct.h>
+    #include <sys/stat.h>
 #else
     #include <unistd.h>
     #include<sys/types.h>
@@ -290,20 +291,26 @@ cf_filetype_t cf_file_type(const cf_char_t* path) {
     if(stat(path, &st) != 0) return CF_FILE_TYPE_UNKNOWN;
     
     switch(st.st_mode & S_IFMT) {
+#ifndef CF_OS_WIN
     case S_IFSOCK:
         return CF_FILE_TYPE_SOCK;
     case S_IFLNK: 
         return CF_FILE_TYPE_LINK;
+#endif
     case S_IFREG: 
         return CF_FILE_TYPE_REGULAR;
+#ifndef CF_OS_WIN
     case S_IFBLK: 
         return CF_FILE_TYPE_BLOCK;
+#endif
     case S_IFDIR: 
         return CF_FILE_TYPE_DIR;
     case S_IFCHR: 
         return CF_FILE_TYPE_CHAR;
+#ifndef CF_OS_WIN
     case S_IFIFO: 
         return CF_FILE_TYPE_PIPE;
+#endif
     default: 
         return CF_FILE_TYPE_NOT_DEF;
     }

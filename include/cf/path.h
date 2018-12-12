@@ -18,13 +18,6 @@
 
 #define CF_PATH_SPLIT_CHAR_WIN '\\'
 #define CF_PATH_SPLIT_CHAR_UNI  '/'
-#ifdef CF_OS_WIN
-#   define CF_PATH_SPLIT_STR    "\\\\"
-#   define CF_PATH_SPLIT_CHAR   '\\'
-#else 
-#   define CF_PATH_SPLIT_STR    "/"
-#   define CF_PATH_SPLIT_CHAR   '/'
-#endif
 
 CF_DECLS_BEGIN
 
