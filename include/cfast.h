@@ -36,6 +36,7 @@
 #include <cf/poll.h>
 #endif
 #include <cf/path.h>
+#include <cf/system.h>
 
 
 #endif /* __CFAST_H__ */
