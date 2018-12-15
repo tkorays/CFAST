@@ -32,6 +32,24 @@
 #       endif
 #  else
 #       define CF_OS_LINUX 1
+
+#       ifdef __APPLE__
+#           include "TargetConditionals.h"
+#           if TARGET_IPHONE_SIMULATOR
+#               define CF_OS_IPHONE_SIM 1
+#           elif TARGET_OS_IPHONE
+#               define CF_OS_IPHONE 1
+#           elif TARGET_OS_MAC
+#               define CF_OS_MAC 1
+#           else
+#               error "Unknown Mac Platform!"
+#           endif
+#       endif
+
+#       ifdef __ANDROID__
+#           define CF_OS_ANDROID 1
+#       endif
+
 #       if __GNUC__ >= 4
 #           define CF_API __attribute__((visibility("default")))
 #       else
