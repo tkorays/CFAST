@@ -37,3 +37,7 @@ CF_DECLARE(cf_errno_t) cf_dso_sym(cf_dso_handle_t* handle, const cf_char_t* name
     if(!*symbol) return CF_EDSO_GETSYM;
     return CF_OK;
 }
+
+CF_DECLARE(cf_errno_t) cf_dso_inject(cf_uint32_t pid, const cf_char_t* path) {
+    return CF_OK;
+}
