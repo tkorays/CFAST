@@ -8,7 +8,8 @@
     #include <io.h>
     #include <direct.h>
     #include <sys/stat.h>
-#else 
+#else
+    #include <unistd.h>
     #include <sys/types.h>
     #include <sys/stat.h>
 #endif

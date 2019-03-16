@@ -43,6 +43,8 @@ typedef struct cf_msgq {
 
 cf_errno_t cf_msgq_init(cf_msgq_t que, cf_uint32_t quesize);
 cf_errno_t cf_msgq_deinit(cf_msgq_t* que);
+cf_errno_t cf_msgq_start(cf_msgq_t* que);
+cf_errno_t cf_msgq_stop(cf_msgq_t* que);
 cf_errno_t cf_msgq_send_sync(
     cf_msgq_t*      que, 
     cf_msg_uid_t    from,

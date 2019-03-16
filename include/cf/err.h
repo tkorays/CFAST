@@ -28,6 +28,7 @@ typedef const cf_char_t*(*cf_err_pfn_strerror)(cf_uint_t eid);
 #define CF_ERR_MODULE_SOCKET    3
 #define CF_ERR_MODULE_DSO       4
 #define CF_ERR_MODULE_SELECT    5
+#define CF_ERR_MODULE_PLUGIN    6
 
 
 #define CF_EOK          CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 0)
