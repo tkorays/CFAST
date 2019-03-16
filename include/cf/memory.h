@@ -12,29 +12,41 @@
 #define __CF_MEMORY_H__
 
 #include <cf/types.h>
+#include <stdlib.h>
+
+
+#ifdef CF_MEMORY_DBG
+#   define cf_malloc(size) cf_malloc_dbg(size)
+#   define cf_free(p) cf_free_dbg(p)
+#   define cf_realloc(p, size) cf_realloc_dbg(p, size)
+#else 
+#   define cf_malloc(size) malloc(size)
+#   define cf_free(p) free(p)
+#   define cf_realloc(p, size) realloc(p, size)
+#endif
 
 CF_DECLS_BEGIN
 
 /**
- * Allocate memory.
+ * Allocate memory, debug version.
  * @param size       Memory size
  * @return           Address of memory.
  */
-cf_void_t* cf_malloc(cf_size_t size);
+cf_void_t* cf_malloc_dbg(cf_size_t size);
 
 /**
- * Destory memory.
+ * Destory memory, debug version.
  * @param addr       Address of memory.
  */
-cf_void_t  cf_free(cf_void_t* addr);
+cf_void_t  cf_free_dbg(cf_void_t* addr);
 
 /**
- * Re-Allocate memory.
+ * Re-Allocate memory, debug version.
  * @param addr       Memory size
  * @param size       Size of realloc.
  * @return           Address of memory.
  */
-cf_void_t* cf_realloc(cf_void_t* addr, cf_size_t size);
+cf_void_t* cf_realloc_dbg(cf_void_t* addr, cf_size_t size);
 
 /**
  * Copy memory from destination(Safety).

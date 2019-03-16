@@ -2,15 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-cf_void_t* cf_malloc(cf_size_t size) {
-    return malloc(size);
+#define CF_MEMTRACE_MALLOC(p, size) (void*)0
+#define CF_MEMTRACE_FREE(p) (void*)0
+
+cf_void_t* cf_malloc_dbg(cf_size_t size) {
+    cf_void_t* p = malloc(size);
+
+    CF_MEMTRACE_MALLOC(p, size);
+    return p;
 }
 
-cf_void_t  cf_free(cf_void_t* addr) {
+cf_void_t  cf_free_dbg(cf_void_t* addr) {
     free(addr);
+    
+    CF_MEMTRACE_FREE(addr);
 }
 
-cf_void_t* cf_realloc(cf_void_t* addr, cf_size_t size) {
+cf_void_t* cf_realloc_dbg(cf_void_t* addr, cf_size_t size) {
     return realloc(addr, size);
 }
 
