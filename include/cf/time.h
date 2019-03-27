@@ -38,7 +38,7 @@ typedef struct cf_datetime {
 } cf_timeinfo_t;
 
 cf_clock_t cf_clock_get();
-cf_uint32_t cf_clock_diff_ms(cf_clock_t next, cf_clock_t prev);
+cf_uint64_t cf_clock_diff_ms(cf_clock_t next, cf_clock_t prev);
 cf_void_t cf_time_sleep(cf_uint32_t ms);
 cf_errno_t cf_time_now(cf_timeinfo_t* ti);
 cf_errno_t cf_time_str(const cf_timeinfo_t* ti, cf_char_t* buf, cf_size_t size);

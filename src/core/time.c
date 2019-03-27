@@ -25,7 +25,7 @@ cf_clock_t cf_clock_get() {
 #endif
 }
 
-cf_uint32_t cf_clock_diff_ms(cf_clock_t next, cf_clock_t prev) {
+cf_uint64_t cf_clock_diff_ms(cf_clock_t next, cf_clock_t prev) {
     return (next - prev);
 }
 

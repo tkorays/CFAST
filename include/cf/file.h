@@ -71,6 +71,8 @@ cf_errno_t  cf_file_link(const cf_char_t* from_path, const cf_char_t* to_path);
 cf_errno_t  cf_file_unlink(const cf_char_t* pathname);
 
 cf_filetype_t cf_file_type(const cf_char_t* path);
+CF_DECLARE(cf_bool_t)  cf_file_isdir(const cf_char_t* path);
+CF_DECLARE(cf_bool_t)  cf_file_isfile(const cf_char_t* path);
 
 CF_DECLS_END
 

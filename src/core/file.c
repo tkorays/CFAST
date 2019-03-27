@@ -1,6 +1,7 @@
 #include <cf/file.h>
 #include <cf/err.h>
 #include <cf/str.h>
+#include <cf/path.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -138,7 +139,10 @@ cf_errno_t  cf_file_opendir(cf_file_dir_t* dir, const cf_char_t* path) {
     if(!dir || !path) return CF_EPARAM;
     _dir = (__dir_t*)dir->__real_impl;
 #ifdef CF_OS_WIN
-    if(CF_OK != cf_file_path_join(path_pattern, sizeof(path_pattern), path, "*")) {
+    if(CF_OK != cf_path_append(path_pattern, sizeof(path_pattern), path)) {
+        return CF_NOK;
+    }
+    if(CF_OK != cf_path_append(path_pattern, sizeof(path_pattern), "*")) {
         return CF_NOK;
     }
     _dir->handle = _findfirst(path_pattern, &_dir->fileinfo);
@@ -314,4 +318,32 @@ cf_filetype_t cf_file_type(const cf_char_t* path) {
     default: 
         return CF_FILE_TYPE_NOT_DEF;
     }
+}
+
+CF_DECLARE(cf_bool_t)  cf_file_isfile(const cf_char_t* path) {
+#ifdef CF_OS_WIN
+    struct _stat st;
+    if(!path) return CF_FALSE;
+    if(_stat(path, &st) != 0) return CF_FALSE;
+    return (st.st_mode & _S_IFMT) == _S_IFREG;
+#else
+    struct stat st;
+    if(!path) return CF_FALSE;
+    if(stat(path, &st) != 0) return CF_FALSE;
+    return (st.st_mode & S_IFMT) == S_IFREG;
+#endif
+}
+
+CF_DECLARE(cf_bool_t)  cf_file_isdir(const cf_char_t* path) {
+#ifdef CF_OS_WIN
+    struct _stat st;
+    if(!path) return CF_FALSE;
+    if(_stat(path, &st) != 0) return CF_FALSE;
+    return (st.st_mode & _S_IFMT) == _S_IFDIR;
+#else 
+    struct stat st;
+    if(!path) return CF_FALSE;
+    if(stat(path, &st) != 0) return CF_FALSE;
+    return (st.st_mode & S_IFMT) == S_IFDIR;
+#endif
 }
