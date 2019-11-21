@@ -18,6 +18,8 @@
 
 #else
 #include <sys/select.h>
+#include <sys/time.h>
+#include <unistd.h>
 #endif
 
 CF_DECLS_BEGIN
