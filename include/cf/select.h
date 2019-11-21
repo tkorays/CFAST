@@ -32,7 +32,7 @@ extern const cf_size_t CF_FD_SETSIZE;
 /**
  * fd_set
  */
-typedef struct fd_set cf_fdset_t;
+typedef /*struct*/ fd_set cf_fdset_t;
 
 typedef struct timeval timeval;
 
