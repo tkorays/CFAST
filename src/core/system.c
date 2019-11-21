@@ -1,9 +1,11 @@
 #include <cf/system.h>
 #ifdef CF_OS_WIN
 
-#else
+#elif defined(CF_OS_MAC)
 #include <sys/sysctl.h>
 #include <mach/machine.h>
+#else
+#include <sys/sysctl.h>
 #endif
 
 CF_DECLARE(cf_cpu_type_t) cf_sys_cpu_type() {
