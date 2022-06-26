@@ -10,6 +10,12 @@
 
 CF_DECLS_BEGIN
 
+typedef enum {
+    CF_THREAD_PRIORITY_LOW = 0,
+    CF_THREAD_PRIORITY_NORMAL,
+    CF_THREAD_PRIORITY_HIGH,
+} cf_thread_priority_t;
+
 #ifdef CF_OS_WIN
 #define CF_THREAD_DEF_PROC(name, arg) cf_uint32_t WINAPI name(cf_void_t* arg)
 #define CF_THREAD_RET(ret) ((cf_uint32_t)(ret))
