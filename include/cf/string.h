@@ -13,6 +13,7 @@
 
 #include <cf/types.h>
 #include <cf/str.h>
+#include <cf/memory.h>
 
 CF_DECLS_BEGIN
 
@@ -20,34 +21,50 @@ CF_DECLS_BEGIN
  * String.
  */
 typedef struct {
-    cf_char_t*  ptr;   /** string data without \0 */
-    cf_size_t   len; /** string length */
+    cf_char_t*  ptr;    /** string data without \0 */
+    cf_uint32_t ref:1;  /** string reference, not managed */
+    cf_uint32_t len:31; /** string length */
 } cf_string_t;
 
-inline cf_string_t cf_string(cf_char_t* s) {
-    cf_string_t str;
-    str.ptr = s;
-    str.len = s ? cf_strlen(s) : 0;
-    return str;
-}
 
-inline cf_string_t* cf_string_from_c(cf_string_t* str, const cf_char_t* s) {
-    if(!str) return CF_NULL_PTR;
-    str->ptr = (cf_char_t*)s;
-    str->len = s ? cf_strlen(s) : 0;
-    return str;
-}
+/**
+ * @brief initialize a string object with length.
+ * 
+ * @param self this pointer
+ * @param len  string length
+ * @return cf_bool_t success or failed.
+ */
+cf_bool_t cf_string_init(cf_string_t* self, cf_size_t len);
 
-inline cf_string_t* cf_string_set(cf_string_t* str, const cf_char_t* s, cf_size_t len) {
-    if(!str) return CF_NULL_PTR;
-    str->ptr = (cf_char_t*)s;
-    str->len = len;
-    return str;
-}
+/**
+ * @brief destroy a string object.
+ * 
+ * @param self this pointer
+ */
+void cf_string_deinit(cf_string_t* self);
 
-inline cf_size_t cf_string_len(cf_string_t* str) {
-    return str ? str->len : 0;
-}
+/**
+ * @brief Reset a string object with other string.
+ * 
+ * @param self this pointer
+ * @param ptr  string pointer
+ * @param len  string length
+ * @param ref  is reference or not.
+ */
+void cf_string_reset(cf_string_t* self, cf_char_t* ptr, cf_size_t len, cf_bool_t ref);
+
+/**
+ * @brief string length
+ * 
+ */
+#define cf_string_len(self) ((self)->len)
+
+/**
+ * @brief clear string object
+ * 
+ */
+#define cf_string_clear(self) do { (self)->ptr = CF_NULL_PTR; (self)->ref = CF_TRUE; (self)->len = 0; } while(0)
+
 
 CF_DECLS_END
 
