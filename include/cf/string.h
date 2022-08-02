@@ -60,6 +60,12 @@ void cf_string_reset(cf_string_t* self, cf_char_t* ptr, cf_size_t len, cf_bool_t
 #define cf_string_len(self) ((self)->len)
 
 /**
+ * @brief string pointer
+ * 
+ */
+#define cf_string_ptr(self) ((self)->ptr)
+
+/**
  * @brief clear string object
  * 
  */
