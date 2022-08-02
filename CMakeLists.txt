@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(cfast C)
+project(cfast C CXX)
 
 option(USE_CFEXP_LIBTELNET_SERVER "use libtelnet server in cfexp"  OFF)
 
@@ -63,3 +63,26 @@ install(DIRECTORY include DESTINATION .)
 if(WIN32)
 install(DIRECTORY DESTINATION bin)
 endif()
+
+
+set(CMAKE_CXX_STANDARD 11)
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+file(
+    GLOB_RECURSE CFAST_TEST_SRC
+    ${CMAKE_SOURCE_DIR}/tests/*_test.cpp
+)
+add_executable(
+    cfast_unittest
+    ${CFAST_TEST_SRC}
+)
+target_link_libraries(cfast_unittest gtest_main cfast)
+include(GoogleTest)
+gtest_discover_tests(cfast_unittest)

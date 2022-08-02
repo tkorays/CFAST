@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #endif
 
+#ifndef CF_OS_WIN
 
 const cf_size_t CF_FD_SETSIZE = FD_SETSIZE;
 
@@ -38,3 +39,4 @@ CF_DECLARE(cf_errno_t) cf_select(int maxfdp, cf_fdset_t* rfds, cf_fdset_t* wfds,
     else if(ret < 0) return CF_NOK;
     return CF_OK;
 }
+#endif
