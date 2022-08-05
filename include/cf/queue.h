@@ -27,15 +27,25 @@ cf_errno_t  cf_que_dequeue(cf_que_t* que, cf_void_t** data, cf_size_t* size);
 
 
 /**
+ * @brief item size can not exceed 10k for lite queue
+ * 
+ */
+#define CF_LITE_QUEUE_MAX_ITEM_SIZE (1024*10)
+
+#define CF_LITE_QUEUE_INIT_CAPACITY (20)
+#define CF_LITE_QUEUE_MAX_CAPACITY (65535)
+
+/**
  * @brief A lite queue store all same size items in the queue.
  * 
  */
 typedef struct {
-    cf_size_t   item_size;  //< all items have the same size
     void*       items;      //< address of the first item
+    cf_size_t   item_size;  //< all items have the same size
     cf_size_t   capacity;   //< max items this queue can hold
     cf_uint_t   head;       //< head index of the queue
     cf_uint_t   tail;       //< tail index of this queue
+    cf_size_t   count;      //< count of items
 } cf_lite_queue_t;
 
 /**
@@ -90,6 +100,22 @@ cf_bool_t cf_lite_queue_push_back(cf_lite_queue_t* self, void* data);
 cf_bool_t cf_lite_queue_push_front(cf_lite_queue_t* self, void* data);
 
 /**
+ * @brief pop up item from front
+ * 
+ * @param self 
+ * @return void* 
+ */
+void* cf_lite_queue_pop_front(cf_lite_queue_t* self);
+
+/**
+ * @brief pop up item from back
+ * 
+ * @param self 
+ * @return void* 
+ */
+void* cf_lite_queue_pop_back(cf_lite_queue_t* self);
+
+/**
  * @brief item size of this queue
  * 
  */
@@ -99,7 +125,13 @@ cf_bool_t cf_lite_queue_push_front(cf_lite_queue_t* self, void* data);
  * @brief is this queue empty
  * 
  */
-#define cf_lite_queue_empty(self) ((self)->head == (self)->tail)
+#define cf_lite_queue_empty(self) ((self)->count == 0)
+
+/**
+ * @brief item count
+ * 
+ */
+#define cf_lite_queue_count(self) ((self)->count)
 
 
 CF_DECLS_END
