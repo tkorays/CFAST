@@ -116,6 +116,13 @@ void* cf_lite_queue_pop_front(cf_lite_queue_t* self);
 void* cf_lite_queue_pop_back(cf_lite_queue_t* self);
 
 /**
+ * @brief clear all items
+ * 
+ * @param self 
+ */
+void cf_lite_queue_clear(cf_lite_queue_t* self);
+
+/**
  * @brief item size of this queue
  * 
  */

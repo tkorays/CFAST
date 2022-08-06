@@ -113,18 +113,57 @@ void* cf_lite_queue_back(cf_lite_queue_t* self) {
     return (void*)&((((cf_uint8_t*)(self->items))[self->item_size * self->tail]));
 }
 
+cf_bool_t cf_lite_queue_extend(cf_lite_queue_t* self) {
+    size_t new_capacity = self->capacity * 2;
+    void* new_items = cf_malloc(self->capacity * self->item_size);
+    cf_uint_t partial_count = 0;
+    if (CF_NULL_PTR == new_items) {
+        return CF_FALSE;
+    }
+    if (self->tail - self->head > 0 && self->tail - self->head + 1 == self->count) {
+        cf_memcpy_s(new_items, new_capacity * self->item_size,\
+            &((cf_uint8_t*)(self->items))[self->item_size*self->head],\
+            self->count*self->item_size);
+    } else {
+        partial_count = self->capacity - self->tail + 1;
+        cf_memcpy_s(new_items, new_capacity * self->item_size,\
+            &((cf_uint8_t*)(self->items))[self->item_size*self->head],\
+            partial_count*self->item_size);
+        cf_memcpy_s((cf_uint8_t*)new_items + partial_count * self->item_size,\
+            (new_capacity - partial_count) * self->item_size,\
+            self->items,
+            (self->tail + 1)*self->item_size);
+    }
+    cf_free(self->items);
+    self->capacity = new_capacity;
+    self->items = new_items;
+    self->head = 0;
+    self->tail = self->count - 1;
+    return CF_TRUE;
+}
+
 cf_bool_t cf_lite_queue_push_back(cf_lite_queue_t* self, void* data) {
+    void* new_items = CF_NULL_PTR;
+    cf_size_t new_capacity;
     if (!data) {
         return CF_FALSE;
     }
 
     if (self->count == self->capacity) {
-        // expand
+        if (!cf_lite_queue_extend(self)) {
+            return CF_FALSE;
+        }
     }
 
+    if (self->count == 0) {
+        self->head = 0;
+        self->tail = 0;
+    } else {
+        self->tail = (self->tail + 1) % self->capacity;
+    }
     cf_memcpy_s((void*)&((((cf_uint8_t*)(self->items))[self->item_size * self->tail])), \
         self->item_size, data, self->item_size);
-    self->tail = (self->tail + 1) % self->capacity;
+    self->count++;
     return CF_TRUE;
 }
 
@@ -134,11 +173,47 @@ cf_bool_t cf_lite_queue_push_front(cf_lite_queue_t* self, void* data) {
     }
 
     if (self->count == self->capacity) {
-        // expand
+        if (!cf_lite_queue_extend(self)) {
+            return CF_FALSE;
+        }
     }
 
+    if (self->count == 0) {
+        self->head = 0;
+        self->tail = 0;
+    } else {
+        self->head = (self->capacity + self->head - 1) % self->capacity;
+    }
     cf_memcpy_s((void*)&((((cf_uint8_t*)(self->items))[self->item_size * self->head])), \
         self->item_size, data, self->item_size);
-    self->tail = (self->capacity + self->tail - 1) % self->capacity;
+    self->count++;
     return CF_TRUE;
+}
+
+void* cf_lite_queue_pop_front(cf_lite_queue_t* self) {
+    void* data = CF_NULL_PTR;
+    if (cf_lite_queue_empty(self)) {
+        return CF_NULL_PTR;
+    }
+    data = cf_lite_queue_front(self);
+    self->head = (self->head + 1) % self->capacity;
+    self->count--;
+    return data;
+}
+
+void* cf_lite_queue_pop_back(cf_lite_queue_t* self) {
+    void* data = CF_NULL_PTR;
+    if (cf_lite_queue_empty(self)) {
+        return CF_NULL_PTR;
+    }
+    data = cf_lite_queue_back(self);
+    self->tail = (self->capacity + self->head - 1) % self->capacity;
+    self->count--;
+    return data;
+}
+
+void cf_lite_queue_clear(cf_lite_queue_t* self) {
+    self->head = 0;
+    self->tail = 0;
+    self->count = 0;
 }
