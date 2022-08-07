@@ -1,3 +1,13 @@
+/****************************************************
+* Copyright (c) 2022, tkorays <tkorays@hotmail.com>
+* All rights reserved.
+*
+* @file    location.h
+* @brief   code location.
+* @version 1.0
+* @author  tkorays<tkorays@hotmail.com>
+* @date    2022-8-4
+****************************************************/
 #ifndef __CFAST_LOCATION_H__
 #define __CFAST_LOCATION_H__
 

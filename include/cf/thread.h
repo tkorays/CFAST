@@ -1,3 +1,13 @@
+/****************************************************
+ * Copyright (c) 2018, tkorays <tkorays@hotmail.com>
+ * All rights reserved.
+ * 
+ * @file    cli.h
+ * @brief   thread wrapper.
+ * @version 1.0
+ * @author  tkorays<tkorays@hotmail.com>
+ * @date    2018-1-6
+ ****************************************************/
 #ifndef __CF_THREAD_H__
 #define __CF_THREAD_H__
 
@@ -10,6 +20,10 @@
 
 CF_DECLS_BEGIN
 
+/**
+ * @brief Thread priority.
+ * 
+ */
 typedef enum {
     CF_THREAD_PRIORITY_LOW = 0,
     CF_THREAD_PRIORITY_NORMAL,
