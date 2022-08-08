@@ -143,14 +143,14 @@ cf_bool_t cf_vector_pop_front(cf_vector_t* vec, void* data, size_t size) {
     return CF_TRUE;
 }
 
-cf_bool_t cf_vector_back(cf_vector_t* vec, void* data, size_t size) {
+cf_bool_t cf_vector_fetch_back(cf_vector_t* vec, void* data, size_t size) {
     CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
     memcpy(data, vec->back, size);
     return CF_TRUE;
 }
 
-cf_bool_t cf_vector_front(cf_vector_t* vec, void* data, size_t size) {
+cf_bool_t cf_vector_fetch_front(cf_vector_t* vec, void* data, size_t size) {
     CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
     memcpy(data, vec->front, size);
@@ -161,6 +161,16 @@ cf_bool_t cf_vector_at(cf_vector_t* vec, int idx, void* data, size_t size) {
     if (!data || size != vec->elm_size) return CF_FALSE;
     memcpy(data, (cf_uint8_t*)vec->buffer, size);
     return CF_TRUE;
+}
+
+void* cf_vector_nextof(cf_vector_t* vec, void* data) {
+    if (vec->elm_count == 0) {
+        return CF_NULL_PTR;
+    }
+    if (data == vec->back) {
+        return CF_NULL_PTR;
+    }
+    return _cf_vector_next_of(vec->buffer, vec->elm_size, vec->capacity, data);
 }
 
 cf_bool_t cf_vector_resize(cf_vector_t* vec, size_t new_size, void* data) {

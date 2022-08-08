@@ -30,13 +30,16 @@ cf_bool_t cf_vector_push_back(cf_vector_t* vec, void* data, size_t size);
 cf_bool_t cf_vector_push_front(cf_vector_t* vec, void* data, size_t size);
 cf_bool_t cf_vector_pop_back(cf_vector_t* vec, void* data, size_t size);
 cf_bool_t cf_vector_pop_front(cf_vector_t* vec, void* data, size_t size);
-cf_bool_t cf_vector_back(cf_vector_t* vec, void* data, size_t size);
-cf_bool_t cf_vector_front(cf_vector_t* vec, void* data, size_t size);
+cf_bool_t cf_vector_fetch_back(cf_vector_t* vec, void* data, size_t size);
+cf_bool_t cf_vector_fetch_front(cf_vector_t* vec, void* data, size_t size);
 cf_bool_t cf_vector_at(cf_vector_t* vec, int idx, void* data, size_t size);
+void* cf_vector_nextof(cf_vector_t* vec, void* data);
 cf_bool_t cf_vector_resize(cf_vector_t* vec, size_t new_size, void* data);
 void cf_vector_clear(cf_vector_t* vec);
 static inline cf_size_t cf_vector_size(cf_vector_t* vec) { return vec->elm_count; }
 static inline cf_bool_t cf_vector_is_empty(cf_vector_t* vec) { return vec->elm_count == 0; }
+static inline void* cf_vector_front(cf_vector_t* vec) { return vec->front; }
+static inline void* cf_vector_back(cf_vector_t* vec) { return vec->back; }
 
 #define CF_VECTOR_DEFINE_PUSH_BACK_FUNC(t)                              \
 static inline cf_bool_t cf_vector_push_back_##t(cf_vector_t* vec, t v) { \
