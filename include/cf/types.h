@@ -24,7 +24,7 @@
 #define CF_SWAP32(a) ((((a) & 0xFF) << 24) | (((a) & 0xFF00) << 8) | (((a) & 0xFF0000) >> 8) | (((a) & 0xFF000000) >> 24))
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #define CF_PCHAR(s) ((cf_char_t*)(s))
-#define CF_TYPE_CAST(v, t) ((t)(v))
+#define CF_TYPE_CAST(t, v) ((t)(v))
 #define CF_ASCII_LF '\012'
 #define CF_ASCII_CR '\015'
 

@@ -6,8 +6,8 @@
 #define cf_vector_BUF_DEF_COUNT 128
 
 static inline cf_bool_t _cf_vectory_copy_buffer(cf_vector_t* vec, void* new_buffer, size_t new_capacity) {
-    uint64_t tmp1        = 0;
-    uint64_t tmp2        = 0;
+    cf_uint64_t tmp1        = 0;
+    cf_uint64_t tmp2        = 0;
     if (vec->elm_count == 0) {
         rtc_free(vec->buffer);
         vec->capacity  = new_capacity;
@@ -15,21 +15,21 @@ static inline cf_bool_t _cf_vectory_copy_buffer(cf_vector_t* vec, void* new_buff
         vec->front     = new_buffer;
         vec->back      = new_buffer;
     } else {
-        if ((uint64_t)(vec->front) < (uint64_t)(vec->back)) {
+        if ((cf_uint64_t)(vec->front) < (cf_uint64_t)(vec->back)) {
             memcpy(new_buffer, vec->front, vec->elm_count * vec->elm_size);
         } else {
-            tmp1 = vec->capacity * vec->elm_size - ((uint64_t)vec->front - (uint64_t)vec->buffer + vec->elm_size);
+            tmp1 = vec->capacity * vec->elm_size - ((cf_uint64_t)vec->front - (cf_uint64_t)vec->buffer + vec->elm_size);
             memcpy(new_buffer, vec->front, tmp1);
             tmp2 = vec->elm_count * vec->elm_size - tmp1;
             if (tmp2 > 0) {
-                memcpy((uint8_t*)new_buffer + tmp1, vec->buffer, tmp2);
+                memcpy((cf_uint8_t*)new_buffer + tmp1, vec->buffer, tmp2);
             }
         }  
         rtc_free(vec->buffer);
         vec->capacity  = new_capacity;
         vec->buffer    = new_buffer;
         vec->front     = new_buffer;
-        vec->back      = (void*)((int8_t*)new_buffer + vec->elm_count * vec->elm_size);
+        vec->back      = (void*)((cf_int8_t*)new_buffer + vec->elm_count * vec->elm_size);
     }
 
     return CF_TRUE;
@@ -37,16 +37,16 @@ static inline cf_bool_t _cf_vectory_copy_buffer(cf_vector_t* vec, void* new_buff
 
 static inline void* _cf_vector_next_of(void* buffer, size_t elm_size, size_t capacity, void* current) {
     int offset;
-    offset = (uint64_t)current - (uint64_t)buffer;
+    offset = (cf_uint64_t)current - (cf_uint64_t)buffer;
     offset = offset == (capacity - 1) * elm_size ? 0 : offset + elm_size;
-    return CF_CAST(void*, (uint8_t*)buffer + offset);
+    return CF_TYPE_CAST(void*, (cf_uint8_t*)buffer + offset);
 }
 
 static inline void* _cf_vector_prev_of(void* buffer, size_t elm_size, size_t capacity, void* current) {
     int offset;
-    offset = (uint64_t)current - (uint64_t)buffer;
+    offset = (cf_uint64_t)current - (cf_uint64_t)buffer;
     offset = offset == 0 ? (capacity - 1) * elm_size : offset - elm_size;
-    return CF_CAST(void*, (uint8_t*)buffer + offset);
+    return CF_TYPE_CAST(void*, (cf_uint8_t*)buffer + offset);
 }
 
 cf_bool_t cf_vector_init(cf_vector_t* self, size_t elm_size) {
@@ -54,7 +54,7 @@ cf_bool_t cf_vector_init(cf_vector_t* self, size_t elm_size) {
     self->elm_size  = elm_size;
     self->buffer    = cf_malloc(self->capacity * elm_size);
     if (!self->buffer) {
-        return CF_NULL;
+        return CF_NULL_PTR;
     }
     self->elm_count = 0;
     self->front     = self->buffer;
@@ -75,7 +75,7 @@ void cf_vector_deinit(cf_vector_t* self) {
 }
 
 void cf_vector_reserve(cf_vector_t* vec, size_t cnt) {
-    void* new_buffer    = CF_NULL;
+    void* new_buffer    = CF_NULL_PTR;
     if (cnt <= vec->capacity) return;
     new_buffer = cf_malloc(cnt * vec->elm_size);
     if (!new_buffer) {
@@ -159,7 +159,7 @@ cf_bool_t cf_vector_front(cf_vector_t* vec, void* data, size_t size) {
 
 cf_bool_t cf_vector_at(cf_vector_t* vec, int idx, void* data, size_t size) {
     if (!data || size != vec->elm_size) return CF_FALSE;
-    memcpy(data, (uint8_t*)vec->buffer, size);
+    memcpy(data, (cf_uint8_t*)vec->buffer, size);
     return CF_TRUE;
 }
 
