@@ -9,7 +9,7 @@ static inline cf_bool_t _cf_vectory_copy_buffer(cf_vector_t* vec, void* new_buff
     cf_uint64_t tmp1        = 0;
     cf_uint64_t tmp2        = 0;
     if (vec->elm_count == 0) {
-        rtc_free(vec->buffer);
+        cf_free(vec->buffer);
         vec->capacity  = new_capacity;
         vec->buffer    = new_buffer;
         vec->front     = new_buffer;
@@ -25,7 +25,7 @@ static inline cf_bool_t _cf_vectory_copy_buffer(cf_vector_t* vec, void* new_buff
                 memcpy((cf_uint8_t*)new_buffer + tmp1, vec->buffer, tmp2);
             }
         }  
-        rtc_free(vec->buffer);
+        cf_free(vec->buffer);
         vec->capacity  = new_capacity;
         vec->buffer    = new_buffer;
         vec->front     = new_buffer;
@@ -86,7 +86,6 @@ void cf_vector_reserve(cf_vector_t* vec, size_t cnt) {
 }
 
 cf_bool_t cf_vector_push_back(cf_vector_t* vec, void* data, size_t size) {
-    CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
 
     if (vec->capacity <= vec->elm_count) {
@@ -104,7 +103,6 @@ cf_bool_t cf_vector_push_back(cf_vector_t* vec, void* data, size_t size) {
 }
 
 cf_bool_t cf_vector_push_front(cf_vector_t* vec, void* data, size_t size) {
-    CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
 
     if (vec->capacity <= vec->elm_count) {
@@ -121,7 +119,6 @@ cf_bool_t cf_vector_push_front(cf_vector_t* vec, void* data, size_t size) {
 }
 
 cf_bool_t cf_vector_pop_back(cf_vector_t* vec, void* data, size_t size) {
-    CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
 
     if (cf_vector_is_empty(vec)) return CF_FALSE;
@@ -133,7 +130,6 @@ cf_bool_t cf_vector_pop_back(cf_vector_t* vec, void* data, size_t size) {
 }
 
 cf_bool_t cf_vector_pop_front(cf_vector_t* vec, void* data, size_t size) {
-    CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
 
     if (cf_vector_is_empty(vec)) return CF_FALSE;
@@ -144,14 +140,12 @@ cf_bool_t cf_vector_pop_front(cf_vector_t* vec, void* data, size_t size) {
 }
 
 cf_bool_t cf_vector_fetch_back(cf_vector_t* vec, void* data, size_t size) {
-    CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
     memcpy(data, vec->back, size);
     return CF_TRUE;
 }
 
 cf_bool_t cf_vector_fetch_front(cf_vector_t* vec, void* data, size_t size) {
-    CF_CHECK_GE(size, vec->elm_size);
     if (!data) return CF_FALSE;
     memcpy(data, vec->front, size);
     return CF_TRUE;
