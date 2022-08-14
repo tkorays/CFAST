@@ -21,6 +21,12 @@ CF_DECLS_BEGIN
  */
 typedef struct {
     cf_int64_t      offset_ns;
+
+    // implementation method
+    cf_uint32_t     steady_flag : 1;
+    cf_uint32_t     steady_high_flag : 1;
+    cf_uint32_t     system_flag : 1;
+    cf_uint32_t     reserved : 29;
 } cf_clock_t;
 
 /**
@@ -43,6 +49,13 @@ void cf_clock_set_global(cf_clock_t* clock);
  * @return cf_clock_t* 
  */
 cf_clock_t* cf_clock_steady();
+
+/**
+ * @brief high resolution steady clock.
+ * 
+ * @return cf_clock_t* 
+ */
+cf_clock_t* cf_clock_steady_high();
 
 /**
  * @brief system's NTP time
