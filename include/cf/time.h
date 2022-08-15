@@ -17,15 +17,6 @@
 
 CF_DECLS_BEGIN
 
-typedef cf_uint32_t cf_time_t;
-typedef cf_uint32_t cf_time_interval_t;
-typedef cf_uint64_t cf_clock_t;
-
-typedef struct {
-    cf_time_t   tv_sec;
-    cf_uint32_t tv_usec;
-} cf_timeval_t;
-
 typedef struct {
     cf_uint32_t	year : 12;
     cf_uint32_t	month : 4;
@@ -34,10 +25,24 @@ typedef struct {
     cf_uint32_t week_day : 5;
     cf_uint32_t utc : 1;
 
-    cf_uint8_t	minute;
-	cf_uint8_t	second;
-    cf_uint16_t millisecond;
+    cf_uint32_t	minute : 8;
+	cf_uint32_t	second : 8;
+    cf_uint32_t millisecond : 16;
+
+    cf_int64_t timestamp;
 } cf_datetime_t;
+
+typedef struct {
+    cf_uint32_t	years : 12;
+    cf_uint32_t	months : 4;
+    cf_uint32_t	days : 5;
+    cf_uint32_t	hours : 5;
+    cf_uint32_t minutes : 6;
+
+	cf_uint32_t	seconds : 6;
+    cf_uint32_t milliseconds : 10;
+    cf_uint32_t delta_ms : 16;
+} cf_timedelta_t;
 
 /**
  * @brief Sleep in current thread
@@ -56,11 +61,20 @@ cf_void_t cf_time_sleep(cf_uint32_t ms);
 cf_bool_t cf_datetime_now(cf_datetime_t* dt);
 
 /**
+ * @brief time diff
+ * 
+ * @param dt1 datetime 1
+ * @param dt2 datetime 2
+ * @param delta timedelta between 1 and 2
+ */
+void cf_datetime_diff(const cf_datetime_t* dt1, const cf_datetime_t* dt2, cf_timedelta_t* delta);
+
+/**
  * @brief return the current timestamp in millisecond
  * 
  * @return cf_int64_t 
  */
-cf_int64_t cf_datetime_timestamp();
+#define cf_datetime_timestamp(dt) ((dt)->timestamp)
 
 /**
  * @brief calculate day of year
@@ -68,7 +82,7 @@ cf_int64_t cf_datetime_timestamp();
  * @param dt datetime instance
  * @return cf_int32_t 
  */
-cf_int32_t cf_datetime_day_of_year(cf_datetime_t* dt);
+cf_int32_t cf_datetime_day_of_year(const cf_datetime_t* dt);
 
 
 CF_DECLS_END

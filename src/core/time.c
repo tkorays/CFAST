@@ -31,11 +31,12 @@ cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
     dt->month = st.wMonth;
     dt->day = st.wDay;
     dt->hour = st.wHour;
-    dt->minute = CF_TYPE_CAST(cf_uint8_t, st.wMinute);
-    dt->second = CF_TYPE_CAST(cf_uint8_t, st.wSecond);
+    dt->minute = st.wMinute;
+    dt->second = st.wSecond;
     dt->millisecond = st.wMilliseconds;
     dt->week_day = st.wDayOfWeek;
     dt->utc = CF_TRUE;
+    dt->timestamp = CF_TYPE_CAST(cf_int64_t, time(CF_NULL_PTR));
 #else
     struct tm* t;
     time_t timer;
@@ -55,11 +56,16 @@ cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
     dt->millisecond = tv.tv_usec / 1000;
     dt->week_day = t->tm_wday;
     dt->utc = CF_TRUE;
+    dt->timestamp = CF_TYPE_CAST(cf_int64_t, timer);
 #endif
     return CF_TRUE;
 }
 
-cf_int32_t cf_datetime_day_of_year(cf_datetime_t* dt) {
+void cf_datetime_diff(const cf_datetime_t* dt1, const cf_datetime_t* dt2, cf_timedelta_t* delta) {
+    // TODO:
+}
+
+cf_int32_t cf_datetime_day_of_year(const cf_datetime_t* dt) {
     cf_int32_t d = 0;
     cf_uint32_t i;
     cf_bool_t leap_year = CF_FALSE;
