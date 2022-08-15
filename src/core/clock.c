@@ -10,7 +10,7 @@
 #endif
 
 #ifdef CF_OS_WIN
-LONGLONG _G_WIN_QPC_FREQ_ = 0;
+static LONGLONG _G_WIN_QPC_FREQ_ = 0;
 #endif
 
 static cf_clock_t* _g_clock_global_ = CF_NULL_PTR;

@@ -26,26 +26,49 @@ typedef struct {
     cf_uint32_t tv_usec;
 } cf_timeval_t;
 
-typedef struct cf_datetime {
-	cf_uint32_t	sec;		/* seconds after the minute [0-60] */
-    cf_uint32_t	min;		/* minutes after the hour [0-59] */
-    cf_uint32_t	hour;	/* hours since midnight [0-23] */
-    cf_uint32_t	mday;	/* day of the month [1-31] */
-    cf_uint32_t	mon;		/* months since January [0-11] */
-    cf_uint32_t	year;	/* years since 1900 */
-    cf_uint32_t	wday;	/* days since Sunday [0-6] */
-    cf_uint32_t msec;
-} cf_timeinfo_t;
+typedef struct {
+    cf_uint32_t	year : 12;
+    cf_uint32_t	month : 4;
+    cf_uint32_t	day : 5;
+    cf_uint32_t	hour : 5;
+    cf_uint32_t week_day : 5;
+    cf_uint32_t utc : 1;
 
-cf_clock_t cf_clock_get();
-cf_uint64_t cf_clock_diff_ms(cf_clock_t next, cf_clock_t prev);
+    cf_uint8_t	minute;
+	cf_uint8_t	second;
+    cf_uint16_t millisecond;
+} cf_datetime_t;
+
+/**
+ * @brief Sleep in current thread
+ * 
+ * @param ms sleep duration
+ * @return cf_void_t 
+ */
 cf_void_t cf_time_sleep(cf_uint32_t ms);
-cf_errno_t cf_time_now(cf_timeinfo_t* ti);
-cf_errno_t cf_time_str(const cf_timeinfo_t* ti, cf_char_t* buf, cf_size_t size);
-cf_errno_t cf_time_strYMDHMS(const cf_timeinfo_t* ti, cf_char_t* buf, cf_size_t size);
-cf_int32_t cf_day_of_year(const cf_timeinfo_t* ti);
-cf_bool_t cf_time_is_valid(const cf_timeinfo_t* ti);
 
+/**
+ * @brief return the current timestamp
+ * 
+ * @param dt [in] param
+ * @return cf_void_t 
+ */
+cf_bool_t cf_datetime_now(cf_datetime_t* dt);
+
+/**
+ * @brief return the current timestamp in millisecond
+ * 
+ * @return cf_int64_t 
+ */
+cf_int64_t cf_datetime_timestamp();
+
+/**
+ * @brief calculate day of year
+ * 
+ * @param dt datetime instance
+ * @return cf_int32_t 
+ */
+cf_int32_t cf_datetime_day_of_year(cf_datetime_t* dt);
 
 
 CF_DECLS_END
