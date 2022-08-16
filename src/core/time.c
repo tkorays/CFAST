@@ -26,7 +26,12 @@ cf_void_t cf_time_sleep(cf_uint32_t ms)
 cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
 #ifdef CF_OS_WIN
     SYSTEMTIME st;
+    FILETIME ft;
+    FILETIME lft;
     GetLocalTime(&st);
+    SystemTimeToFileTime(&st, &ft);
+    FileTimeToLocalFileTime(&ft, &lft);
+
     dt->year = st.wYear;
     dt->month = st.wMonth;
     dt->day = st.wDay;
@@ -36,7 +41,8 @@ cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
     dt->millisecond = st.wMilliseconds;
     dt->week_day = st.wDayOfWeek;
     dt->utc = CF_TRUE;
-    dt->timestamp = CF_TYPE_CAST(cf_int64_t, time(CF_NULL_PTR));
+
+    dt->timestamp = CF_TYPE_CAST(cf_int64_t, (CF_TYPE_CAST(cf_uint64_t, lft.dwHighDateTime) << 32 | lft.dwLowDateTime) / 10000);
 #else
     struct tm* t;
     time_t timer;
@@ -56,7 +62,9 @@ cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
     dt->millisecond = tv.tv_usec / 1000;
     dt->week_day = t->tm_wday;
     dt->utc = CF_TRUE;
-    dt->timestamp = CF_TYPE_CAST(cf_int64_t, timer);
+
+    // TODO: improve for *nix
+    dt->timestamp = CF_TYPE_CAST(cf_int64_t, timer) * 1000;
 #endif
     return CF_TRUE;
 }

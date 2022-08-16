@@ -33,15 +33,11 @@ typedef struct {
 } cf_datetime_t;
 
 typedef struct {
-    cf_uint32_t	years : 12;
-    cf_uint32_t	months : 4;
     cf_uint32_t	days : 5;
     cf_uint32_t	hours : 5;
     cf_uint32_t minutes : 6;
-
 	cf_uint32_t	seconds : 6;
     cf_uint32_t milliseconds : 10;
-    cf_uint32_t delta_ms : 16;
 } cf_timedelta_t;
 
 /**
