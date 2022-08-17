@@ -26,7 +26,7 @@ CF_DECLARE(cf_bool_t) cf_fd_isset(cf_int_t fd, cf_fdset_t* fdset) {
     return FD_ISSET(fd, fdset);
 }
 
-CF_DECLARE(cf_errno_t) cf_select(int maxfdp, cf_fdset_t* rfds, cf_fdset_t* wfds, cf_fdset_t* efds, cf_timeval_t* timeout) {
+CF_DECLARE(cf_errno_t) cf_select(int maxfdp, cf_fdset_t* rfds, cf_fdset_t* wfds, cf_fdset_t* efds, struct timeval* timeout) {
     struct timeval t;
     cf_int_t ret;
     if(timeout) {

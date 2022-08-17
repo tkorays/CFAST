@@ -16,13 +16,13 @@ static inline cf_bool_t _cf_vectory_copy_buffer(cf_vector_t* vec, void* new_buff
         vec->back      = new_buffer;
     } else {
         if ((cf_uint64_t)(vec->front) < (cf_uint64_t)(vec->back)) {
-            memcpy(new_buffer, vec->front, vec->elm_count * vec->elm_size);
+            cf_memcpy_s(new_buffer, vec->elm_size * new_capacity, vec->front, vec->elm_count * vec->elm_size);
         } else {
             tmp1 = vec->capacity * vec->elm_size - ((cf_uint64_t)vec->front - (cf_uint64_t)vec->buffer + vec->elm_size);
-            memcpy(new_buffer, vec->front, tmp1);
+            cf_memcpy_s(new_buffer, vec->elm_size * new_capacity, vec->front, tmp1);
             tmp2 = vec->elm_count * vec->elm_size - tmp1;
             if (tmp2 > 0) {
-                memcpy((cf_uint8_t*)new_buffer + tmp1, vec->buffer, tmp2);
+                cf_memcpy_s((cf_uint8_t*)new_buffer + tmp1, vec->elm_size * (new_capacity - tmp1), vec->buffer, tmp2);
             }
         }  
         cf_free(vec->buffer);
@@ -54,12 +54,12 @@ cf_bool_t cf_vector_init(cf_vector_t* self, size_t elm_size) {
     self->elm_size  = elm_size;
     self->buffer    = cf_malloc(self->capacity * elm_size);
     if (!self->buffer) {
-        return CF_NULL_PTR;
+        return CF_FALSE;
     }
     self->elm_count = 0;
     self->front     = self->buffer;
     self->back      = self->buffer;
-    return self;
+    return CF_TRUE;
 }
 
 void cf_vector_deinit(cf_vector_t* self) {
@@ -97,7 +97,7 @@ cf_bool_t cf_vector_push_back(cf_vector_t* vec, void* data, size_t size) {
 
     vec->back = vec->elm_count == 0 ? vec->buffer :
         _cf_vector_next_of(vec->buffer, vec->elm_size, vec->capacity, vec->back);
-    memcpy(vec->back, data, size);
+    cf_memcpy_s(vec->back, size, data, size);
     vec->elm_count++;
     return CF_TRUE;
 }
@@ -113,7 +113,7 @@ cf_bool_t cf_vector_push_front(cf_vector_t* vec, void* data, size_t size) {
     }
     vec->front = vec->elm_count == 0 ? vec->buffer :
         _cf_vector_prev_of(vec->buffer, vec->elm_size, vec->capacity, vec->front);
-    memcpy(vec->front, data, size);
+    cf_memcpy_s(vec->front, size, data, size);
     vec->elm_count++;
     return CF_TRUE;
 }
@@ -122,7 +122,7 @@ cf_bool_t cf_vector_pop_back(cf_vector_t* vec, void* data, size_t size) {
     if (!data) return CF_FALSE;
 
     if (cf_vector_is_empty(vec)) return CF_FALSE;
-    memcpy(data, vec->back, size);
+    cf_memcpy_s(data, size, vec->back, size);
 
     vec->back = _cf_vector_prev_of(vec->buffer, vec->elm_size, vec->capacity, vec->back);
     vec->elm_count--;
@@ -133,7 +133,7 @@ cf_bool_t cf_vector_pop_front(cf_vector_t* vec, void* data, size_t size) {
     if (!data) return CF_FALSE;
 
     if (cf_vector_is_empty(vec)) return CF_FALSE;
-    memcpy(data, vec->front, size);
+    cf_memcpy_s(data, size, vec->front, size);
     vec->front = _cf_vector_next_of(vec->buffer, vec->elm_count, vec->capacity, vec->front);
     vec->elm_count--;
     return CF_TRUE;
@@ -141,19 +141,19 @@ cf_bool_t cf_vector_pop_front(cf_vector_t* vec, void* data, size_t size) {
 
 cf_bool_t cf_vector_fetch_back(cf_vector_t* vec, void* data, size_t size) {
     if (!data) return CF_FALSE;
-    memcpy(data, vec->back, size);
+    cf_memcpy_s(data, size, vec->back, size);
     return CF_TRUE;
 }
 
 cf_bool_t cf_vector_fetch_front(cf_vector_t* vec, void* data, size_t size) {
     if (!data) return CF_FALSE;
-    memcpy(data, vec->front, size);
+    cf_memcpy_s(data, size, vec->front, size);
     return CF_TRUE;
 }
 
 cf_bool_t cf_vector_at(cf_vector_t* vec, int idx, void* data, size_t size) {
     if (!data || size != vec->elm_size) return CF_FALSE;
-    memcpy(data, (cf_uint8_t*)vec->buffer, size);
+    cf_memcpy_s(data, size, (cf_uint8_t*)vec->buffer, size);
     return CF_TRUE;
 }
 

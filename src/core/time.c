@@ -47,7 +47,6 @@ cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
     struct tm* t;
     time_t timer;
     struct timeval tv;
-    if (!ti) return CF_FALSE;
     (void)gettimeofday(&tv, NULL);
 
     timer = time(NULL);
@@ -63,8 +62,7 @@ cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
     dt->week_day = t->tm_wday;
     dt->utc = CF_TRUE;
 
-    // TODO: improve for *nix
-    dt->timestamp = CF_TYPE_CAST(cf_int64_t, timer) * 1000;
+    dt->timestamp = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 #endif
     return CF_TRUE;
 }
