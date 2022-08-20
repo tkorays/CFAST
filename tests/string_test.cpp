@@ -6,7 +6,7 @@ TEST(cf_string_test, construct) {
   cf_string_clear(&str);
   EXPECT_EQ(cf_string_len(&str), 0);
 
-  cf_string_init(&str, 20);
+  EXPECT_EQ(CF_TRUE, cf_string_init(&str, 20));
   EXPECT_EQ(cf_string_len(&str), 20);
 
   cf_string_deinit(&str);

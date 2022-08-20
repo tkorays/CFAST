@@ -1,6 +1,7 @@
 #include <cf/socket.h>
 #include <cf/err.h>
 #include <cf/str.h>
+#include <cf/memory.h>
 
 #ifdef CF_OS_WIN
 //#include <winsock.h>
@@ -41,6 +42,44 @@ const cf_int_t CF_SOCK_SHUTDOWN_RECV = SHUT_RD;
 const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SHUT_RDWR;
 #endif
 
+void cf_sockaddr_clear(cf_sockaddr_t* addr) {
+    cf_membzero(addr, sizeof(cf_sockaddr_t));
+}
+
+void cf_sockaddr_make_ipv4(cf_sockaddr_t* addr, cf_ipv4_addr_t host, cf_uint16_t port) {
+    cf_sockaddr_clear(addr);
+    cf_sockaddr_ipv4_t* addr_ipv4 = CF_TYPE_CAST(cf_sockaddr_ipv4_t*, addr);
+    addr_ipv4->sin_family = CF_SOCK_AF_INET;
+    addr_ipv4->sin_addr.ip_u32 = cf_sock_htonl(host.ip_u32);
+    addr_ipv4->sin_port = cf_sock_htons(port);
+}
+
+void cf_sockaddr_make_ipv6(cf_sockaddr_t* addr, cf_ipv6_addr_t host, cf_uint16_t port) {
+    cf_sockaddr_clear(addr);
+    cf_sockaddr_ipv6_t* addr_ipv6 = CF_TYPE_CAST(cf_sockaddr_ipv6_t*, addr);
+    addr_ipv6->sin6_family = CF_SOCK_AF_INET6;
+    addr_ipv6->sin6_addr = host;
+    addr_ipv6->sin6_port = cf_sock_htons(port);
+}
+
+void cf_ipv4_to_str(cf_ipv4_addr_t host, char* s, cf_size_t len) {
+    if (!s || len < 18) {
+        return;
+    }
+    cf_snprintf(s, len, "%s.%s.%s.%s", host.ip_u8x4[0], host.ip_u8x4[1], host.ip_u8x4[2], host.ip_u8x4[3]);
+}
+
+void cf_ipv6_to_str(cf_ipv6_addr_t host, char* s, cf_size_t len) {
+
+}
+
+void cf_ipv4_from_str(char* s, cf_size_t len, cf_ipv4_addr_t* host) {
+    inet_pton(CF_SOCK_AF_INET, s, host);
+}
+
+void cf_ipv6_from_str(char* s, cf_size_t len, cf_ipv6_addr_t* host) {
+
+}
 
 cf_uint16_t cf_sock_ntohs(cf_uint16_t n) {
     return CF_SWAP16(n);
@@ -58,14 +97,14 @@ cf_uint32_t cf_sock_htonl(cf_uint32_t n) {
     return CF_SWAP32(n);
 }
 
-cf_char_t*  cf_sock_inet_ntoa(cf_in_addr_t in) {
+cf_char_t*  cf_sock_inet_ntoa(cf_ipv4_addr_t in) {
     static cf_char_t s[18] = {0};
-    cf_char_t* addr = (cf_char_t*)&(in.S_addr);
+    cf_char_t* addr = (cf_char_t*)&(in.ip_u32);
     (cf_void_t)cf_snprintf(s, sizeof(s), "%s.%s.%s.%s", addr[0], addr[1], addr[2], addr[3]);
     return s;
 }
 
-cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_in_addr_t* addr) {
+cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_ipv4_addr_t* addr) {
     if(!s || !addr) return CF_NOK;
     //struct in_addr ia;
     //if(inet_aton(s, &ia) != 0) return CF_NOK;
