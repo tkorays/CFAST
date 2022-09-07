@@ -7,3 +7,5 @@ build/
 build-*/
 *~
 *.log
+.clangd/
+compile_commands.json

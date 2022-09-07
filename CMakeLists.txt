@@ -34,6 +34,7 @@ set(SRC_LIST src/core/list.c
     src/core/string.c
     src/core/vector.c
     src/core/clock.c
+    src/core/array.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
