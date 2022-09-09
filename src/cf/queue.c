@@ -68,20 +68,20 @@ cf_errno_t  cf_que_dequeue(cf_que_t* que, cf_void_t** data, cf_size_t* size) {
     return CF_OK;
 }
 
-cf_bool_t cf_lite_queue_init(cf_lite_queue_t* self, cf_size_t item_size, cf_size_t init_capacity) {
-    if (item_size == 0 || item_size > CF_LITE_QUEUE_MAX_ITEM_SIZE) {
+cf_bool_t cf_lite_queue_init(cf_lite_queue_t* self, cf_size_t elm_size, cf_size_t init_capacity) {
+    if (elm_size == 0 || elm_size > CF_LITE_QUEUE_MAX_ITEM_SIZE) {
         return CF_FALSE;
     }
     if (init_capacity == 0) {
         init_capacity = CF_LITE_QUEUE_INIT_CAPACITY;
     }
 
-    self->item_size     = item_size;
+    self->elm_size     = elm_size;
     self->capacity      = CF_MIN2(init_capacity, CF_LITE_QUEUE_MAX_CAPACITY);
     self->head          = 0;
     self->tail          = 0;
     self->count         = 0;
-    self->items         = cf_malloc(self->item_size * self->capacity);
+    self->items         = cf_malloc(self->elm_size * self->capacity);
     return CF_TRUE;
 }
 
@@ -89,7 +89,7 @@ void cf_lite_queue_deinit(cf_lite_queue_t* self) {
     if (self->items) {
         cf_free(self->items);
     }
-    self->item_size     = 0;
+    self->elm_size      = 0;
     self->capacity      = 0;
     self->head          = 0;
     self->tail          = 0;
@@ -102,7 +102,7 @@ void* cf_lite_queue_front(cf_lite_queue_t* self) {
         return CF_NULL_PTR;
     }
 
-    return (void*)&((((cf_uint8_t*)(self->items))[self->item_size * self->head]));
+    return CF_ARRAY_GET(void*, self->items, self->elm_size, self->head);
 }
 
 void* cf_lite_queue_back(cf_lite_queue_t* self) {
@@ -110,29 +110,30 @@ void* cf_lite_queue_back(cf_lite_queue_t* self) {
         return CF_NULL_PTR;
     }
 
-    return (void*)&((((cf_uint8_t*)(self->items))[self->item_size * self->tail]));
+    return CF_ARRAY_GET(void*, self->items, self->elm_size, self->tail);
 }
 
 cf_bool_t cf_lite_queue_extend(cf_lite_queue_t* self) {
     size_t new_capacity = self->capacity * 2;
-    void* new_items = cf_malloc(self->capacity * self->item_size);
+    void* new_items = cf_malloc(new_capacity * self->elm_size);
     cf_uint_t partial_count = 0;
     if (CF_NULL_PTR == new_items) {
         return CF_FALSE;
     }
+
     if (self->tail - self->head > 0 && self->tail - self->head + 1 == self->count) {
-        cf_memcpy_s(new_items, new_capacity * self->item_size,\
-            &((cf_uint8_t*)(self->items))[self->item_size*self->head],\
-            self->count*self->item_size);
+        cf_memcpy_s(new_items, new_capacity * self->elm_size,\
+            &((cf_uint8_t*)(self->items))[self->elm_size*self->head],\
+            self->count*self->elm_size);
     } else {
         partial_count = self->capacity - self->tail + 1;
-        cf_memcpy_s(new_items, new_capacity * self->item_size,\
-            &((cf_uint8_t*)(self->items))[self->item_size*self->head],\
-            partial_count*self->item_size);
-        cf_memcpy_s((cf_uint8_t*)new_items + partial_count * self->item_size,\
-            (new_capacity - partial_count) * self->item_size,\
+        cf_memcpy_s(new_items, new_capacity * self->elm_size,\
+            &((cf_uint8_t*)(self->items))[self->elm_size*self->head],\
+            partial_count*self->elm_size);
+        cf_memcpy_s((cf_uint8_t*)new_items + partial_count * self->elm_size,\
+            (new_capacity - partial_count) * self->elm_size,\
             self->items,
-            (self->tail + 1)*self->item_size);
+            (self->tail + 1)*self->elm_size);
     }
     cf_free(self->items);
     self->capacity = new_capacity;
@@ -161,8 +162,8 @@ cf_bool_t cf_lite_queue_push_back(cf_lite_queue_t* self, void* data) {
     } else {
         self->tail = (self->tail + 1) % self->capacity;
     }
-    cf_memcpy_s((void*)&((((cf_uint8_t*)(self->items))[self->item_size * self->tail])), \
-        self->item_size, data, self->item_size);
+    cf_memcpy_s((void*)&((((cf_uint8_t*)(self->items))[self->elm_size * self->tail])), \
+        self->elm_size, data, self->elm_size);
     self->count++;
     return CF_TRUE;
 }
@@ -184,8 +185,8 @@ cf_bool_t cf_lite_queue_push_front(cf_lite_queue_t* self, void* data) {
     } else {
         self->head = (self->capacity + self->head - 1) % self->capacity;
     }
-    cf_memcpy_s((void*)&((((cf_uint8_t*)(self->items))[self->item_size * self->head])), \
-        self->item_size, data, self->item_size);
+    cf_memcpy_s((void*)&((((cf_uint8_t*)(self->items))[self->elm_size * self->head])), \
+        self->elm_size, data, self->elm_size);
     self->count++;
     return CF_TRUE;
 }

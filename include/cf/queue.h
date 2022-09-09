@@ -41,7 +41,7 @@ cf_errno_t  cf_que_dequeue(cf_que_t* que, cf_void_t** data, cf_size_t* size);
  */
 typedef struct {
     void*       items;      //< address of the first item
-    cf_size_t   item_size;  //< all items have the same size
+    cf_size_t   elm_size;     //< all items have the same size
     cf_size_t   capacity;   //< max items this queue can hold
     cf_uint_t   head;       //< head index of the queue
     cf_uint_t   tail;       //< tail index of this queue
@@ -52,11 +52,11 @@ typedef struct {
  * @brief initialize a lite queue with item size and initial capacity.
  * 
  * @param self self pointer
- * @param item_size item size of every item
+ * @param elm_size item size of every item
  * @param init_capacity initial capacity of this queue
  * @return cf_bool_t 
  */
-cf_bool_t cf_lite_queue_init(cf_lite_queue_t* self, cf_size_t item_size, cf_size_t init_capacity);
+cf_bool_t cf_lite_queue_init(cf_lite_queue_t* self, cf_size_t elm_size, cf_size_t init_capacity);
 
 /**
  * @brief deinitialize lite queue
@@ -126,7 +126,7 @@ void cf_lite_queue_clear(cf_lite_queue_t* self);
  * @brief item size of this queue
  * 
  */
-#define cf_lite_queue_item_size(self) ((self)->item_size)
+#define cf_lite_queue_item_size(self) ((self)->elm_size)
 
 /**
  * @brief is this queue empty
