@@ -10,31 +10,31 @@ if(NOT CMAKE_INSTALL_PREFIX)
     set(CMAKE_INSTALL_PREFIX /usr/local)
 endif()
 
-set(SRC_LIST src/core/list.c
-    src/core/memory.c
-    src/core/mpool.c
-    src/core/cli.c
-    src/core/opt.c 
-    src/core/str.c
-    src/core/log.c
-    src/core/thread.c
-    src/core/err.c
-    src/core/file.c
-    src/core/queue.c
-    src/core/config.c
-    src/core/socket.c
-    src/core/mutex.c
-    src/core/dso.c
-    src/core/dbg.c
-    src/core/select.c
-    src/core/path.c
-    src/core/env.c
-    src/core/time.c
-    src/core/system.c
-    src/core/string.c
-    src/core/vector.c
-    src/core/clock.c
-    src/core/array.c
+set(SRC_LIST src/cf/list.c
+    src/cf/memory.c
+    src/cf/mpool.c
+    src/cf/cli.c
+    src/cf/opt.c 
+    src/cf/str.c
+    src/cf/log.c
+    src/cf/thread.c
+    src/cf/err.c
+    src/cf/file.c
+    src/cf/queue.c
+    src/cf/config.c
+    src/cf/socket.c
+    src/cf/mutex.c
+    src/cf/dso.c
+    src/cf/dbg.c
+    src/cf/select.c
+    src/cf/path.c
+    src/cf/env.c
+    src/cf/time.c
+    src/cf/system.c
+    src/cf/string.c
+    src/cf/vector.c
+    src/cf/clock.c
+    src/cf/array.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
@@ -47,7 +47,7 @@ if(WIN32)
 
 else()
     set(SRC_LIST ${SRC_LIST}
-        src/core/poll.c)
+        src/cf/poll.c)
 endif()
 
 add_library(cfast STATIC ${SRC_LIST})
