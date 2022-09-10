@@ -3,7 +3,7 @@
 cf_bool_t cf_tls_init(cf_tls_t* self, cf_tls_memfree_f f) {
 #if defined (CF_OS_WIN)
     self->tls_index = -1;
-    self->tls_index = TLSAlloc();
+    self->tls_index = TlsAlloc();
 #else
     self->tls_key = -1;
     if (0 != pthread_key_create(&self->tls_key, f)) {
@@ -15,7 +15,7 @@ cf_bool_t cf_tls_init(cf_tls_t* self, cf_tls_memfree_f f) {
 
 cf_bool_t cf_tls_deinit(cf_tls_t* self) {
 #if defined (CF_OS_WIN)
-    BOOL ret = TLSFree(self->tls_index);
+    BOOL ret = TlsFree(self->tls_index);
     self->tls_index = -1;
     return CF_TYPE_CAST(cf_bool_t, ret);
 #else
@@ -29,7 +29,7 @@ cf_bool_t cf_tls_deinit(cf_tls_t* self) {
 
 cf_bool_t cf_tls_set(cf_tls_t* self, void* value) {
 #if defined (CF_OS_WIN)
-    return CF_TYPE_CAST(cf_bool_t, TLSSetValue(self->tls_index, value));
+    return CF_TYPE_CAST(cf_bool_t, TlsSetValue(self->tls_index, value));
 #else
     return (0 != pthread_setspecific(self->tls_key, value));
 #endif
@@ -37,7 +37,7 @@ cf_bool_t cf_tls_set(cf_tls_t* self, void* value) {
 
 void* cf_tls_get(cf_tls_t* self) {
 #if defined (CF_OS_WIN)
-    return TLSGetValue(self->tls_index);
+    return TlsGetValue(self->tls_index);
 #else
     return pthread_getspecific(self->tls_key);
 #endif
