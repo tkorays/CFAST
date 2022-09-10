@@ -35,6 +35,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/vector.c
     src/cf/clock.c
     src/cf/array.c
+    src/cf/tls.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
