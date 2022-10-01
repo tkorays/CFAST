@@ -209,13 +209,13 @@ cf_bool_t cf_socket_set_nonblock(cf_socket_t* self, cf_bool_t nonblock) {
     return ioctlsocket(self->raw_socket_id, FIONBIO,&mode) == 0 ? CF_TRUE : CF_FALSE;
 #else
     cf_int_t flags;
-	flags = fcntl(sock, F_GETFL, 0);
+	flags = fcntl(self->raw_socket_id, F_GETFL, 0);
 	if (flags < 0) {
 		return CF_FALSE;
 	}
     if(nonblock) flags |= O_NONBLOCK;
     else flags &= ~O_NONBLOCK;
-	if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0) {
+	if (fcntl(self->raw_socket_id, F_SETFL, flags | O_NONBLOCK) < 0) {
 		return CF_FALSE;
 	}
     return CF_TRUE;
