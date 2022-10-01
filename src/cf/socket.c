@@ -1,12 +1,11 @@
-#include <cf/socket.h>
-#include <cf/err.h>
-#include <cf/str.h>
-#include <cf/memory.h>
+#include "cf/socket.h"
+#include "cf/memory.h"
 
 #ifdef CF_OS_WIN
 //#include <winsock.h>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
+#pragma comment(lib, "WS2_32.lib")
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -15,15 +14,6 @@
 #include <sys/ioctl.h> /* BSD's ioctl, e.g. Mac OSX */
 #include <fcntl.h>
 #endif
-
-const cf_int_t CF_SOCK_AF_UNSPEC = AF_UNSPEC;
-const cf_int_t CF_SOCK_AF_LOCAL = AF_UNIX;
-const cf_int_t CF_SOCK_AF_INET = AF_INET;
-const cf_int_t CF_SOCK_AF_INET6 = AF_INET6;
-
-const cf_int_t CF_SOCK_STREAM = SOCK_STREAM;
-const cf_int_t CF_SOCK_DGRAM = SOCK_DGRAM;
-const cf_int_t CF_SOCK_RAW = SOCK_RAW;
 
 const cf_int_t CF_SOCK_PROTO_AUTO = 0;
 #ifdef CF_OS_WIN
@@ -42,197 +32,192 @@ const cf_int_t CF_SOCK_SHUTDOWN_RECV = SHUT_RD;
 const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SHUT_RDWR;
 #endif
 
-void cf_sockaddr_clear(cf_sockaddr_t* addr) {
-    cf_membzero(addr, sizeof(cf_sockaddr_t));
-}
-
-void cf_sockaddr_make_ipv4(cf_sockaddr_t* addr, cf_ipv4_addr_t host, cf_uint16_t port) {
-    cf_sockaddr_clear(addr);
-    cf_sockaddr_ipv4_t* addr_ipv4 = CF_TYPE_CAST(cf_sockaddr_ipv4_t*, addr);
-    addr_ipv4->sin_family = CF_SOCK_AF_INET;
-    addr_ipv4->sin_addr.ip_u32 = cf_sock_htonl(host.ip_u32);
-    addr_ipv4->sin_port = cf_sock_htons(port);
-}
-
-void cf_sockaddr_make_ipv6(cf_sockaddr_t* addr, cf_ipv6_addr_t host, cf_uint16_t port) {
-    cf_sockaddr_clear(addr);
-    cf_sockaddr_ipv6_t* addr_ipv6 = CF_TYPE_CAST(cf_sockaddr_ipv6_t*, addr);
-    addr_ipv6->sin6_family = CF_SOCK_AF_INET6;
-    addr_ipv6->sin6_addr = host;
-    addr_ipv6->sin6_port = cf_sock_htons(port);
-}
-
-void cf_ipv4_to_str(cf_ipv4_addr_t host, char* s, cf_size_t len) {
-    if (!s || len < 18) {
-        return;
-    }
-    cf_snprintf(s, len, "%s.%s.%s.%s", host.ip_u8x4[0], host.ip_u8x4[1], host.ip_u8x4[2], host.ip_u8x4[3]);
-}
-
-void cf_ipv6_to_str(cf_ipv6_addr_t host, char* s, cf_size_t len) {
-
-}
-
-void cf_ipv4_from_str(char* s, cf_size_t len, cf_ipv4_addr_t* host) {
-    inet_pton(CF_SOCK_AF_INET, s, host);
-}
-
-void cf_ipv6_from_str(char* s, cf_size_t len, cf_ipv6_addr_t* host) {
-
-}
-
-cf_uint16_t cf_sock_ntohs(cf_uint16_t n) {
-    return CF_SWAP16(n);
-}
-
-cf_uint16_t cf_sock_htons(cf_uint16_t n) {
-    return CF_SWAP16(n);
-}
-
-cf_uint32_t cf_sock_ntohl(cf_uint32_t n) {
-    return CF_SWAP32(n);
-}
-
-cf_uint32_t cf_sock_htonl(cf_uint32_t n) {
-    return CF_SWAP32(n);
-}
-
-cf_char_t*  cf_sock_inet_ntoa(cf_ipv4_addr_t in) {
-    static cf_char_t s[18] = {0};
-    cf_char_t* addr = (cf_char_t*)&(in.ip_u32);
-    (cf_void_t)cf_snprintf(s, sizeof(s), "%s.%s.%s.%s", addr[0], addr[1], addr[2], addr[3]);
-    return s;
-}
-
-cf_errno_t cf_sock_inet_aton(const cf_char_t* s, cf_ipv4_addr_t* addr) {
-    if(!s || !addr) return CF_NOK;
-    //struct in_addr ia;
-    //if(inet_aton(s, &ia) != 0) return CF_NOK;
-    //addr->S_addr = (cf_uint32_t)ia.s_addr;
-    return inet_pton(CF_SOCK_AF_INET, s, addr) == 0 ? CF_OK : CF_NOK;
-    //addr->S_addr = inet_addr(s);
-}
+#ifdef CF_OS_WIN
+#define MAKE_INTER_SA_FROM_CF_SA_V4(inter, cfaddr) do {     \
+    (inter).sin_family = AF_INET;                           \
+    (inter).sin_port = htons((cfaddr).port);                \
+    (inter).sin_addr.s_addr = htonl((cfaddr).ipaddr.v4.u32);\
+} while(0)
+#else
+#define MAKE_INTER_SA_FROM_CF_SA_V4(inter, cfaddr) do {     \
+    (inter).sin_family = AF_INET;                           \
+    (inter).sin_len = sizeof(inter);                        \
+    (inter).sin_port = htons((cfaddr).port);                \
+    (inter).sin_addr.s_addr = htonl((cfaddr).ipaddr.v4.u32);\
+} while(0)
+#endif
 
 
-cf_errno_t cf_sock_pton(cf_int_t af, const cf_char_t* src, cf_void_t* dst) {
-    if (!src || !dst) return CF_EPARAM;
-    return inet_pton(af, src, dst) == 0 ? CF_OK : CF_NOK;
-}
+#define MAKE_CF_SA_FROM_INTER_SA(cfaddr, inter) do {\
+} while(0)
 
-cf_errno_t cf_sock_ntop(cf_int_t af, const cf_void_t* src, cf_char_t* dst, cf_size_t dstsize) {
-    if (!src || !dst) return CF_EPARAM;
-    return inet_ntop(af, src, dst, dstsize) == 0 ? CF_OK : CF_NOK;
-}
-
-
-cf_errno_t cf_sock_startup(cf_int_t ver_major, cf_int_t ver_minor) {
+cf_bool_t cf_socket_bootstrap() {
 #ifdef CF_OS_WIN
     WSADATA wsd;
-    return WSAStartup(MAKEWORD(ver_major, ver_minor), &wsd) == 0 ? CF_OK : CF_NOK;
+    return WSAStartup(MAKEWORD(2, 0), &wsd) == 0 ? CF_TRUE : CF_FALSE;
 #else
-    return CF_OK;
+    return CF_TRUE;
 #endif
 }
 
-cf_errno_t cf_sock_cleanup() {
+cf_void_t cf_socket_shutdown() {
 #ifdef CF_OS_WIN
-    return WSACleanup() == 0 ? CF_OK : CF_NOK;
-#else 
-    return CF_OK;
+    WSACleanup();
 #endif
 }
 
-cf_errno_t cf_sock_create(cf_socket_t* sock, cf_int_t family, cf_int_t type, cf_int_t protocol) {
-    if(!sock) {
-        return CF_EPARAM;
+cf_bool_t cf_socket_init(cf_socket_t* self, cf_bool_t is_ipv4, cf_bool_t is_tcp) {
+    self->is_ipv4 = is_ipv4;
+    self->is_tcp = is_tcp;
+    self->raw_socket_id = 0;
+    self->send_err = 0;
+    self->recv_err = 0;
+    self->send_bytes = 0;
+    self->recv_bytes = 0;
+
+    self->raw_socket_id = socket(
+            is_ipv4 ? AF_INET : AF_INET6,
+            is_tcp ? SOCK_STREAM : SOCK_DGRAM,
+            CF_SOCK_PROTO_AUTO);
+    if (!self->raw_socket_id) {
+        return CF_FALSE;
     }
-    *sock = socket(family, type, protocol);
-    if(!*sock) {
-        return CF_NOK;
-    }
-    return CF_OK;
+    return CF_TRUE;
 }
 
-cf_errno_t cf_sock_shutdown(cf_socket_t sock, cf_int_t how) {
-    return shutdown(sock, how) == 0 ? CF_OK : CF_NOK;
+void cf_socket_deinit(cf_socket_t* self) {
+    if (self->raw_socket_id) {
+        shutdown(self->raw_socket_id, CF_SOCK_SHUTDOWN_BOTH);
+    }
 }
 
-cf_errno_t cf_sock_close(cf_socket_t sock) {
-    if(!sock) return CF_EPARAM;
+cf_bool_t cf_socket_close(cf_socket_t* self) {
+    if (self->raw_socket_id) {
 #ifdef CF_OS_WIN
-    if (0 != closesocket(sock)) return CF_NOK;
+    return closesocket(self->raw_socket_id) == 0;
 #else
-    if(0 != close(sock)) return CF_NOK;
+    return close(self->raw_socket_id) == 0;
 #endif
-    return CF_OK;
-}
-
-cf_errno_t cf_sock_bind(cf_socket_t sock, cf_sockaddr_t* sa, cf_sock_len_t addrlen) {
-    if(sock == 0 || !sa) return CF_EPARAM;
-    if(0 != bind(sock, (struct sockaddr*)sa, addrlen)) return CF_NOK;
-    return CF_OK;
-}
-
-cf_errno_t cf_sock_listen(cf_socket_t sock, cf_uint_t backlog) {
-    if(sock == 0) return CF_EPARAM;
-    if(0 != listen(sock, backlog)) return CF_NOK;
-    return CF_OK;
-}
-
-cf_errno_t cf_sock_accept(cf_socket_t sock, cf_socket_t* new_sock, cf_sockaddr_t* addr, cf_sock_len_t* addrlen) {
-    cf_int_t err = accept(sock, (struct sockaddr*)addr, addrlen);
-    if(err < 0) return CF_NOK;
-    else {
-        *new_sock = err;
-        return CF_OK;
     }
+    return CF_TRUE;
 }
 
-cf_errno_t cf_sock_connect(cf_socket_t sock, cf_sockaddr_t* sa, cf_int_t namelen) {
-    cf_int_t err = connect(sock, (struct sockaddr*)sa, namelen);
-    if(err) return CF_NOK;
-    else return CF_OK;
+cf_bool_t cf_socket_bind(cf_socket_t* self, cf_sockaddr_t* addr) {
+    struct sockaddr sa;
+    socklen_t len;
+
+    cf_memcpy_s(&self->addr, sizeof(self->addr), addr, sizeof(cf_sockaddr_t));
+
+    if (!self->raw_socket_id) return CF_FALSE;
+
+    if (self->is_ipv4) {
+        MAKE_INTER_SA_FROM_CF_SA_V4(*CF_TYPE_CAST(struct sockaddr_in*, &sa), self->addr);
+        len = sizeof(struct sockaddr_in);
+    } else {
+        /* IPV6 TODO: support ipv6! */
+        len = sizeof(struct sockaddr_in6);
+    }
+
+    return 0 == bind(self->raw_socket_id, &sa, len);
 }
 
-cf_errno_t cf_sock_send(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags) {
-    return cf_sock_sendto(sock, buff, len, flags, CF_NULL_PTR, 0);
+cf_bool_t cf_socket_listen(cf_socket_t* self) {
+    if (!self->raw_socket_id) return CF_FALSE;
+    return 0 == listen(self->raw_socket_id, 0);
 }
 
-cf_errno_t cf_sock_recv(cf_socket_t sock, cf_void_t* buff, cf_size_t* len, cf_uint_t flags) {
-    return cf_sock_recvfrom(sock, buff, len, flags, CF_NULL_PTR, 0);
+cf_bool_t cf_socket_accept(cf_socket_t* self, cf_socket_t* sock) {
+    struct sockaddr sa;
+    socklen_t len;
+    int new_sock = 0;
+    int err = 0;
+    if (!self->raw_socket_id) return CF_FALSE;
+    if (self->is_ipv4) {
+        len = sizeof(struct sockaddr_in);
+    } else {
+        len = sizeof(struct sockaddr_in6);
+    }
+    err = accept(self->raw_socket_id, (struct sockaddr*)&sa, &len);
+    if (err < 0) return CF_FALSE;
+
+    sock->raw_socket_id = err;
+    if (self->is_ipv4) {
+        sock->is_ipv4 = self->is_ipv4;
+        sock->is_tcp = self->is_tcp;
+        sock->addr.ipaddr.v4.u32 = ntohl(CF_TYPE_CAST(struct sockaddr_in*, &sa)->sin_addr.s_addr);
+        sock->addr.port = ntohs(CF_TYPE_CAST(struct sockaddr_in*, &sa)->sin_port);
+    } else {
+        /* TODO: support ipv6 */
+    }
+
+    return CF_TRUE;
 }
 
-cf_errno_t cf_sock_sendto(cf_socket_t sock, cf_void_t* buff, cf_size_t *len, cf_uint_t flags,
-                          cf_sockaddr_t* sa, cf_sock_len_t addrlen) {
-    cf_int_t rl = sendto(sock, buff, *len, flags, (struct sockaddr*)sa, addrlen);
-    if(rl <= 0) return CF_NOK;                         
-    *len = rl;
-    return CF_OK;
+cf_bool_t cf_socket_connect(cf_socket_t* self, cf_sockaddr_t* addr) {
+    struct sockaddr sa;
+    int err;
+    int len = self->is_ipv4 ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6);
+    if (!self->raw_socket_id) return CF_FALSE;
+    err = connect(self->raw_socket_id, &sa, len);
+    if (err) return CF_FALSE;
+    if (self->is_ipv4) {
+        addr->ipver = CF_IP_V4;
+        addr->ipaddr.v4.u32 = ntohl(CF_TYPE_CAST(struct sockaddr_in*, &sa)->sin_addr.s_addr);
+        addr->port = ntohs(CF_TYPE_CAST(struct sockaddr_in*, &sa)->sin_port);
+    } else {
+        /* TODO */
+    }
+    return CF_TRUE;
 }
 
-cf_errno_t cf_sock_recvfrom(cf_socket_t sock, cf_void_t* buff, cf_size_t *len, cf_uint_t flags,
-                            cf_sockaddr_t* from, cf_sock_len_t* fromlen) {
-    cf_int_t rl = recvfrom(sock, buff, *len, flags, (struct sockaddr*)from, fromlen);    
-    if(rl <= 0) return CF_NOK;                         
-    *len = rl;
-    return CF_OK;
+cf_int_t cf_socket_send(cf_socket_t* self, void* buff, cf_size_t len) {
+    return cf_socket_sendto(self, CF_NULL_PTR, buff, len);
 }
 
-cf_errno_t cf_sock_set_nonblock(cf_socket_t sock, cf_bool_t nonblock) {
+cf_int_t cf_socket_recv(cf_socket_t* self, void* buff, cf_size_t len) {
+    return cf_socket_recvfrom(self, CF_NULL_PTR, buff, len);
+}
+
+cf_int_t cf_socket_sendto(cf_socket_t* self, cf_sockaddr_t* to, void* buff, cf_size_t len) {
+    struct sockaddr sa;
+    if (!self->raw_socket_id) return 0;
+    MAKE_INTER_SA_FROM_CF_SA_V4(*CF_TYPE_CAST(struct sockaddr_in*, &sa), *to);
+    return sendto(self->raw_socket_id, buff, len, 0, &sa, sizeof(struct sockaddr_in));
+}
+
+cf_int_t cf_socket_recvfrom(cf_socket_t* self, cf_sockaddr_t* from, void* buff, cf_size_t len) {
+    struct sockaddr sa;
+    socklen_t sl;
+    int ret;
+    if (!self->raw_socket_id) return 0;
+    ret = recvfrom(self->raw_socket_id, buff, len, 0, &sa, &sl);
+
+    if (self->is_ipv4) {
+        from->ipver = self->addr.ipver;
+        from->ipaddr.v4.u32 = ntohl(CF_TYPE_CAST(struct sockaddr_in*, &sa)->sin_addr.s_addr);
+        from->port = ntohs(CF_TYPE_CAST(struct sockaddr_in*, &sa)->sin_port);
+    } else {
+        /* TODO */
+    }
+
+    return ret;
+}
+
+cf_bool_t cf_socket_set_nonblock(cf_socket_t* self, cf_bool_t nonblock) {
 #ifdef CF_OS_WIN
     unsigned long mode = (nonblock ? 1 : 0);
-    return ioctlsocket(sock, FIONBIO,&mode) == 0 ? CF_OK : CF_NOK;
+    return ioctlsocket(self->raw_socket_id, FIONBIO,&mode) == 0 ? CF_TRUE : CF_FALSE;
 #else
     cf_int_t flags;
 	flags = fcntl(sock, F_GETFL, 0);
 	if (flags < 0) {
-		return CF_NOK;
+		return CF_FALSE;
 	}
     if(nonblock) flags |= O_NONBLOCK;
     else flags &= ~O_NONBLOCK;
 	if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0) {
-		return CF_NOK;
+		return CF_FALSE;
 	}
-    return CF_OK;
+    return CF_TRUE;
 #endif
 }
