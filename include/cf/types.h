@@ -29,12 +29,18 @@
 #define CF_ASCII_LF '\012'
 #define CF_ASCII_CR '\015'
 
+#define CF_UNUSED_VAR(var) ((void*)(var))
+
 #define CF_MAX_INT32    0x7fffffff
 #define CF_MAX_UINT32   UINT_MAX
 #define CF_MIN_INT32    0x80000000
 #define CF_MAX_INT64    9223372036854775807L
 #define CF_MAX_UINT64   18446744073709551615UL
 #define CF_MIN_INT64    (-CF_MAX_INT64 - 1L)
+
+#define _CF_IN_
+#define _CF_OUT_
+#define _CF_INOUT_
 
 
 typedef int             cf_int_t;

@@ -84,6 +84,26 @@ cf_void_t* cf_memchr(const cf_void_t* s, cf_char_t c, cf_size_t n);
  */
 cf_void_t cf_membzero(cf_void_t* dst, cf_size_t n);
 
+
+typedef void*(*cf_alloc_new_fn)(void* nullable_allocator, cf_size_t size);
+typedef void(*cf_alloc_delete_fn)(void* nullable_allocator, void* address);
+
+/**
+ * @brief this is the interface for a memory allocator.
+ * 
+ */
+typedef struct cf_allocator {
+    void*               impl;       /** pointer of the allocator implementation */
+    cf_alloc_new_fn     new_fn;     /** new function */
+    cf_alloc_delete_fn  delete_fn;  /** delete function */
+} cf_allocator_t;
+
+
+cf_allocator_t* cf_allocator_default();
+
+typedef struct cf_mpool cf_mpool_t;
+cf_bool_t cf_allocator_init_from_mpool(cf_allocator_t* self, cf_mpool_t* mpool);
+
 CF_DECLS_END
 
 #endif /* __CF_MEMORY_H__ */

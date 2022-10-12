@@ -46,3 +46,24 @@ cf_void_t cf_membzero(cf_void_t* dst, cf_size_t n) {
     cf_memset_s(dst, n, 0, n);
 #endif
 }
+
+static void* _allocator_new_default(void* nullable_allocator, cf_size_t size) {
+    CF_UNUSED_VAR(nullable_allocator);
+    return cf_malloc(size);
+}
+
+static void _allocator_delete_default(void* nullable_allocator, void* address) {
+    CF_UNUSED_VAR(nullable_allocator);
+    return cf_free(address);
+}
+
+
+static cf_allocator_t _g_allocator = {
+    .impl = CF_NULL_PTR,
+    .new_fn = _allocator_new_default,
+    .delete_fn = _allocator_delete_default
+};
+
+cf_allocator_t* cf_allocator_default() {
+    return &_g_allocator;
+}

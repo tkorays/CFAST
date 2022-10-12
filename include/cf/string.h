@@ -24,6 +24,7 @@ typedef struct {
     cf_char_t*  ptr;    /** string data without \0 */
     cf_uint32_t ref:1;  /** string reference, not managed */
     cf_uint32_t len:31; /** string length */
+    // void(*freefn)(void* nullable_ctx, void* addr);
 } cf_string_t;
 
 
