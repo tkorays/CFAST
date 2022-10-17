@@ -28,6 +28,13 @@
 CF_DECLS_BEGIN
 
 /**
+ * Allocate memory and set zero.
+ * @param size          memory size
+ * @return cf_void_t*   address of memory
+ */
+cf_void_t* cf_malloc_z(cf_size_t size);
+
+/**
  * Allocate memory, debug version.
  * @param size       Memory size
  * @return           Address of memory.

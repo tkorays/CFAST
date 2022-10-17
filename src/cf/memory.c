@@ -5,6 +5,10 @@
 #define CF_MEMTRACE_MALLOC(p, size) (void*)0
 #define CF_MEMTRACE_FREE(p) (void*)0
 
+cf_void_t* cf_malloc_z(cf_size_t size) {
+    return memset(cf_malloc(size), 0, size);
+}
+
 cf_void_t* cf_malloc_dbg(cf_size_t size) {
     cf_void_t* p = malloc(size);
 
