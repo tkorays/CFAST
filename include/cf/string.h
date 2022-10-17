@@ -21,10 +21,9 @@ CF_DECLS_BEGIN
  * String.
  */
 typedef struct {
-    cf_char_t*  ptr;    /** string data without \0 */
-    cf_uint32_t ref:1;  /** string reference, not managed */
-    cf_uint32_t len:31; /** string length */
-    // void(*freefn)(void* nullable_ctx, void* addr);
+    cf_char_t*          ptr;        /** string data without \0 */
+    cf_size_t           len;        /** string length */
+    cf_allocator_t*     allocator;  /** null allocator means unmanaged data */
 } cf_string_t;
 
 
@@ -33,9 +32,21 @@ typedef struct {
  * 
  * @param self this pointer
  * @param len  string length
+ * @param str  initial string
  * @return cf_bool_t success or failed.
  */
-cf_bool_t cf_string_init(cf_string_t* self, cf_size_t len);
+cf_bool_t cf_string_init(cf_string_t* self, cf_size_t len, const cf_char_t* str);
+
+/**
+ * @brief initialize a string object with lengh and a valid allocator
+ * 
+ * @param self  this pointer
+ * @param len   length of this string
+ * @param str  initial string
+ * @param alloc allocator
+ * @return cf_bool_t 
+ */
+cf_bool_t cf_string_init_with_allocator(cf_string_t* self, cf_size_t len, const cf_char_t* str, cf_allocator_t* alloc);
 
 /**
  * @brief destroy a string object.
@@ -45,14 +56,25 @@ cf_bool_t cf_string_init(cf_string_t* self, cf_size_t len);
 void cf_string_deinit(cf_string_t* self);
 
 /**
+ * @brief compare two stings
+ * 
+ * @param self  this pointer
+ * @param s     the second string
+ * @param s_len the second string length
+ * @return int  compare result, like strcmp
+ */
+int cf_string_cmp_raw(cf_string_t* self, const char* s, cf_size_t s_len);
+
+
+/**
  * @brief Reset a string object with other string.
  * 
- * @param self this pointer
- * @param ptr  string pointer
- * @param len  string length
- * @param ref  is reference or not.
+ * @param self  this pointer
+ * @param ptr   string pointer
+ * @param len   string length
+ * @param alloc allocator, a null allocator means this is a reference string.
  */
-void cf_string_reset(cf_string_t* self, cf_char_t* ptr, cf_size_t len, cf_bool_t ref);
+void cf_string_reset(cf_string_t* self, cf_char_t* ptr, cf_size_t len, cf_allocator_t* alloc);
 
 /**
  * @brief string length
@@ -70,8 +92,19 @@ void cf_string_reset(cf_string_t* self, cf_char_t* ptr, cf_size_t len, cf_bool_t
  * @brief clear string object
  * 
  */
-#define cf_string_clear(self) do { (self)->ptr = CF_NULL_PTR; (self)->ref = CF_TRUE; (self)->len = 0; } while(0)
+#define cf_string_clear(self) do { (self)->ptr = CF_NULL_PTR; (self)->len = 0; (self)->allocator = CF_NULL_PTR; } while(0)
 
+/**
+ * @brief init a string with reference
+ * 
+ */
+#define cf_string_init_with_ref(self, s, l) do { (self)->ptr = (s); (self)->len = (l); (self)->allocator = CF_NULL_PTR; } while(0)
+
+/**
+ * @brief compare two cf_string_t object
+ * 
+ */
+#define cf_string_cmp(self, other) cf_string_cmp_raw((self), (other)->ptr, (other)->len)
 
 CF_DECLS_END
 

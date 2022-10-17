@@ -37,6 +37,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/array.c
     src/cf/tls.c
     src/cf/bytes.c
+    src/cfx/cli.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)

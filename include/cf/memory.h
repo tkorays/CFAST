@@ -98,8 +98,18 @@ typedef struct cf_allocator {
     cf_alloc_delete_fn  delete_fn;  /** delete function */
 } cf_allocator_t;
 
+typedef cf_uint32_t cf_allocator_id_t;
+#define CF_MAX_ALLOCATOR_CNT    16
+#define CF_ALLOCATOR_ID_BEGIN   0
+#define CF_ALLOCATOR_ID_DEFAULT 0
+#define CF_ALLOCATOR_ID_MPOOL   1
+#define CF_ALLOCATOR_ID_END     ((CF_MAX_ALLOCATOR_CNT) - 1)
+#define CF_ALLOCATOR_ID_VALID(id) ((id) >= (CF_ALLOCATOR_ID_BEGIN) && (id) <= (CF_ALLOCATOR_ID_END))
+#define CF_ALLOCATOR_NONE       CF_NULL_PTR
 
 cf_allocator_t* cf_allocator_default();
+cf_bool_t cf_allocator_register(cf_allocator_id_t id, cf_allocator_t* allocator);
+cf_allocator_t* cf_allocator_get(cf_allocator_id_t id);
 
 typedef struct cf_mpool cf_mpool_t;
 cf_bool_t cf_allocator_init_from_mpool(cf_allocator_t* self, cf_mpool_t* mpool);

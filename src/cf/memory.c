@@ -64,6 +64,26 @@ static cf_allocator_t _g_allocator = {
     .delete_fn = _allocator_delete_default
 };
 
+cf_allocator_t* _g_allocators_[CF_MAX_ALLOCATOR_CNT] = {
+    &_g_allocator,
+    CF_NULL_PTR,
+};
+
 cf_allocator_t* cf_allocator_default() {
     return &_g_allocator;
+}
+
+cf_bool_t cf_allocator_register(cf_allocator_id_t id, cf_allocator_t* allocator) {
+    if (_g_allocators_[id] != CF_NULL_PTR || !CF_ALLOCATOR_ID_VALID(id)) {
+        return CF_FALSE;
+    }
+    _g_allocators_[id] = allocator;
+    return CF_TRUE;
+}
+
+cf_allocator_t* cf_allocator_get(cf_allocator_id_t id) {
+    if (!CF_ALLOCATOR_ID_VALID(id)) {
+        return CF_NULL_PTR;
+    }
+    return _g_allocators_[id];
 }
