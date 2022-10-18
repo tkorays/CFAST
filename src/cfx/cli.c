@@ -108,8 +108,9 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
             } else {
                 /* from command state to option state */
                 state = CLI_STATE_OPT;
-                substate = CLI_OPT_SUBSTATE_WAITING_FOR_VAL;
-                // TODO: handle option
+                substate = CLI_OPT_SUBSTATE_WAITING_FOR_OPT;
+                --i;
+                continue;
             }
         } else if (state == CLI_STATE_OPT) {
             if (!cmd) {
@@ -117,31 +118,15 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
                 return CF_FALSE;
             }
 
-            if (substate == CLI_OPT_SUBSTATE_WAITING_FOR_OPT && is_opt) {
-                /* this is an option we should wait for value if option requires value */
-                if (opt_is_long_name) {
-                    if (cf_strlen(argv[i]) <= 2) {
-                        self->io.output(CF_NULL_PTR, "option format is not correct: \"%s\"", argv[i]);
-                        return CF_FALSE;
-                    }
-                    opt = cfx_cli_cmd_opt(cmd, &argv[i][2]);
-                } else {
-                    if (cf_strlen(argv[i]) <= 1) {
-                        self->io.output(CF_NULL_PTR, "option format is not correct: \"%s\"", argv[i]);
-                        return CF_FALSE;
-                    }
-                    opt = cfx_cli_cmd_opt(cmd, &argv[i][1]);
-                }
-                if (!opt) {
-                    self->io.output(CF_NULL_PTR, "no option named %s", argv[i]);
+            if (is_opt) {
+                    /* we are waiting for a value and prev option is not a flag, error state */
+                if (substate == CLI_OPT_SUBSTATE_WAITING_FOR_VAL && opt && !opt->flag) {
+                    self->io.output(CF_NULL_PTR, "expect a option value for %s\n",
+                        (opt->long_name.len ? opt->long_name.ptr : opt->short_name));
                     return CF_FALSE;
                 }
-                substate = CLI_OPT_SUBSTATE_WAITING_FOR_VAL;
-            } else if (substate == CLI_OPT_SUBSTATE_WAITING_FOR_VAL && is_opt) {
-                // TODO: 
-                // 连遇到两个opt，前一个可能有参数，可能没有参数，需要根据情况决定是否异常
 
-
+                /* this is an option we should wait for value if option requires value */
                 if (opt_is_long_name) {
                     if (cf_strlen(argv[i]) <= 2) {
                         self->io.output(CF_NULL_PTR, "option format is not correct: \"%s\"", argv[i]);
@@ -160,15 +145,17 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
                     self->io.output(CF_NULL_PTR, "no option named %s", argv[i]);
                     return CF_FALSE;
                 }
-                substate = CLI_OPT_SUBSTATE_WAITING_FOR_VAL;
+                /* flag option don't need a value */
+                opt->has_value = opt->flag ? CF_TRUE : CF_FALSE;
+                substate = opt->flag ? CLI_OPT_SUBSTATE_WAITING_FOR_OPT : CLI_OPT_SUBSTATE_WAITING_FOR_VAL;
             } else if (substate == CLI_OPT_SUBSTATE_WAITING_FOR_OPT && !is_opt) {
                 /* no pending options, enter argument state */
                 state = CLI_STATE_ARG;
                 substate = CLI_OPT_SUBSTATE_WAITING_FOR_OPT;
                 break;
             } else if (substate == CLI_OPT_SUBSTATE_WAITING_FOR_VAL && !is_opt) {
-                //TODO: fetch value
-                opt->value;
+                opt->has_value = CF_TRUE;
+                cf_string_init_with_ref(&opt->value, argv[i], cf_strlen(argv[i]));
                 substate = CLI_OPT_SUBSTATE_WAITING_FOR_OPT;
             }
         }
@@ -181,6 +168,16 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
     if (!cmd->proc) {
         self->io.output(CF_NULL_PTR, "command \"%s\" is a GROUP! we will say help later.", cf_string_ptr(&cmd->name));
         return CF_FALSE;
+    }
+
+    /* check if all required options is set */
+    opt = cmd->opts;
+    while (opt) {
+        if (opt->required && !opt->has_value) {
+            self->io.output(CF_NULL_PTR, "missing option!");
+            return;
+        }
+        opt = opt->next;
     }
 
     if (cmd && cmd->proc) {
@@ -234,9 +231,8 @@ void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self) {
     opt = self->opts;
     while (opt) {
         opt_next = opt->next;
-        cf_string_deinit(&opt->long_name);
-        cf_string_deinit(&opt->value);
-        cf_free(opt);
+        cfx_cli_opt_deinit(opt);
+        // cf_free(opt);
         opt = opt_next;
     }
 
@@ -301,37 +297,10 @@ cf_bool_t cfx_cli_cmd_add_sub(cfx_cli_cmd_t* self, cfx_cli_cmd_t* subcmd) {
     return CF_TRUE;
 }
 
-cf_bool_t cfx_cli_cmd_add_opt(
-    cfx_cli_cmd_t* self,
-    char short_name,
-    const char* long_name,
-    const char* desc,
-    cf_bool_t required,
-    cf_bool_t flag,
-    const char* defvalue) {
-    cfx_cli_opt_t* opt = CF_NULL_PTR;
+cf_bool_t cfx_cli_cmd_add_opt(cfx_cli_cmd_t* self, cfx_cli_opt_t* opt) {
     cfx_cli_opt_t* it;
-    if (short_name == 0 
-        && (long_name == CF_NULL_PTR || cf_strlen(long_name) == 0)) {
-        return CF_FALSE;
-    }
-    if (!desc) {
-        return CF_FALSE;
-    }
+    if (!opt) return CF_FALSE;
 
-    opt = cf_malloc_z(sizeof(cfx_cli_opt_t));
-
-    opt->short_name = short_name;
-    if (long_name) {
-        cf_string_init(&opt->long_name, cf_strlen(long_name), long_name);
-    }
-    opt->next = CF_NULL_PTR;
-    opt->required = required;
-    opt->flag = flag;
-    if (defvalue) {
-        cf_string_init(&opt->value, cf_strlen(defvalue), defvalue);
-    }
-    
     if (!self->opts) {
         self->opts = opt;
     }
@@ -344,4 +313,76 @@ cf_bool_t cfx_cli_cmd_add_opt(
     }
     
     return CF_TRUE;
+}
+
+cf_bool_t cfx_cli_opt_init(cfx_cli_opt_t* self, char sn, const char* ln, const char* desc, cf_bool_t required, cf_bool_t flag, const char* def) {
+    if (sn == 0 && (ln == CF_NULL_PTR || cf_strlen(ln) == 0)) {
+        return CF_FALSE;
+    }
+    if (!desc) {
+        return CF_FALSE;
+    }
+    cf_membzero(self, sizeof(cfx_cli_opt_t));
+
+    self->short_name = sn;
+    if (ln) {
+        cf_string_init(&self->long_name, cf_strlen(ln), ln);
+    }
+    self->next = CF_NULL_PTR;
+    self->required = required;
+    self->flag = flag;
+    if (def) {
+        cf_string_init(&self->value, cf_strlen(def), def);
+    }
+    return CF_FALSE;
+}
+
+void cfx_cli_opt_deinit(cfx_cli_opt_t* self) {
+    cf_string_deinit(&self->long_name);
+    cf_string_deinit(&self->value);
+}
+
+cf_bool_t cfx_cli_opt_exist_sn(cfx_cli_opt_t* opt, char short_name) {
+    if (short_name == 0) return CF_FALSE;
+
+    while (opt) {
+        if (opt->short_name == short_name) return CF_TRUE;
+        opt = opt->next;
+    }
+    return CF_FALSE;
+}
+
+cf_bool_t cfx_cli_opt_exist_ln(cfx_cli_opt_t* opt, const char* long_name) {
+    if (long_name == CF_NULL_PTR) return CF_FALSE;
+
+    while (opt) {
+        if (cf_string_len(&opt->long_name) == 0) {
+            opt = opt->next;
+            continue;
+        }
+        if (cf_strcmp(cf_string_ptr(&opt->long_name), long_name) == 0) return CF_TRUE;
+        opt = opt->next;
+    }
+    return CF_FALSE;
+}
+
+cf_bool_t cfx_cli_opt_has_val_sn(cfx_cli_opt_t* opt, char short_name) {
+    if (short_name == 0) return CF_FALSE;
+
+    while (opt) {
+        if (opt->short_name == short_name && opt->has_value) return CF_TRUE;
+        opt = opt->next;
+    }
+    return CF_FALSE;
+}
+
+cf_bool_t cfx_cli_opt_has_val_ln(cfx_cli_opt_t* opt, const char* long_name) {
+    if (long_name == CF_NULL_PTR) return CF_FALSE;
+
+    while (opt) {
+        if (cf_string_len(&opt->long_name) == 0) continue;
+        if (cf_strcmp(cf_string_ptr(&opt->long_name), long_name) == 0  && opt->has_value) return CF_TRUE;
+        opt = opt->next;
+    }
+    return CF_FALSE;
 }

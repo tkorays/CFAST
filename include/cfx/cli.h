@@ -80,10 +80,11 @@ struct cfx_cli_io {
 struct cfx_cli_opt {
     char                short_name; /** short name of this option */
     cf_string_t         long_name;  /** long name of this option */
-    cf_string_t         value;      /** value of this option in string format */
     cfx_cli_opt_t*      next;       /** next option */
     cf_bool_t           required;   /** this option is required */
     cf_bool_t           flag;       /** a flag option will ouput true/false value */
+    cf_bool_t           has_value;  /** has value */
+    cf_string_t         value;      /** value of this option in string format */
 };
 
 /** see `cfx_cli_cmd_t` */
@@ -141,18 +142,17 @@ cfx_cli_cmd_t* cfx_cli_root_cmd(cfx_cli_t* self);
 
 cf_bool_t cfx_cli_cmd_init(cfx_cli_cmd_t* self, const char* name, const char* desc, cfx_cli_proc_fn fn);
 void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self);
-
 cfx_cli_cmd_t* cfx_cli_cmd_sub(cfx_cli_cmd_t* self, char* name);
 cfx_cli_opt_t* cfx_cli_cmd_opt(cfx_cli_cmd_t* self, char* opt);
 cf_bool_t cfx_cli_cmd_add_sub(cfx_cli_cmd_t* self, cfx_cli_cmd_t* subcmd);
-cf_bool_t cfx_cli_cmd_add_opt(
-                            cfx_cli_cmd_t* self,
-                            char short_name,
-                            const char* long_name,
-                            const char* desc,
-                            cf_bool_t required,
-                            cf_bool_t flag,
-                            const char* defvalue);
+cf_bool_t cfx_cli_cmd_add_opt(cfx_cli_cmd_t* self, cfx_cli_opt_t* opt);
+
+cf_bool_t cfx_cli_opt_init(cfx_cli_opt_t* self, char sn, const char* ln, const char* desc, cf_bool_t required, cf_bool_t flag, const char* def);
+void cfx_cli_opt_deinit(cfx_cli_opt_t* self);
+cf_bool_t cfx_cli_opt_exist_sn(cfx_cli_opt_t* self, char short_name);
+cf_bool_t cfx_cli_opt_exist_ln(cfx_cli_opt_t* self, const char* long_name);
+cf_bool_t cfx_cli_opt_has_val_sn(cfx_cli_opt_t* self, char short_name);
+cf_bool_t cfx_cli_opt_has_val_ln(cfx_cli_opt_t* self, const char* long_name);
 
 /** @} */
 

@@ -17,12 +17,19 @@
 
 CF_DECLS_BEGIN
 
+typedef struct {
+    cf_uint32_t         ref : 1;    /** this is a reference object */
+    cf_uint32_t         len : 31;   /** string length */
+    cf_char_t*          ptr;        /** string data with \0 */
+} cf_string_ref_t;
+
 /**
  * String.
  */
 typedef struct {
-    cf_char_t*          ptr;        /** string data without \0 */
-    cf_size_t           len;        /** string length */
+    cf_uint32_t         ref : 1;    /** this is a reference object */
+    cf_uint32_t         len : 31;   /** string length */
+    cf_char_t*          ptr;        /** string data with \0 */
     cf_allocator_t*     allocator;  /** null allocator means unmanaged data */
 } cf_string_t;
 
