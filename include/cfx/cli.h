@@ -80,6 +80,7 @@ struct cfx_cli_io {
 struct cfx_cli_opt {
     char                short_name; /** short name of this option */
     cf_string_t         long_name;  /** long name of this option */
+    cf_string_t         desc;       /** description of this option */
     cfx_cli_opt_t*      next;       /** next option */
     cf_bool_t           required;   /** this option is required */
     cf_bool_t           flag;       /** a flag option will ouput true/false value */

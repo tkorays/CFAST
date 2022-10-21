@@ -60,6 +60,9 @@ else()
 target_link_libraries(cfast pthread)
 endif()
 
+add_executable(mycli examples/mycli.c)
+target_link_libraries(mycli cfast)
+
 install(TARGETS cfast
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib

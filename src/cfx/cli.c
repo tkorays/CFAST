@@ -2,6 +2,8 @@
 #include "cf/str.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include "cf/optional.h"
+
 
 #define CFX_DEF_CLI_LICENSE "CFAST CLI v1.0, Author(tkorays), All right reserved!\n"
 
@@ -72,6 +74,56 @@ void cfx_cli_deinit(cfx_cli_t* self) {
     cf_string_deinit(&self->version);
 }
 
+void cfx_cli_help(cfx_cli_t* self, cfx_cli_cmd_t* cmd) {
+    cfx_cli_cmd_t* p = &self->root;
+    cfx_cli_opt_t* opt;
+    char buf[2048];
+    int i = 0;
+    int padding_len;
+    i += cf_snprintf(buf + i, sizeof(buf) - i, "Usage: ");
+    while (p && p != cmd) {
+        i += cf_snprintf(buf + i, sizeof(buf) - i, "%s ", cf_string_ptr(&p->name));
+        p = p->next;
+    }
+    i += cf_snprintf(buf + i, sizeof(buf) - i, "%s ", cf_string_ptr(&cmd->name));
+    
+    i += cf_snprintf(buf + i, sizeof(buf) - i, "COMMAND [OPTIONS] [ARGS] ...\n");
+    i += cf_snprintf(buf + i, sizeof(buf) - i, "\n    %s\n", cf_string_ptr(&cmd->desc));
+    self->io.output(CF_NULL_PTR, "%s", buf);
+
+    p = cmd->child;
+    if (p) {
+        self->io.output(CF_NULL_PTR, "\nCommands:\n");
+        while (p) {
+            /* TODO: pretty print */
+            self->io.output(CF_NULL_PTR, "    %s          %s\n",
+                cf_string_ptr(&p->name), cf_string_ptr(&p->desc));
+            p = p->next;
+        }
+    }
+
+    self->io.output(CF_NULL_PTR, "\nOptions:\n");
+    if (cmd == &self->root) {
+        self->io.output(CF_NULL_PTR, "   --version    Show the version and exit.\n");
+    }
+    self->io.output(CF_NULL_PTR, "   --help       Show this message and exit.\n");
+
+    opt = cmd->opts;
+    while (opt) {
+        if (opt->short_name && cf_string_len(&opt->long_name)) {
+            self->io.output(CF_NULL_PTR, "   -%c,--%s       %s\n",
+                opt->short_name, cf_string_ptr(&opt->long_name), cf_string_ptr(&opt->desc));
+        }
+        else if (opt->short_name) {
+            self->io.output(CF_NULL_PTR, "   -%c       %s\n", opt->short_name, cf_string_ptr(&opt->desc));
+        }
+        else {
+            self->io.output(CF_NULL_PTR, "   --%s       %s\n", cf_string_ptr(&opt->long_name), cf_string_ptr(&opt->desc));
+        }
+        opt = opt->next;
+    }
+}
+
 #define CLI_STATE_CMD 0
 #define CLI_STATE_OPT 1
 #define CLI_STATE_ARG 2
@@ -97,11 +149,13 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
             if (!is_opt) {
                 cmd = cfx_cli_cmd_sub(cmd, argv[i]);
                 if (!cmd) {
-                    /* leave command state and enter argument state */
-                    cmd = parent;
-                    state = CLI_STATE_ARG;
-                    substate = CLI_OPT_SUBSTATE_WAITING_FOR_OPT;
-                    break;
+                    self->io.output(CF_NULL_PTR, "no such comamnd '%s', try '--help' for help\n", argv[i]);
+                    return CF_FALSE;
+                    ///* leave command state and enter argument state */
+                    //cmd = parent;
+                    //state = CLI_STATE_ARG;
+                    //substate = CLI_OPT_SUBSTATE_WAITING_FOR_OPT;
+                    //break;
                 } else {
                     parent = cmd;
                 }
@@ -114,7 +168,7 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
             }
         } else if (state == CLI_STATE_OPT) {
             if (!cmd) {
-                self->io.output(CF_NULL_PTR, "command not found!");
+                self->io.output(CF_NULL_PTR, "command not found!\n");
                 return CF_FALSE;
             }
 
@@ -142,7 +196,11 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
                     opt = cfx_cli_cmd_opt(cmd, &argv[i][1]);
                 }
                 if (!opt) {
-                    self->io.output(CF_NULL_PTR, "no option named %s", argv[i]);
+                    if (cf_strcmp(argv[i], "--help") == 0) {
+                        cfx_cli_help(self, cmd);
+                    } else {
+                        self->io.output(CF_NULL_PTR, "no option named %s", argv[i]);
+                    }
                     return CF_FALSE;
                 }
                 /* flag option don't need a value */
@@ -166,7 +224,7 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
         return CF_FALSE;
     }
     if (!cmd->proc) {
-        self->io.output(CF_NULL_PTR, "command \"%s\" is a GROUP! we will say help later.", cf_string_ptr(&cmd->name));
+        cfx_cli_help(self, cmd);
         return CF_FALSE;
     }
 
@@ -174,7 +232,7 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
     opt = cmd->opts;
     while (opt) {
         if (opt->required && !opt->has_value) {
-            self->io.output(CF_NULL_PTR, "missing option!");
+            self->io.output(CF_NULL_PTR, "missing option! use --help to get options");
             return;
         }
         opt = opt->next;
@@ -196,13 +254,13 @@ cfx_cli_cmd_t* cfx_cli_root_cmd(cfx_cli_t* self) {
 
 
 cf_bool_t cfx_cli_cmd_init(cfx_cli_cmd_t* self, const char* name, const char* desc, cfx_cli_proc_fn fn) {
-    if (!name || !desc || !fn) {
+    if (!name || !desc) {
         return CF_FALSE;
     }
 
     cf_membzero(self, sizeof(cfx_cli_cmd_t));
     cf_string_init(&self->name, cf_strlen(name), name);
-    cf_string_init(&self->desc, cf_strlen(desc), name);
+    cf_string_init(&self->desc, cf_strlen(desc), desc);
     self->proc = fn;
 
     return CF_TRUE;
@@ -250,7 +308,7 @@ cfx_cli_cmd_t* cfx_cli_cmd_sub(cfx_cli_cmd_t* self, char* name) {
         if (cf_strcmp(cf_string_ptr(&child->name), name) == 0) {
             return child;
         }
-        self = child->next;
+        child = child->next;
     }
     return CF_NULL_PTR;
 }
@@ -328,6 +386,7 @@ cf_bool_t cfx_cli_opt_init(cfx_cli_opt_t* self, char sn, const char* ln, const c
     if (ln) {
         cf_string_init(&self->long_name, cf_strlen(ln), ln);
     }
+    cf_string_init(&self->desc, cf_strlen(desc), desc);
     self->next = CF_NULL_PTR;
     self->required = required;
     self->flag = flag;
@@ -339,6 +398,7 @@ cf_bool_t cfx_cli_opt_init(cfx_cli_opt_t* self, char sn, const char* ln, const c
 
 void cfx_cli_opt_deinit(cfx_cli_opt_t* self) {
     cf_string_deinit(&self->long_name);
+    cf_string_deinit(&self->desc);
     cf_string_deinit(&self->value);
 }
 
