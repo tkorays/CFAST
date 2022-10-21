@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <cf/tls.h>
 
-int a = 1234;
 
 TEST(cf_tls_test, test) {
+    int a = 1234;
     cf_tls_t tls;
     cf_tls_init(&tls, CF_NULL_PTR);
     cf_tls_set(&tls, &a);

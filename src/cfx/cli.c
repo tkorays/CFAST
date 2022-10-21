@@ -36,10 +36,9 @@ void _cfx_cli_io_output_fn(cf_void_t* ctx, const cf_char_t* fmt, ...) {
     va_list args;
     cf_char_t buf[1024] = {0};
     va_start(args, fmt);
-    vsprintf_s(buf, sizeof(buf), fmt, args);
-    /* vsprintf(buf, fmt, args); */
+    vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
-    printf(buf);
+    printf("%s", buf);
 }
 
 cfx_cli_io_t _cfx_cli_default_io_ = {
@@ -175,8 +174,13 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
             if (is_opt) {
                     /* we are waiting for a value and prev option is not a flag, error state */
                 if (substate == CLI_OPT_SUBSTATE_WAITING_FOR_VAL && opt && !opt->flag) {
-                    self->io.output(CF_NULL_PTR, "expect a option value for %s\n",
-                        (opt->long_name.len ? opt->long_name.ptr : opt->short_name));
+                    if (cf_string_len(&opt->long_name)) {
+                      self->io.output(
+                          CF_NULL_PTR, "expect a option value for %s\n", opt->long_name.ptr);
+                    } else {
+                      self->io.output(
+                          CF_NULL_PTR, "expect a option value for %c\n", opt->short_name);
+                    }
                     return CF_FALSE;
                 }
 
@@ -233,7 +237,7 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
     while (opt) {
         if (opt->required && !opt->has_value) {
             self->io.output(CF_NULL_PTR, "missing option! use --help to get options");
-            return;
+            return CF_FALSE;
         }
         opt = opt->next;
     }
