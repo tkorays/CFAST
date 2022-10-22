@@ -110,30 +110,6 @@ struct cfx_cli {
     cfx_cli_io_t        io;         /** input and output function */
 };
 
-
-struct cfx_cmd_opt_proto {
-    char                short_name;
-    char*               long_name;
-    char*               desc;
-    int                 type;
-    cf_bool_t           required;
-    cf_bool_t           flag;
-    char*               value;
-};
-
-struct cfx_cmd_proto {
-    char*               name;
-    char*               desc;
-    char*               version;
-
-    int                 opts_cnt;
-    cfx_cmd_opt_proto_t*opts;
-
-    int                 subcmds_cnt;
-    cfx_cmd_proto_t*    subcmds;
-};
-
-
 cf_bool_t cfx_cli_init(cfx_cli_t* self, cfx_cli_io_t* io, const char* name, const char* desc, const char* ver);
 cf_bool_t cfx_cli_init_from_proto(cfx_cli_t* self, cfx_cli_io_t* io, cfx_cmd_proto_t* proto);
 void cfx_cli_deinit(cfx_cli_t* self);

@@ -5,32 +5,7 @@
 #include "cf/optional.h"
 
 
-#define CFX_DEF_CLI_LICENSE "CFAST CLI v1.0, Author(tkorays), All right reserved!\n"
-
-
-
-cfx_cmd_opt_proto_t opts_for_root[] = {
-    {
-        .short_name = 'a',
-        .long_name  = "abc",
-        .desc       = "help for abc cmd",
-        .type       = 0,
-        .required   = CF_TRUE,
-        .flag       = CF_FALSE,
-        .value      = "",
-    }
-};
-
-cfx_cmd_proto_t cmd_root = {
-    .name = "wtf",
-    .desc = "help for wtf",
-    .version = "1.0.0",
-
-    .opts_cnt   = CF_ARRAY_SIZE(opts_for_root),
-    .opts       = &opts_for_root[0],
-    .subcmds_cnt  = 0,
-    .subcmds = CF_NULL_PTR,
-};
+#define CFX_DEF_CLI_LICENSE "CFAST CLI v1.0, Author(tkorays), All right reserved!"
 
 void _cfx_cli_io_output_fn(cf_void_t* ctx, const cf_char_t* fmt, ...) {
     va_list args;
@@ -78,7 +53,6 @@ void cfx_cli_help(cfx_cli_t* self, cfx_cli_cmd_t* cmd) {
     cfx_cli_opt_t* opt;
     char buf[2048];
     int i = 0;
-    int padding_len;
     i += cf_snprintf(buf + i, sizeof(buf) - i, "Usage: ");
     while (p && p != cmd) {
         i += cf_snprintf(buf + i, sizeof(buf) - i, "%s ", cf_string_ptr(&p->name));
@@ -94,8 +68,7 @@ void cfx_cli_help(cfx_cli_t* self, cfx_cli_cmd_t* cmd) {
     if (p) {
         self->io.output(CF_NULL_PTR, "\nCommands:\n");
         while (p) {
-            /* TODO: pretty print */
-            self->io.output(CF_NULL_PTR, "    %s          %s\n",
+            self->io.output(CF_NULL_PTR, "  %-18s%s\n",
                 cf_string_ptr(&p->name), cf_string_ptr(&p->desc));
             p = p->next;
         }
@@ -103,21 +76,33 @@ void cfx_cli_help(cfx_cli_t* self, cfx_cli_cmd_t* cmd) {
 
     self->io.output(CF_NULL_PTR, "\nOptions:\n");
     if (cmd == &self->root) {
-        self->io.output(CF_NULL_PTR, "   --version    Show the version and exit.\n");
+        self->io.output(CF_NULL_PTR, "  --version           Show the version and exit.\n");
     }
-    self->io.output(CF_NULL_PTR, "   --help       Show this message and exit.\n");
+    self->io.output(CF_NULL_PTR, "  --help              Show this message and exit.\n");
 
     opt = cmd->opts;
     while (opt) {
         if (opt->short_name && cf_string_len(&opt->long_name)) {
-            self->io.output(CF_NULL_PTR, "   -%c,--%s       %s\n",
-                opt->short_name, cf_string_ptr(&opt->long_name), cf_string_ptr(&opt->desc));
+            self->io.output(CF_NULL_PTR, "  -%c,--%-15s%s%s%s\n",
+                opt->short_name,
+                cf_string_ptr(&opt->long_name),
+                cf_string_ptr(&opt->desc),
+                opt->flag ? " [flag]" : "",
+                opt->required ? " [required]" : "");
         }
         else if (opt->short_name) {
-            self->io.output(CF_NULL_PTR, "   -%c       %s\n", opt->short_name, cf_string_ptr(&opt->desc));
+            self->io.output(CF_NULL_PTR, "  -%-19c%s%s%s\n",
+                opt->short_name,
+                cf_string_ptr(&opt->desc),
+                opt->flag ? " [flag]" : "",
+                opt->required ? " [required]" : "");
         }
         else {
-            self->io.output(CF_NULL_PTR, "   --%s       %s\n", cf_string_ptr(&opt->long_name), cf_string_ptr(&opt->desc));
+            self->io.output(CF_NULL_PTR, "  --%-18s%s%s%s\n",
+                cf_string_ptr(&opt->long_name),
+                cf_string_ptr(&opt->desc),
+                opt->flag ? " [flag]" : "",
+                opt->required ? " [required]" : "");
         }
         opt = opt->next;
     }
@@ -202,6 +187,9 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
                 if (!opt) {
                     if (cf_strcmp(argv[i], "--help") == 0) {
                         cfx_cli_help(self, cmd);
+                    } else if (cmd == &self->root && cf_strcmp(argv[i], "--version") == 0) {
+                        self->io.output(CF_NULL_PTR, "%s\n%s version %s\n",
+                            CFX_DEF_CLI_LICENSE, cf_string_ptr(&self->name), cf_string_ptr(&self->version));
                     } else {
                         self->io.output(CF_NULL_PTR, "no option named %s", argv[i]);
                     }
@@ -236,7 +224,11 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
     opt = cmd->opts;
     while (opt) {
         if (opt->required && !opt->has_value) {
-            self->io.output(CF_NULL_PTR, "missing option! use --help to get options");
+            if (opt->short_name) {
+                self->io.output(CF_NULL_PTR, "missing option -%c! use --help to get options", opt->short_name);
+            } else {
+                self->io.output(CF_NULL_PTR, "missing option -%s! use --help to get options", cf_string_ptr(&opt->long_name));
+            }
             return CF_FALSE;
         }
         opt = opt->next;
@@ -294,7 +286,6 @@ void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self) {
     while (opt) {
         opt_next = opt->next;
         cfx_cli_opt_deinit(opt);
-        // cf_free(opt);
         opt = opt_next;
     }
 
