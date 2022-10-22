@@ -4,6 +4,9 @@
 #elif defined(CF_OS_MAC)
 #include <sys/sysctl.h>
 #include <mach/machine.h>
+#elif defined(CF_OS_ANDROID)
+#include <unistd.h>
+#include <syscall.h>
 #else
 #include <sys/sysctl.h>
 #endif

@@ -32,7 +32,7 @@ const cf_int_t CF_SOCK_SHUTDOWN_RECV = SHUT_RD;
 const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SHUT_RDWR;
 #endif
 
-#ifdef CF_OS_WIN
+#if !defined(__APPLE__)
 #define MAKE_INTER_SA_FROM_CF_SA_V4(inter, cfaddr) do {     \
     (inter).sin_family = AF_INET;                           \
     (inter).sin_port = htons((cfaddr).port);                \
