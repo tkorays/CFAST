@@ -46,6 +46,10 @@ void cfx_cli_deinit(cfx_cli_t* self) {
     cf_string_deinit(&self->name);
     cf_string_deinit(&self->desc);
     cf_string_deinit(&self->version);
+    self->root.prev = CF_NULL_PTR;
+    self->root.next = CF_NULL_PTR;
+    self->root.child = CF_NULL_PTR;
+    self->root.opts = CF_NULL_PTR;
 }
 
 void cfx_cli_help(cfx_cli_t* self, cfx_cli_cmd_t* cmd) {
@@ -265,6 +269,8 @@ cf_bool_t cfx_cli_cmd_init(cfx_cli_cmd_t* self, const char* name, const char* de
 void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self) {
     cfx_cli_cmd_t* cmd, *cmd_next;
     cfx_cli_opt_t* opt, *opt_next;
+    if (!self) return;
+
     /* deinit child */
     cfx_cli_cmd_deinit(self->child);
     self->child = CF_NULL_PTR;

@@ -32,6 +32,12 @@ int main(int argc, char* argv[]) {
     cfx_cli_cmd_add_sub(cmd, &subcmd1);
 
     cfx_cli_input(&cli, CF_NULL_PTR, argc, argv);
+
+    cfx_cli_opt_deinit(&opt_a);
+    cfx_cli_opt_deinit(&opt_b);
+    cfx_cli_opt_deinit(&opt_c);
+    cfx_cli_opt_deinit(&opt_d);
+    cfx_cli_cmd_deinit(cmd);
     cfx_cli_deinit(&cli);
     return 0;
 }
