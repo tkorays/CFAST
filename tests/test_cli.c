@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
-#include <cfx/cli.h>
+#include "cfx/cli.h"
+#include "cf/assert.h"
 #include <stdio.h>
 
 int cmd_proc(const cfx_cli_t* cli, cf_void_t* sess, cfx_cli_opt_t* opts, cf_size_t argc, cf_char_t* argv[]) {
@@ -19,16 +19,16 @@ int cmd_proc(const cfx_cli_t* cli, cf_void_t* sess, cfx_cli_opt_t* opts, cf_size
         printf("\n");
         opts = opts->next;
     }
-    EXPECT_EQ(cfx_cli_opt_exist_sn(opt, 'a'), CF_TRUE);
-    EXPECT_EQ(cfx_cli_opt_exist_ln(opt, "aaa"), CF_TRUE);
-    EXPECT_EQ(cfx_cli_opt_exist_sn(opt, 's'), CF_FALSE);
-    EXPECT_EQ(cfx_cli_opt_exist_ln(opt, "sss"), CF_FALSE);
-    EXPECT_EQ(cfx_cli_opt_has_val_sn(opt, 'a'), CF_TRUE);
-    EXPECT_EQ(cfx_cli_opt_has_val_sn(opt, 'd'), CF_TRUE);
+    cf_assert(cfx_cli_opt_exist_sn(opt, 'a') == CF_TRUE);
+    cf_assert(cfx_cli_opt_exist_ln(opt, "aaa") == CF_TRUE);
+    cf_assert(cfx_cli_opt_exist_sn(opt, 's') == CF_FALSE);
+    cf_assert(cfx_cli_opt_exist_ln(opt, "sss") == CF_FALSE);
+    cf_assert(cfx_cli_opt_has_val_sn(opt, 'a') == CF_TRUE);
+    cf_assert(cfx_cli_opt_has_val_sn(opt, 'd') == CF_TRUE);
     return 0;
 }
 
-TEST(cfx_cli_test, init) {
+int main(int argc, char const *argv[]) {
     cfx_cli_t cli;
     cfx_cli_init(&cli, CF_NULL_PTR, "mycli", "this is a simple CLI", "1.0.0");
 
@@ -60,13 +60,14 @@ TEST(cfx_cli_test, init) {
     cfx_cli_cmd_add_sub(&subcmd1, &subcmd11);
     cfx_cli_cmd_add_sub(cmd, &subcmd1);
 
-    int argc = 11;
-    char* argv[] = {
+    int argc1 = 11;
+    char* argv1[] = {
         "mycli", "cmd1", "cmd11", "-a", "abc", "--bbb", "bbb", "-c", "--ddd",
         "1234", "5678"
     };
 
-    cfx_cli_input(&cli, CF_NULL_PTR, argc, argv);
+    cfx_cli_input(&cli, CF_NULL_PTR, argc1, argv1);
 
     cfx_cli_deinit(&cli);
+    return 0;
 }
