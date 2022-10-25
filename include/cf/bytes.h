@@ -52,7 +52,7 @@ CF_DECLS_BEGIN
  * 
  */
 #define __cf_byte_reader_get_template__(type_name, type_name_short)                 \
-inline cf_bool_t cf_byte_reader_get_##type_name_short(cf_byte_reader_t* self,       \
+CF_FORCE_INLINE cf_bool_t cf_byte_reader_get_##type_name_short(cf_byte_reader_t* self,       \
     type_name* value) {                                                             \
     if (sizeof(type_name) <= (self->len - self->pos)) {                             \
         *value = *CF_TYPE_CAST(type_name*, self->data + self->pos);                 \
@@ -112,7 +112,7 @@ __cf_byte_reader_get_template__(double, double)
 cf_bool_t cf_byte_writer_put(cf_byte_writer_t* self, char* data, cf_size_t length);
 
 #define __cf_byte_writer_put_template__(type_name, type_name_short)                                 \
-inline cf_bool_t cf_byte_writer_put_##type_name_short(cf_byte_writer_t* self, type_name value) {    \
+CF_FORCE_INLINE cf_bool_t cf_byte_writer_put_##type_name_short(cf_byte_writer_t* self, type_name value) {    \
     if (self->length > self->capacity) return CF_FALSE;                                             \
     if (self->capacity - self->length < sizeof(type_name)) return CF_FALSE;                         \
     *CF_TYPE_CAST(type_name*, self->buffer + self->length) = value;                                 \

@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int cmd_proc(const cfx_cli_t* cli, cf_void_t* sess, cfx_cli_opt_t* opts, cf_size_t argc, cf_char_t* argv[]) {
-    printf("cmd1 proc cnt: %d argv0: %s \n", argc, argv[0]);
+    printf("cmd1 proc cnt: %zu argv0: %s \n", argc, argv[0]);
     return 0;
 }
 
