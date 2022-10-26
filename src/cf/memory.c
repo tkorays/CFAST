@@ -1,3 +1,4 @@
+#include "cf/types.h"
 #include <cf/memory.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +7,11 @@
 #define CF_MEMTRACE_FREE(p) (void*)0
 
 cf_void_t* cf_malloc_z(cf_size_t size) {
-    return memset(cf_malloc(size), 0, size);
+    cf_void_t* ptr = cf_malloc(size);
+    if (ptr) {
+      return memset(ptr, 0, size);
+    }
+    return CF_NULL_PTR;
 }
 
 cf_void_t* cf_malloc_dbg(cf_size_t size) {
