@@ -13,7 +13,7 @@
 * [ ] hash.
 * [ ] set.
 * [ ] stack（使用array实现）.
-* [ ] array（和list不同，大小固定，不能动态增加）.
+* [x] array（和list不同，大小固定，不能动态增加）.
 * [x] socket封装！！！
 * [ ] env
 * [ ] time模块gettick，用来统计代码执行时间.

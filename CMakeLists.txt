@@ -9,6 +9,15 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
     SET(CMAKE_BUILD_TYPE Debug)
 endif()
 
+
+include(TestBigEndian)
+TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
+if(IS_BIG_ENDIAN)
+    add_definitions("-DCF_IS_BIG_ENDIAN")
+else()
+    add_definitions("-DCF_IS_LITTLE_ENDIAN")
+endif()
+
 include_directories(./include)
 
 if(NOT CMAKE_INSTALL_PREFIX)
@@ -81,6 +90,8 @@ endif()
 if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     enable_testing()
     set(TESTS
+        array
+        list
         bytes
         types
         tls

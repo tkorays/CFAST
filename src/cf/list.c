@@ -2,6 +2,7 @@
 #include <cf/list.h>
 #include <cf/memory.h>
 #include <cf/err.h>
+#include <cf/assert.h>
 
 
 typedef struct _cf_list_node {
@@ -9,47 +10,46 @@ typedef struct _cf_list_node {
     struct _cf_list_node *prev, *next;
 } cf_list_node_t;
 
-struct cf_list {
-    cf_size_t           number;     /*< number of list items */
-    cf_void_t*          head;       /*< head of list */
-    cf_void_t*          tail;       /*< tail of list */
-    fn_cf_list_free     fn_free;    /*< free function pointer */
-};
 
-
-cf_list_t*  cf_list_create(fn_cf_list_free func) {
-    struct cf_list* li = (struct cf_list*)cf_malloc(sizeof(struct cf_list));
-    if(CF_NULL_PTR == li) {
-        return CF_NULL_PTR;
-    }
-
-    li->number = 0;
-    li->head = CF_NULL_PTR;
-    li->tail = CF_NULL_PTR;
-    li->fn_free = func;
-    
-    return li;
+cf_bool_t cf_list_init(cf_list_t* self) {
+    self->count = 0;
+    self->head = CF_NULL_PTR;
+    self->tail = CF_NULL_PTR;
+    return CF_TRUE;
 }
 
-cf_errno_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
+cf_void_t cf_list_deinit(cf_list_t* self) {
+    cf_list_iter_t it = CF_NULL_PTR;
+    cf_list_node_t* node = CF_NULL_PTR;
+    it = cf_list_iter_init(self);
+    while(it) {
+        node = it;
+        it = cf_list_iter_next(it);
+
+        cf_free(node);
+    }
+
+    self->head = CF_NULL_PTR;
+    self->tail = CF_NULL_PTR;
+    self->count = 0;
+}
+
+
+cf_bool_t cf_list_insert(cf_list_t* li, cf_int32_t pos, cf_void_t* data) {
     cf_list_node_t* node = CF_NULL_PTR;
     cf_list_node_t* tmp = CF_NULL_PTR;
     cf_uint32_t abs_pos = 0;
     cf_uint32_t index;
-    if(!li || !data) return CF_EPARAM;
+    if(!data) return CF_FALSE;
+
+    /* check insert position */
+    abs_pos = (pos >= 0 ? pos : li->count + 1 + pos);
+    if (abs_pos < 0 || abs_pos > li->count) {
+        return CF_FALSE;
+    }
 
     node = (cf_list_node_t*)cf_malloc(sizeof(cf_list_node_t));
     node->data = data;
-
-    abs_pos = (pos >= 0 ? pos : -pos);
-    if((pos > 0 && abs_pos > li->number) && (pos < 0 && (abs_pos + 1) > li->number)) {
-        cf_free(node);
-        return CF_NOK;
-    }
-
-    if(pos < 0) {
-        abs_pos = li->number + 1 - abs_pos;
-    }
 
     /* insert front */
     for(index = 0, tmp = li->head; index < abs_pos && tmp; index++, tmp = tmp->next) ;
@@ -65,7 +65,7 @@ cf_errno_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
         node->next = tmp;
         tmp->prev = node;
         li->head = node;
-    } else if(index >= li->number) {
+    } else if(index >= li->count - 1) {
         /* tail */
         node->prev = li->tail;
         node->next = CF_NULL_PTR;
@@ -77,31 +77,27 @@ cf_errno_t cf_list_insert(struct cf_list* li, cf_void_t* data, cf_int32_t pos) {
         tmp->next->prev = node;
         tmp->next = node;
     }
-    li->number++;
+    li->count++;
 
-    return CF_OK;
+    return CF_TRUE;
 }
 
-cf_errno_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) {
+cf_void_t* cf_list_erase(struct cf_list* li, cf_int32_t pos) {
     cf_list_node_t* node = CF_NULL_PTR;
     cf_list_node_t* tmp = CF_NULL_PTR;
     cf_uint32_t abs_pos = 0;
     cf_uint32_t index;
-    if(!li || !data) return CF_EPARAM;
+    cf_void_t* data = CF_NULL_PTR;
 
-    abs_pos = (pos >= 0 ? pos : -pos);
-    if((pos > 0 && abs_pos > li->number) && (pos < 0 && (abs_pos + 1) > li->number)) {
-        return CF_NOK;
-    }
-
-    if(pos < 0) {
-        abs_pos = li->number + 1 - abs_pos;
+    /* check insert position */
+    abs_pos = (pos >= 0 ? pos : li->count + 1 + pos);
+    if (abs_pos < 0 || abs_pos > li->count) {
+        return CF_NULL_PTR;
     }
 
     for(index = 0, node = li->head; index < abs_pos && node; index++, node = node->next) ;
     if(CF_NULL_PTR == li->head) {
-        data = CF_NULL_PTR;
-        return CF_NOK;
+        return CF_NULL_PTR;
     } else if(index == 0) {
         /* head */
         li->head = node->next;
@@ -110,7 +106,7 @@ cf_errno_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) 
         } else {
             li->tail = CF_NULL_PTR;
         }
-    } else if(index >= li->number) {
+    } else if(index >= li->count) {
         /* tail */
         node = li->tail;
         ((cf_list_node_t*)li->tail)->next = CF_NULL_PTR;
@@ -125,58 +121,48 @@ cf_errno_t cf_list_remove(struct cf_list* li, cf_void_t** data, cf_int32_t pos) 
         tmp->next = node->next;
         node->next->prev = tmp;
     }
-    li->number--;
-    *data = node->data;
+    li->count--;
+    data = node->data;
     cf_free(node);
 
-    return CF_OK;
+    return data;
 }
 
-cf_errno_t cf_list_delete(struct cf_list* li, cf_int32_t pos, cf_bool_t free_data) {
-    cf_errno_t ret = CF_OK;
-    cf_void_t* data = CF_NULL_PTR;
-    if(!li) return CF_EPARAM;
-    if(!li->fn_free && free_data) return CF_EPARAM;
-
-    ret = cf_list_remove(li, &data, pos);
-    if(ret != CF_OK) {
-        return CF_NOK;
-    }
-    if(free_data) {
-        li->fn_free(data);
-    }
-
-    return CF_OK;
-}
-
-cf_errno_t cf_list_destroy(struct cf_list* li, cf_bool_t free_data) {
-    cf_list_iter_t it = CF_NULL_PTR;
+cf_void_t* cf_list_get(cf_list_t* li, cf_int32_t pos) {
     cf_list_node_t* node = CF_NULL_PTR;
-    if(!li) return CF_EPARAM;
-    cf_list_iter_init(li, &it);
-    while(it) {
-        node = it;
-        it = cf_list_iter_next(it);
+    cf_uint32_t abs_pos = 0;
+    cf_uint32_t index;
 
-        if(free_data && li->fn_free) {
-            li->fn_free(node->data);
-        }
-        cf_free(node);
+    /* check insert position */
+    abs_pos = (pos >= 0 ? pos : li->count + pos);
+    if (abs_pos < 0 || abs_pos > li->count - 1) {
+        return CF_NULL_PTR;
     }
-    cf_free(li);
 
-    return CF_OK;
+    for(index = 0, node = li->head; index < abs_pos && node; index++, node = node->next) ; 
+    if(CF_NULL_PTR == node) {
+        return CF_NULL_PTR;
+    } else {
+        return node->data;
+    }
 }
 
-cf_size_t cf_list_size(struct cf_list* li) {
-    if(!li) return 0;
-    return li->number;
+cf_void_t* cf_list_head(cf_list_t* li) {
+    if (li->head) {
+        return CF_TYPE_CAST(cf_list_node_t*, li->head)->data;
+    }
+    return CF_NULL_PTR;
 }
 
-cf_errno_t cf_list_iter_init(struct cf_list* li, cf_list_iter_t* it) {
-    if(!li || !it) return CF_EPARAM;
-    *it = (cf_list_iter_t)li->head;
-    return CF_OK;
+cf_void_t* cf_list_tail(cf_list_t* li) {
+    if (li->tail) {
+        return CF_TYPE_CAST(cf_list_node_t*, li->tail)->data;
+    }
+    return CF_NULL_PTR;
+}
+
+cf_list_iter_t cf_list_iter_init(struct cf_list* li) {
+    return (cf_list_iter_t)li->head;
 }
 
 cf_list_iter_t cf_list_iter_next(cf_list_iter_t it) {
@@ -184,8 +170,6 @@ cf_list_iter_t cf_list_iter_next(cf_list_iter_t it) {
     return ((cf_list_node_t*)it)->next;
 }
 
-cf_errno_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data) {
-    if(!it || !data) return CF_EPARAM;
-    *data = ((cf_list_node_t*)it)->data;
-    return CF_OK;
+cf_void_t* cf_list_iter_data(cf_list_iter_t it) {
+    return ((cf_list_node_t*)it)->data;
 }

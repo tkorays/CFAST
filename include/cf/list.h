@@ -13,17 +13,16 @@
 
 #include <cf/types.h>
 
+/**
+ * a linked list
+ */
+typedef struct cf_list {
+    cf_size_t           count;      /*< number of list items */
+    cf_void_t*          head;       /*< head of list */
+    cf_void_t*          tail;       /*< tail of list */
+} cf_list_t;
+
 CF_DECLS_BEGIN
-
-/**
- * Type of free function to free item data of a list.
- */
-typedef void(*fn_cf_list_free)(void*);
-
-/**
- * This structure represents a double linked list.
- */
-typedef struct cf_list cf_list_t;
 
 /**
  * Iterator of a list
@@ -41,11 +40,19 @@ typedef cf_void_t* cf_list_iter_t;
 #define CF_LIST_POS_TAIL -1
 
 /**
- * Create a list.
- * @param func                  Func for free data
- * @return                      The list.
+ * Initialize a list.
+ *
+ * @param self      this pointer
+ * @return          true for success
  */
-cf_list_t*  cf_list_create(fn_cf_list_free func);
+cf_bool_t cf_list_init(cf_list_t* self);
+
+/**
+ * Destroy a list.
+ * 
+ * @param self      this pointer
+ */
+cf_void_t cf_list_deinit(cf_list_t* self);
 
 /**
  * Insert item to list.
@@ -54,7 +61,7 @@ cf_list_t*  cf_list_create(fn_cf_list_free func);
  * @param pos       Inset position, range from -N-1 to N.
  * @return          The result.
  */
-cf_errno_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos);
+cf_bool_t cf_list_insert(cf_list_t* li, cf_int32_t pos, cf_void_t* data);
 
 /**
  * Remove item from list, NOT free data.
@@ -63,39 +70,41 @@ cf_errno_t cf_list_insert(cf_list_t* li, cf_void_t* data, cf_int32_t pos);
  * @param pos       Inset position, range from -N-1 to N.
  * @return          The result.
  */
-cf_errno_t cf_list_remove(cf_list_t* li, cf_void_t** data, cf_int32_t pos);
+cf_void_t* cf_list_erase(cf_list_t* li, cf_int32_t pos);
+
 
 /**
- * Delete item from list, MAY free data.
- * @param li        The list.
- * @param pos       Inset position, range from -N-1 to N.
- * @param free_data Whethere to free data.
- * @return          The result.
+ * get list data by position
+ *
+ * @param li        this pointer
+ * @param pos       position of the item
+ * @return          returned data
  */
-cf_errno_t cf_list_delete(cf_list_t* li, cf_int32_t pos, cf_bool_t free_data);
+cf_void_t* cf_list_get(cf_list_t* li, cf_int32_t pos);
 
 /**
- * Free the list.
- * @param li        The list.
- * @param free_data Whethere to free data.
- * @return          The result.
+ * Get list head
+ *
+ * @param li        this pointer
+ * @return          returned data
  */
-cf_errno_t cf_list_destroy(cf_list_t* li, cf_bool_t free_data);
+cf_void_t* cf_list_head(cf_list_t* li);
 
 /**
- * Get the size of the list.
- * @param li        The list.
- * @return          The size.
+ * Get list tail
+ *
+ * @param li        this pointer
+ * @return          returned data
  */
-cf_size_t   cf_list_size(cf_list_t* li);
+cf_void_t* cf_list_tail(cf_list_t* li);
+
 
 /**
  * Init the iterator, return the first iterator.
  * @param li        The list.
- * @param it        The iterator.
  * @return          The result.
  */
-cf_errno_t cf_list_iter_init(cf_list_t* li, cf_list_iter_t* it);
+cf_list_iter_t cf_list_iter_init(cf_list_t* li);
 
 /**
  * Get next iterator.
@@ -107,10 +116,12 @@ cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
 /**
  * Get data from iterator.
  * @param it        The iterator.
- * @param data      Data.
  * @return          The result.
  */
-cf_errno_t cf_list_iter_data(cf_list_iter_t it, cf_void_t** data);
+cf_void_t* cf_list_iter_data(cf_list_iter_t it);
+
+
+#define cf_list_size(li) ((li)->count)
 
 CF_DECLS_END
 

@@ -38,6 +38,18 @@
 #define CF_MAX_UINT64   18446744073709551615UL
 #define CF_MIN_INT64    (-CF_MAX_INT64 - 1L)
 
+#ifdef CF_BIG_ENDIAN
+#define cf_hton_u16(a) (a)
+#define cf_hton_u32(a) (a)
+#define cf_ntoh_u16(a) (a)
+#define cf_ntoh_u32(a) (a)
+#else
+#define cf_hton_u16(a) CF_SWAP16(a)
+#define cf_hton_u32(a) CF_SWAP32(a)
+#define cf_ntoh_u16(a) CF_SWAP16(a)
+#define cf_ntoh_u32(a) CF_SWAP32(a)
+#endif
+
 #define _CF_IN_
 #define _CF_OUT_
 #define _CF_INOUT_

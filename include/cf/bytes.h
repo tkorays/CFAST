@@ -3,6 +3,10 @@
 
 #include <cf/types.h>
 
+/* read integers from big endian buffer */
+#define cf_read_u16_from_be(buf) cf_ntoh_u16(*CF_TYPE_CAST(cf_uint16_t*, buf))
+#define cf_read_u32_from_be(buf) cf_ntoh_u32(*CF_TYPE_CAST(cf_uint32_t*, buf))
+
 /**
  * @brief byte reader.
  * 

@@ -129,6 +129,12 @@
 #define CF_VERSION_NUM_MINOR 0
 #define CF_VERSION_NUM ((CF_VERSION_MAJOR << 16) | CF_VERSION_MINOR)
 
+#ifdef CF_IS_BIG_ENDIAN
+#   define CF_BIG_ENDIAN 1
+#else
+#   define CF_LITTLE_ENDIAN 1
+#endif
+
 CF_DECLS_BEGIN
 
 const char* cf_get_version();

@@ -5,6 +5,12 @@
 #include <cf/err.h>
 #include <cf/assert.h>
 
+#define cf_array_clear(arr) do {    \
+    (arr)->capacity = 0;            \
+    (arr)->elm_size = 0;            \
+    (arr)->elm_count = 0;           \
+    (arr)->elm_start = CF_NULL_PTR; } while(0)
+
 cf_bool_t cf_array_init(cf_array_t* self, cf_size_t el_size, cf_int_t capacity) {
     if (el_size > 1024) {
         return CF_FALSE;;
@@ -34,10 +40,10 @@ cf_bool_t cf_array_insert(cf_array_t* self, int index, cf_void_t* elm, cf_size_t
     cf_size_t new_memory_size = 0;
     cf_void_t* new_memory = CF_NULL_PTR;
     
-    cf_assert(size < self->elm_size);
+    cf_assert(size <= self->elm_size);
 
     // out of range
-    if (index < CF_ARRAY_END_INDEX || index >= self->elm_count) {
+    if (index < CF_ARRAY_END_INDEX || index > CF_TYPE_CAST(int, self->elm_count)) {
         return CF_FALSE;
     }
 
@@ -62,7 +68,7 @@ cf_bool_t cf_array_insert(cf_array_t* self, int index, cf_void_t* elm, cf_size_t
             elm,
             self->elm_size);
         self->elm_count += 1;
-        return CF_FALSE;
+        return CF_TRUE;
     }
 
     i = index;
@@ -101,9 +107,12 @@ cf_bool_t cf_array_erase(cf_array_t* self, int index) {
 }
 
 cf_bool_t cf_array_set(cf_array_t* self, int index, cf_void_t* elm, cf_size_t size) {
-    cf_assert(size < self->elm_size);
-    if (index < CF_ARRAY_END_INDEX || index >= self->elm_count || self->elm_count <= 0) {
+    cf_assert(size <= self->elm_size);
+    if (index < CF_ARRAY_END_INDEX || index >= CF_TYPE_CAST(int, self->elm_count) || self->elm_count <= 0) {
         return CF_FALSE;
+    }
+    if (index == CF_ARRAY_END_INDEX) {
+        index = self->elm_count - 1;
     }
     cf_memcpy_s((cf_uint8_t*)self->elm_start + self->elm_size * index,
             self->elm_size,
@@ -113,7 +122,7 @@ cf_bool_t cf_array_set(cf_array_t* self, int index, cf_void_t* elm, cf_size_t si
 }
 
 cf_void_t* cf_array_get(cf_array_t* self, int index) {
-    if (index < CF_ARRAY_END_INDEX || index >= self->elm_count || self->elm_count <= 0) {
+    if (index < CF_ARRAY_END_INDEX || index >= CF_TYPE_CAST(int, self->elm_count) || self->elm_count <= 0) {
         return CF_NULL_PTR;
     }
     if (index == CF_ARRAY_END_INDEX) {
@@ -135,3 +144,9 @@ cf_int_t cf_array_find(cf_array_t* self, cf_void_t* elm, cf_size_t size, cf_alg_
 
     return CF_ARRAY_INVALID_INDEX;
 }
+
+cf_bool_t cf_array_reset(cf_array_t* self) {
+    self->elm_count = 0;
+    return CF_TRUE;
+}
+
