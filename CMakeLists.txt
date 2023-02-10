@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(cfast C CXX)
+project(cfast C)
 
 option(CF_ENABLE_TEST "Enable Unittest" ON)
 option(USE_CFEXP_LIBTELNET_SERVER "use libtelnet server in cfexp"  OFF)

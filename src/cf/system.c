@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <syscall.h>
 #else
-#include <sys/sysctl.h>
+/** #include <sys/sysctl.h> */
 #endif
 
 CF_DECLARE(cf_cpu_type_t) cf_sys_cpu_type() {
@@ -35,62 +35,74 @@ CF_DECLARE(cf_cpu_arch_t) cf_sys_cpu_arch() {
 CF_DECLARE(cf_int_t) cf_sys_cpu_core_count() {
 #ifdef CF_OS_WIN
     return 0;
-#else
+#elif defined(CF_OS_MAC)
     int count = 0;
     size_t size = sizeof(int);
     sysctlbyname("machdep.cpu.core_count", &count, &size, NULL, 0);
     return count;
+#else
+    return 0;
 #endif
 }
 
 CF_DECLARE(cf_int_t) cf_sys_cpu_thread_count() {
 #ifdef CF_OS_WIN
     return 0;
-#else
+#elif defined(CF_OS_MAC)
     int count = 0;
     size_t size = sizeof(int);
     sysctlbyname("machdep.cpu.thread_count", &count, &size, NULL, 0);
     return count;
+#else
+    return 0;
 #endif
 }
 
 CF_DECLARE(cf_int_t) cf_sys_cpu_freq_mhz() {
 #ifdef CF_OS_WIN
     return 0;
-#else
+#elif defined(CF_OS_MAC)
     cf_uint64_t freq = 0;
     size_t size = sizeof(cf_uint64_t);
     sysctlbyname("hw.cpufrequency", &freq, &size, NULL, 0);
     return (cf_int_t)(freq /1000000);
+#else
+    return 0;
 #endif
 }
 
 CF_DECLARE(cf_void_t) cf_sys_cpu_brand(cf_char_t* buf, cf_size_t size) {
 #ifdef CF_OS_WIN
     return ;
-
-#else
+#elif defined(CF_OS_MAC)
     if(!buf) return ;
     sysctlbyname("machdep.cpu.brand_string", buf, &size, NULL, 0);
+#else
+    return;
 #endif
 }
 
 CF_DECLARE(cf_int_t) cf_sys_mem_size_m() {
 #ifdef CF_OS_WIN
     return 0;
-#else 
+#elif defined(CF_OS_MAC)
     cf_uint64_t mem;
     size_t size = sizeof(cf_uint64_t);
     sysctlbyname("hw.memsize", &mem, &size, NULL, 0);
     return (cf_int_t)(mem >> 20);
+#else 
+    return 0;
 #endif
 }
 
 CF_DECLARE(cf_void_t) cf_sys_hostname(cf_char_t* buf, cf_size_t size) {
 #ifdef CF_OS_WIN
     return ;
-#else 
+#elif defined(CF_OS_MAC)
     if(!buf) return;
     sysctlbyname("kern.hostname", buf, &size, NULL, 0);
+#else 
+    return;
 #endif
 }
+

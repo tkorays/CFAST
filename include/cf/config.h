@@ -52,9 +52,10 @@
 
 #       if __GNUC__ >= 4
 #           define CF_API __attribute__((visibility("default")))
-#           define CF_FORCE_INLINE __attribute__((always_inline))
+#           define CF_FORCE_INLINE __attribute__((always_inline)) inline
 #       else
 #           define CF_API
+#           define CF_FORCE_INLINE 
 #       endif
 #  endif
 #endif

@@ -37,7 +37,7 @@ cf_errno_t cf_thread_join(cf_thread_t t, cf_uint32_t* retval) {
 #else
     cf_void_t* ret = 0;
     if(pthread_join(t, &ret) == 0) {
-        if(retval) *retval = (cf_uint32_t)ret;
+        if(retval) *retval = (cf_uint32_t)(cf_uintptr_t)ret;
         return CF_OK;
     }
     else return CF_NOK;
