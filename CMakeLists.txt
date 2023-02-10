@@ -31,6 +31,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/opt.c 
     src/cf/str.c
     src/cf/log.c
+    src/cf/logging.c
     src/cf/thread.c
     src/cf/err.c
     src/cf/file.c
