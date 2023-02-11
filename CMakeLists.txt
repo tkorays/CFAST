@@ -33,6 +33,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/logging.c
     src/cf/thread.c
     src/cf/err.c
+    src/cf/event.c
     src/cf/file.c
     src/cf/queue.c
     src/cf/config.c
@@ -52,6 +53,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/tls.c
     src/cf/bytes.c
     src/cfx/cli.c
+    src/cf/task_queue.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
@@ -101,6 +103,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         cli
         queue
         logging
+        task_queue
     )
     foreach(TEST_NAME ${TESTS})
         add_executable(test_${TEST_NAME} tests/test_${TEST_NAME}.c ${ADDL_SOURCE})

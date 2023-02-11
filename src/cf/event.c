@@ -1,13 +1,35 @@
 #include <cf/event.h>
+#include <cf/memory.h>
 
+#if defined(CF_OS_WIN)
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
 
-cf_event_t* cf_event_create(cf_event_t* self,
+struct cf_event {
+    cf_bool_t managed;
+#if defined(CF_OS_WIN)
+    HANDLE handle;
+#else
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+#endif
+    cf_bool_t manual_reset;
+    cf_bool_t event_status;
+};
+
+cf_event_t* cf_event_new(
     cf_bool_t manual_reset,
     cf_bool_t signaled) {
+    cf_event_t* self = cf_malloc_z(sizeof(cf_event_t));
+    if (!self) {
+        return CF_NULL_PTR;
+    }
     self->manual_reset = manual_reset;
     self->event_status = signaled;
 #if defined(CF_OS_WIN)
-    self->handle = ::CreateEvent(NULL, self->manual_reset, signaled, NULL);
+    self->handle = CreateEvent(NULL, self->manual_reset, signaled, NULL);
 #else
     pthread_mutex_init(self->mutex, NULL);
     pthread_condattr_t cond_attr;
@@ -15,11 +37,14 @@ cf_event_t* cf_event_create(cf_event_t* self,
     pthread_cond_init(self->cond, &cond_attr);
     pthread_condattr_destroy(&cond_attr);
 #endif
+    return self;
 }
 
-void cf_event_destroy(cf_event_t* self) {
+void cf_event_delete(cf_event_t* self) {
 #if defined(CF_OS_WIN)
-    CloseHandle(self->handle);
+    if (self->handle) {
+        CloseHandle(self->handle);
+    }
 #else
     pthread_mutex_destroy(self->mutex);
     pthread_cond_destroy(self->cond);

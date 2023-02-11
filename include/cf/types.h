@@ -85,5 +85,6 @@ typedef cf_int64_t      cf_uintptr_t;
 #endif
 typedef int             cf_errno_t;     /** errno */
 
+#include "cf/err.h"
 
 #endif /* __CF_TYPES_H__ */
