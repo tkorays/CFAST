@@ -11,17 +11,6 @@ static const cf_char_t* _g_log_level_name[] = {
     "_", "D", "I", "W", "E", "F"
 };
 
-/*
-F	 B
-30      40      黑
-31      41      紅
-32      42      綠
-33      43      黃
-34      44      藍
-35      45      紫紅
-36      46      靛藍
-37      47      白 
-*/
 #ifdef CF_OS_WIN
 #   define CF_LOG_COMMON_FORMAT "[%s][P(%u)|T(%u)][%s][%s:%d, %s] %s\n"
 #   define CF_LOG_CLR_I_FORMAT CF_LOG_COMMON_FORMAT
@@ -65,12 +54,20 @@ cf_logger_t* cf_logger_new() {
 }
 
 void cf_logger_delete(cf_logger_t* self) {
+    cf_list_iter_t it;
+    cf_logger_sink_t* sink = CF_NULL_PTR;
+    for (it = cf_list_iter_init(&self->sinks); it; it = cf_list_iter_next(it)) {
+        sink = CF_TYPE_CAST(cf_logger_sink_t*, cf_list_iter_data(it));
+        if (sink) {
+            cf_logger_sink_delete(sink);
+        }
+    }
     cf_list_deinit(&self->sinks);
 }
 
 void cf_logger_write(
     cf_logger_t*        self,
-    const cf_char_t*    fn,
+    const cf_char_t*    filename,
     cf_int_t            line,
     const cf_char_t*    func,
     cf_log_level_t      level,
@@ -81,6 +78,8 @@ void cf_logger_write(
     cf_logger_sink_t* sink = CF_NULL_PTR;
     cf_char_t buf[1024] = {0};
     va_list args;
+    cf_uint_t pid = cf_getpid();
+    cf_uint_t tid = cf_gettid();
 
     va_start(args, fmt);
     vsprintf(buf, fmt, args);
@@ -88,8 +87,8 @@ void cf_logger_write(
 
     for (it = cf_list_iter_init(&self->sinks); it; it = cf_list_iter_next(it)) {
         sink = CF_TYPE_CAST(cf_logger_sink_t*, cf_list_iter_data(it));
-        if (sink && sink->func) {
-            sink->func(sink->instance, fn, line, func, level, buf);
+        if (sink && sink->write && level >= self->level) {
+            sink->write(sink->instance, pid, tid, filename, line, func, level, buf);
         }
     }
 }
@@ -98,17 +97,15 @@ void cf_logger_set_level(cf_logger_t* self, cf_log_level_t level) {
     self->level = level;
 }
 
-void cf_logger_add_sink(cf_logger_t* self, cf_logger_sink_t* sink) {
-    cf_list_insert(&self->sinks, CF_LIST_POS_TAIL, sink);
+cf_bool_t cf_logger_add_sink(cf_logger_t* self, cf_logger_sink_t* sink) {
+    return cf_list_insert(&self->sinks, CF_LIST_POS_TAIL, sink);
 }
 
-cf_logger_sink_t* cf_logger_sink_new_type_file() {
-    return CF_NULL_PTR;
-}
-
-void _log_to_terminal(
+void _log_to_file(
     void*               fp,
-    const cf_char_t*    fn,
+    cf_uint_t           pid,
+    cf_uint_t           tid,
+    const cf_char_t*    filename,
     cf_int_t            line,
     const cf_char_t*    func,
     cf_log_level_t      level,
@@ -126,28 +123,30 @@ void _log_to_terminal(
         CF_TYPE_CAST(FILE*, fp),
         CF_LOG_COMMON_FORMAT,
         ts,
-        cf_getpid(),
-        cf_gettid(), 
+        pid, 
+        tid, 
         _g_log_level_name[level],
-        fn, line, func, msg);
+        filename, line, func, msg);
 }
 
-cf_logger_sink_t* cf_logger_sink_new_type_term() {
+cf_logger_sink_t* cf_logger_sink_new_type_file(
+    cf_file_t fp,
+    CF_FN_LOGGER_SINK_CLEAR clear) {
     cf_logger_sink_t* sink = cf_malloc_z(sizeof(cf_logger_sink_t));
     if (!sink) {
         return CF_NULL_PTR;
     }
-    sink->type      = "terminal";
-    sink->instance  = CF_TYPE_CAST(void*, stdout);
-    sink->func      = _log_to_terminal;
+    sink->type      = "file";
+    sink->instance  = CF_TYPE_CAST(void*, fp);
+    sink->write     = _log_to_file;
+    sink->clear     = clear;
     return sink;
 }
 
 void cf_logger_sink_delete(cf_logger_sink_t* self) {
-    if (cf_strcmp(self->type, "terminal") == 0) {
-        cf_free(self);
-    } else {
-        cf_free(self);
+    if (self->clear) {
+        self->clear(self->instance);
     }
+    cf_free(self);
 }
 
