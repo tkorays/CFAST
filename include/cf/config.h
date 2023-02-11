@@ -30,6 +30,7 @@
 #       else /* static library */
 #         define CF_API
 #       endif
+#       define CF_FORCE_INLINE __forceinline
 #  else
 #       define CF_OS_LINUX 1
 

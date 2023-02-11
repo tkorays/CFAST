@@ -101,6 +101,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         location
         cli
         queue
+        logging
     )
     foreach(TEST_NAME ${TESTS})
         add_executable(test_${TEST_NAME} tests/test_${TEST_NAME}.c ${ADDL_SOURCE})

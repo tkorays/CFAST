@@ -114,6 +114,6 @@ cf_uint_t cf_gettid() {
 #ifdef CF_OS_WIN
     return GetCurrentThreadId();
 #else 
-    return (cf_uint_t)pthread_self();
+    return (cf_uint_t)(cf_uintptr_t)pthread_self();
 #endif
 }

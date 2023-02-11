@@ -17,8 +17,10 @@
 /* vc 6 */
 #define define CF_LOG(log, level, fmt, ...)
 #else
-#   define CF_LOG(log, level, fmt, ...)  cf_logger_write(log, __FILE__, __LINE__, __FUNCTION__, level, fmt, ##__VA_ARGS__)
+#   define CF_LOG(level, fmt, ...)  cf_logger_write(cf_logger_default(), __FILE__, __LINE__, __FUNCTION__, level, fmt, ##__VA_ARGS__)
 #endif
+
+CF_DECLS_BEGIN
 
 /**
  * Log level.
@@ -33,10 +35,25 @@ typedef enum {
     CF_LOG_LFATAL   = 5,
 } cf_log_level_t;
 
-typedef struct cf_logger cf_logger_t;
-typedef struct cf_logsink cf_logger_sink_t;
+typedef void(*CF_FN_LOG_WRITE)(
+    void* instance,
+    const cf_char_t*    fn,
+    cf_int_t            line,
+    const cf_char_t*    func,
+    cf_log_level_t      level,
+    const cf_char_t*    msg
+);
 
-CF_DECLS_BEGIN
+typedef struct cf_logger cf_logger_t;
+
+typedef struct {
+    const cf_char_t*    type;
+    void*               instance;
+    CF_FN_LOG_WRITE     func;
+} cf_logger_sink_t;
+
+
+cf_logger_t* cf_logger_default();
 
 /**
  * create a logger instance.
@@ -79,6 +96,14 @@ void cf_logger_write(
  * @return void
  */
 void cf_logger_set_level(cf_logger_t* self, cf_log_level_t level);
+
+/**
+ * add a logger sink.
+ *
+ * @param self  this pointer like c++
+ * @param sink  logger sink, logger is responsible for releasing sinks' memory
+ */
+void cf_logger_add_sink(cf_logger_t* self, cf_logger_sink_t* sink);
 
 /**
  * create a file logger sink
