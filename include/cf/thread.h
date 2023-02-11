@@ -11,6 +11,8 @@
 #ifndef __CF_THREAD_H__
 #define __CF_THREAD_H__
 
+#define _GNU_SOURCE
+
 #include <cf/types.h>
 #ifdef CF_OS_WIN
 #include <Windows.h>
@@ -51,6 +53,8 @@ cf_errno_t cf_thread_join(cf_thread_t t, cf_uint32_t* retval);
 cf_errno_t cf_thread_detach(cf_thread_t t);
 cf_errno_t cf_thread_cancel(cf_thread_t t);
 cf_bool_t cf_thread_equal(cf_thread_t t1, cf_thread_t t2);
+void cf_thread_setname(cf_thread_t t, const char* name);
+void cf_thread_set_priority(cf_thread_t t, cf_thread_priority_t p);
 cf_thread_t cf_thread_self();
 cf_errno_t cf_thread_attr_init(cf_thread_attr_t* attr);
 cf_errno_t cf_thread_attr_destroy(cf_thread_attr_t* attr);

@@ -52,6 +52,8 @@ cf_task_queue_t* cf_task_queue_new(const char* name, int priority) {
     if (CF_OK != cf_thread_create(&thread, &attr, task_queue_proc, 0)) {
         goto err_proc;
     }
+    cf_thread_setname(thread, name);
+    cf_thread_set_priority(thread, priority);
     cf_thread_attr_destroy(&attr);
 
     return task_queue;

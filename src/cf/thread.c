@@ -2,6 +2,36 @@
 #include <cf/err.h>
 #ifdef CF_OS_WIN
 #include <process.h>
+
+#define MS_VC_EXCEPTION 0x406D1388
+ 
+#pragma pack(push,8)
+typedef struct tagTHREADNAME_INFO
+{
+   DWORD    dwType; // Must be 0x1000.
+   LPCSTR   szName; // Pointer to name (in user addr space).
+   DWORD    dwThreadID; // Thread ID (-1=caller thread).
+   DWORD    dwFlags; // Reserved for future use, must be zero.
+} THREADNAME_INFO;
+#pragma pack(pop)
+
+void SetThreadName(DWORD dwThreadID, char* threadName)
+{
+   THREADNAME_INFO info;
+   info.dwType      = 0x1000;
+   info.szName      = threadName;
+   info.dwThreadID  = dwThreadID;
+   info.dwFlags     = 0;
+ 
+   __try
+   {
+      RaiseException(MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+   }
+   __except(EXCEPTION_EXECUTE_HANDLER)
+   {
+   }
+}
+
 #else
 #include <unistd.h>
 #endif
@@ -71,6 +101,27 @@ cf_bool_t cf_thread_equal(cf_thread_t t1, cf_thread_t t2) {
 #else
     if(pthread_equal(t1, t2)) return CF_TRUE;
     else return CF_FALSE;
+#endif
+}
+
+void cf_thread_setname(cf_thread_t t, const char* name) {
+#ifdef CF_OS_WIN
+    SetThreadName(GetThreadId(t), name);
+#else
+    pthread_setname_np(t, name);
+#endif
+}
+
+void cf_thread_set_priority(cf_thread_t t, cf_thread_priority_t p) {
+#ifdef CF_OS_WIN
+    int priority = THREAD_PRIORITY_NORMAL;
+    if (p == CF_THREAD_PRIORITY_LOW) {
+        priority = THREAD_PRIORITY_LOWEST;
+    } else (p == CF_THREAD_PRIORITY_HIGH) {
+        priority = THREAD_PRIORITY_HIGHEST;
+    }
+    SetThreadPriority(t, priority)
+#else
 #endif
 }
 
