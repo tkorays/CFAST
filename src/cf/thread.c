@@ -117,10 +117,10 @@ void cf_thread_set_priority(cf_thread_t t, cf_thread_priority_t p) {
     int priority = THREAD_PRIORITY_NORMAL;
     if (p == CF_THREAD_PRIORITY_LOW) {
         priority = THREAD_PRIORITY_LOWEST;
-    } else (p == CF_THREAD_PRIORITY_HIGH) {
+    } else if (p == CF_THREAD_PRIORITY_HIGH) {
         priority = THREAD_PRIORITY_HIGHEST;
     }
-    SetThreadPriority(t, priority)
+    SetThreadPriority(t, priority);
 #else
 #endif
 }
