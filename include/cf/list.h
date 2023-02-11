@@ -15,6 +15,7 @@
 
 /**
  * a linked list
+ * creating and releasing node data is users' responsibility.
  */
 typedef struct cf_list {
     cf_size_t           count;      /*< number of list items */
