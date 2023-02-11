@@ -8,6 +8,11 @@
 #include <pthread.h>
 #endif
 
+/**
+ * @defgroup CF_TLS TLS
+ * Thread Local Storage
+ * @{
+ */
 
 typedef struct cf_tls {
 #if defined (CF_OS_WIN)
@@ -28,5 +33,7 @@ cf_bool_t cf_tls_set(cf_tls_t* self, void* value);
 void* cf_tls_get(cf_tls_t* self);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_THREAD_LOCAL_STORAGE_H__ */

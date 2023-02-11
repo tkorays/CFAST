@@ -18,11 +18,10 @@
 CF_DECLS_BEGIN
 
 /**
- * @defgroup CFX Command Line Interface
- * @ingroup CFX_CLI
- * @{
- * 
+ * @defgroup CFX_CLI CLIx
  * This module provides an interactive Command Line Interface(CLI).
+ *
+ * @{
  */
 
 

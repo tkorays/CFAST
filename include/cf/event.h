@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_EVENT event
+ * system independent event
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -63,6 +69,8 @@ void cf_event_reset(cf_event_t* self);
 cf_bool_t cf_event_wait(cf_event_t* self, int timeout_ms);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_EVENT_H__ */
 

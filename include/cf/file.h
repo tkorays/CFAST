@@ -15,6 +15,12 @@
 #include <cf/err.h>
 #include <stdio.h>
 
+/**
+ * @defgroup CF_FILE file
+ * standard file operations
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 #define CF_FILE_SEEK_SET    SEEK_SET
@@ -75,5 +81,7 @@ CF_DECLARE(cf_bool_t)  cf_file_isdir(const cf_char_t* path);
 CF_DECLARE(cf_bool_t)  cf_file_isfile(const cf_char_t* path);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_FILE_H__ */

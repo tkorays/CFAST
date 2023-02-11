@@ -3,6 +3,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_ERR error
+ * error
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -76,5 +82,7 @@ cf_void_t cf_err_register(cf_uint32_t module, cf_err_pfn_strerror fn);
 cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_ERR_H__ */

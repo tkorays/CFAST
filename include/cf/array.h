@@ -15,7 +15,13 @@
 #include <cf/algorithm.h>
 
 /**
- * a simple array.
+ * @defgroup CF_ARRAY array
+ * Simple array
+ * @{
+ */
+
+/**
+ * @brief a simple array.
  */
 typedef struct cf_array {
     cf_size_t   capacity;   /* capacity of this array */
@@ -112,5 +118,7 @@ cf_bool_t cf_array_reset(cf_array_t* self);
 #define cf_array_size(arr) ((arr)->elm_count)
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* ifndef __CF_ARRAY_H__ */

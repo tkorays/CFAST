@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_QUEUE queue
+ * double ended queue
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -142,5 +148,7 @@ void cf_lite_queue_clear(cf_lite_queue_t* self);
 
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_QUEUE_H__ */

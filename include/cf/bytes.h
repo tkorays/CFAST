@@ -3,6 +3,13 @@
 
 #include <cf/types.h>
 
+/**
+ *
+ * @defgroup CF_BYTES bytes
+ * Utils to Read and Write Bytes
+ * @{
+ */
+
 /* read integers from big endian buffer */
 #define cf_read_u16_from_be(buf) cf_ntoh_u16(*CF_TYPE_CAST(cf_uint16_t*, buf))
 #define cf_read_u32_from_be(buf) cf_ntoh_u32(*CF_TYPE_CAST(cf_uint32_t*, buf))
@@ -155,5 +162,7 @@ __cf_byte_writer_put_template__(float, float)
 __cf_byte_writer_put_template__(double, double)
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_BYTES_H__ */

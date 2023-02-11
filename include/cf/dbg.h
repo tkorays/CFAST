@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_DBG debug
+ * Debug utils
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -26,5 +32,7 @@ CF_DECLS_BEGIN
 CF_DECLARE(cf_size_t) cf_dbg_mem2hex(cf_void_t* m, cf_size_t n, cf_char_t* buf, cf_size_t size);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_DBG_H__ */

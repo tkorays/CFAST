@@ -13,6 +13,12 @@
 
 #include "cf/types.h"
 
+/**
+ * @defgroup CF_TASK_QUEUE task queue
+ * execute task asynchronously
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -71,5 +77,7 @@ void cf_task_queue_post_delayed(
     int ms);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_TASK_QUEUE_H__ */

@@ -20,6 +20,12 @@
 #include <pthread.h>
 #endif
 
+/**
+ * @defgroup CF_THREAD thread
+ * a system independent thread implementation
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -63,5 +69,7 @@ cf_uint_t cf_getpid();
 cf_uint_t cf_gettid();
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_THREAD_H__ */

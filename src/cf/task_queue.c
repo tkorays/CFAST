@@ -4,6 +4,7 @@
 #include "cf/memory.h"
 #include "cf/mutex.h"
 #include "cf/event.h"
+#include "cf/err.h"
 
 #include <stdio.h>
 

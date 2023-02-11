@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_DSO DSO
+ * Dynamic Shared Object
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -46,5 +52,7 @@ CF_DECLARE(cf_errno_t) cf_dso_sym(cf_dso_handle_t* handle, const cf_char_t* name
 CF_DECLARE(cf_errno_t) cf_dso_inject(cf_uint32_t pid, const cf_char_t* path);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_DSO_H__ */

@@ -13,6 +13,12 @@
 
 #include "cf/types.h"
 
+/**
+ * @defgroup CF_VECTOR vector
+ * an cpp-like vector
+ * @{
+ */
+
 typedef struct {
     void*           buffer;
     cf_size_t       capacity;
@@ -108,5 +114,7 @@ CF_VECTOR_DEFINE_POP_FRONT_FUNC(cf_int32_t)
 CF_VECTOR_DEFINE_POP_FRONT_FUNC(cf_uint32_t)
 CF_VECTOR_DEFINE_POP_FRONT_FUNC(cf_int64_t)
 CF_VECTOR_DEFINE_POP_FRONT_FUNC(cf_uint64_t)
+
+/** @} */
 
 #endif /* __CFAST_VECTOR_H__ */

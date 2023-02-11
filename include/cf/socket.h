@@ -3,9 +3,17 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_SOCKET socket
+ * socket for network
+ * @{
+ */
+
 #define CF_SOCK_PORT_UNSPEC 0
 #define CF_IP_V4 4
 #define CF_IP_V6 6
+
+CF_DECLS_BEGIN
 
 /* ipv4 */
 typedef union {
@@ -127,10 +135,9 @@ cf_int_t cf_socket_recvfrom(cf_socket_t* self, cf_sockaddr_t* from, void* buff, 
  */
 cf_bool_t cf_socket_set_nonblock(cf_socket_t* self, cf_bool_t nonblock);
 
-CF_DECLS_BEGIN
-
-
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_TRANSPORT_H__ */
 

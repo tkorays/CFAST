@@ -14,6 +14,12 @@
 #include <cf/types.h>
 
 /**
+ * @defgroup CF_LIST list
+ * double linked list
+ * @{
+ */
+
+/**
  * a linked list
  * creating and releasing node data is users' responsibility.
  */
@@ -125,5 +131,7 @@ cf_void_t* cf_list_iter_data(cf_list_iter_t it);
 #define cf_list_size(li) ((li)->count)
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_LIST_H__ */

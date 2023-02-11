@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_SYSTEM system
+ * utils for operation systems
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 typedef enum {
@@ -38,5 +44,7 @@ CF_DECLARE(cf_int_t) cf_sys_mem_size_m();
 CF_DECLARE(cf_void_t) cf_sys_hostname(cf_char_t* buf, cf_size_t size);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_SYSTEM_H__ */

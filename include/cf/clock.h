@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_CLOCK clock
+ * Time and Clocks
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -112,5 +118,7 @@ cf_int64_t cf_clock_ntp_ms(cf_clock_t* self);
 
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CFAST_CLOCK_H__ */

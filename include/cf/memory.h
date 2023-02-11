@@ -14,6 +14,11 @@
 #include <cf/types.h>
 #include <stdlib.h>
 
+/**
+ * @defgroup CF_MEMORY memory
+ * memory allocation and memory allocator
+ * @{
+ */
 
 #ifdef CF_MEMORY_DBG
 #   define cf_malloc(size) cf_malloc_dbg(size)
@@ -122,5 +127,7 @@ typedef struct cf_mpool cf_mpool_t;
 cf_bool_t cf_allocator_init_from_mpool(cf_allocator_t* self, cf_mpool_t* mpool);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_MEMORY_H__ */

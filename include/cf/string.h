@@ -15,6 +15,12 @@
 #include <cf/str.h>
 #include <cf/memory.h>
 
+/**
+ * @defgroup CF_ADV_STRING advance string
+ * advance string implementation
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 typedef struct {
@@ -114,5 +120,7 @@ void cf_string_reset(cf_string_t* self, cf_char_t* ptr, cf_size_t len, cf_alloca
 #define cf_string_cmp(self, other) cf_string_cmp_raw((self), (other)->ptr, (other)->len)
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_STRING_H__ */

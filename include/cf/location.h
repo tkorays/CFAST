@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_LOCATION location
+ * file location
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 typedef struct {
@@ -34,5 +40,6 @@ typedef struct {
 
 CF_DECLS_END
 
+/** @} */
 
 #endif /* __CFAST_LOCATION_H__ */

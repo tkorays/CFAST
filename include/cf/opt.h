@@ -3,6 +3,11 @@
 
 #include <cf/types.h>
 
+/**
+ * defgroup CF_OPT opt
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 #define CF_OPT_NAME_MAX_SIZE 64
@@ -21,5 +26,7 @@ typedef struct {
 cf_errno_t cf_opt_get_raw(cf_uint_t argc, cf_char_t* argv[], cf_uint_t* pos, cf_opt_t* opt);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_OPT_H__ */

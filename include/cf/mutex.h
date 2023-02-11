@@ -19,6 +19,12 @@
 #include <pthread.h>
 #endif
 
+/**
+ * defgroup CF_MUTEX mutex
+ * a system independent mutex
+ * @{
+ */
+
 CF_DECLS_BEGIN
 #ifdef CF_OS_WIN
 typedef HANDLE cf_mutex_t;
@@ -35,5 +41,7 @@ cf_errno_t cf_mutex_trylock(cf_mutex_t* mutex);
 cf_errno_t cf_mutex_unlock(cf_mutex_t* mutex);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_MUTEX_H__ */

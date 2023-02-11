@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_STR str
+ * c-style str
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 #define CF_IS_ASCII(c) ((c) < 128)
@@ -122,5 +128,7 @@ cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format,
 #define cf_str_endwith(s, search) ((s - cf_strlen(search)) == cf_strstr((s), search)))
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_STR_H__ */

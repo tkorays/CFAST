@@ -3,6 +3,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_SHM shared memory
+ * shared memory
+ * @{
+ */
+
 typedef struct cf_shm cf_shm_t;
 
 CF_DECLS_BEGIN
@@ -13,5 +19,7 @@ CF_DECLARE(cf_void_t*) cf_shm_get_buf(cf_shm_t* shm);
 CF_DECLARE(cf_size_t)  cf_shm_get_size(cf_shm_t* shm);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_SHM_H__ */ 

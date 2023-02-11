@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_TIME time
+ * time utils 
+ * @{
+ */
+
 #define CF_IS_LEAP_YEAR(y) (((y) % 4 == 0) && ((y) % 100 != 0))
 
 CF_DECLS_BEGIN
@@ -82,5 +88,7 @@ cf_int32_t cf_datetime_day_of_year(const cf_datetime_t* dt);
 
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_TIME_H__ */

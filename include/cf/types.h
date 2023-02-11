@@ -14,6 +14,12 @@
 #include <stddef.h>
 #include <cf/config.h>
 
+/**
+ * @defgroup CF_TPES types
+ * types
+ * @{
+ */
+
 #define CF_NULL_PTR 0
 #define CF_VOID_PTR (void*)0
 #define CF_TRUE 1
@@ -85,6 +91,6 @@ typedef cf_int64_t      cf_uintptr_t;
 #endif
 typedef int             cf_errno_t;     /** errno */
 
-#include "cf/err.h"
+/** @} */
 
 #endif /* __CF_TYPES_H__ */

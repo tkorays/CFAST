@@ -18,6 +18,12 @@
 #include <sys/poll.h>
 #endif
 
+/**
+ * @defgroup CF_POLL poll
+ * poll
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 #define CF_POLLIN       POLLIN
@@ -42,5 +48,7 @@ typedef nfds_t cf_nfds_t;
 CF_DECLARE(cf_int_t) cf_poll(cf_pollfd_t* fdarray, cf_nfds_t nfds, cf_int_t timeout);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_POLL_H__ */

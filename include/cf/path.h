@@ -14,6 +14,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_PATH path utils
+ * system path utils
+ * @{
+ */
+
 #define CF_PATH_MAX_SIZE 256
 
 #define CF_PATH_SPLIT_CHAR_WIN '\\'
@@ -31,5 +37,6 @@ CF_DECLARE(cf_bool_t)  cf_path_isabs(const cf_char_t* path);
 
 CF_DECLS_END
 
+/** @} */
 
 #endif /* __CF_PATH_H__ */

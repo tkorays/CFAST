@@ -22,6 +22,12 @@
 #include <unistd.h>
 #endif
 
+/**
+ * @defgroup CF_SELECT select
+ * select
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 #ifndef CF_OS_WIN
@@ -47,5 +53,7 @@ CF_DECLARE(cf_errno_t) cf_select(int maxfdp, cf_fdset_t* rfds, cf_fdset_t* wfds,
 #endif
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_SELECT_H__ */

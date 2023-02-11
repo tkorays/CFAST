@@ -17,11 +17,10 @@
 CF_DECLS_BEGIN
 
 /**
- * @defgroup CFAST Command Line Interface
- * @ingroup CF_CLI
- * @{
- *
+ * @defgroup CF_CLI CLI
  * This module provides an interactive Command Line Interface(CLI).
+ *
+ * @{
  */
 
 #define CF_CLI_MAX_BUFF 1024

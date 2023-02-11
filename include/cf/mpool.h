@@ -13,6 +13,12 @@
 
 #include <cf/types.h>
 
+/**
+ * @defgroup CF_MPOOL memory pool
+ * a simple memory pool
+ * @{
+ */
+
 CF_DECLS_BEGIN
 
 /**
@@ -65,5 +71,7 @@ cf_void_t*  cf_mpool_alloc(cf_mpool_t* pool, cf_size_t size);
 cf_void_t   cf_mpool_get_stat(cf_mpool_t* pool, cf_mpool_stat_t* stat);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_MPOOL_H__ */

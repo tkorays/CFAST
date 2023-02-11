@@ -14,6 +14,12 @@
 #include "cf/types.h"
 #include "cf/file.h"
 
+/**
+ * @defgroup CF_LOGGING logging
+ * logging utils
+ * @{
+ */
+
 #if (defined _MSC_VER) && (_MSC_VER < 1300)
 /* vc 6 */
 #define define CF_LOG(log, level, fmt, ...)
@@ -161,6 +167,8 @@ cf_logger_sink_t* cf_logger_sink_new_type_file(
 void cf_logger_sink_delete(cf_logger_sink_t* self);
 
 CF_DECLS_END
+
+/** @} */
 
 #endif /* __CF_LOGING_H__ */
 

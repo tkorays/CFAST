@@ -5,6 +5,7 @@
 *.a
 build/
 build-*/
+output/
 *~
 *.log
 .clangd/
