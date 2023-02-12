@@ -19,7 +19,7 @@
 #include <cf/err.h>
 #include <cf/file.h>
 #include <cf/list.h>
-#include <cf/log.h>
+#include <cf/logging.h>
 #include <cf/memory.h>
 #include <cf/mpool.h>
 #include <cf/msg.h>

@@ -52,8 +52,9 @@ set(SRC_LIST src/cf/list.c
     src/cf/array.c
     src/cf/tls.c
     src/cf/bytes.c
-    src/cfx/cli.c
     src/cf/task_queue.c
+    src/cfx/cli.c
+    src/cfx/fec.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
@@ -105,6 +106,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         queue
         logging
         task_queue
+        fec
     )
     foreach(TEST_NAME ${TESTS})
         add_executable(test_${TEST_NAME} tests/test_${TEST_NAME}.c ${ADDL_SOURCE})
