@@ -40,7 +40,7 @@ CF_DECLS_BEGIN
 cf_size_t cf_strlen(const cf_char_t* s);
 
 /**
- * Compare two strings.
+ * Compare two strings, return 0 if equal. see strcmp.
  * @param s1        String.
  * @param s2        String.
  * @return          Compararision result.
@@ -56,11 +56,13 @@ cf_int32_t cf_strcmp(const cf_char_t* s1, const cf_char_t* s2);
 cf_int32_t cf_stricmp(const cf_char_t* s1, const cf_char_t* s2);
 
 /**
- * Link two strings.
+ * Append source string to destination.
  * @param dst       Destination string.
  * @param dstsize   Size of destination string.
  * @param src       Source string.
- * @return          Pointer to destination if link successfully.
+ * @return          Pointer to destination if concat successfully.
+ *
+ * destination should have enough space to hold all bytes.
  */
 cf_char_t* cf_strcat_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src);
 
@@ -69,7 +71,7 @@ cf_char_t* cf_strcat_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src);
  * @param dst       Destination string.
  * @param dstsize   Size of destination string.
  * @param src       Source string.
- * @return          Pointer to destination if link successfully.
+ * @return          Pointer to destination if copy successfully.
  */
 cf_char_t* cf_strcpy_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src);
 
@@ -79,7 +81,7 @@ cf_char_t* cf_strcpy_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src);
  * @param dstsize   Size of destination string.
  * @param src       Source string.
  * @param srcmax    Size to be copy.
- * @return          Pointer to destination if link successfully.
+ * @return          Pointer to destination if copy successfully.
  */
 cf_char_t* cf_strncpy_s(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* src, cf_size_t srcmax);
 
@@ -124,7 +126,68 @@ cf_char_t* cf_strrchr(const cf_char_t* s, cf_char_t c);
  */
 cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format, ...);
 
+/**
+ * strip empty chars 
+ * 
+ * @param   s   input string
+ * @return true if success
+ */
+cf_bool_t cf_str_strip(cf_char_t* s);
+
+/**
+ * Upper the first char
+ * @param   s   input string
+ * @return true if success
+ */
+cf_bool_t cf_str_capitalize(cf_char_t* s);
+
+/**
+ * convert string to upper case
+ * @param   s   input string
+ * @return true if success
+ */
+cf_bool_t cf_str_to_upper(cf_char_t* s);
+
+/**
+ * convert string to lower case
+ * @param   s   input string
+ * @return true if success
+ */
+cf_bool_t cf_str_to_lower(cf_char_t* s);
+
+/**
+ * swith between upper case and lower case
+ * @param   s   input string
+ * @return true if success
+ */
+cf_bool_t cf_str_switch_case(cf_char_t* s);
+
+/**
+ * center a string with filled character
+ * @param   dst     destination buffer
+ * @param   size    size of destination buffer
+ * @param   c       the filled character
+ * @param   total   total length of result string
+ * @return true if success
+ */
+cf_bool_t cf_str_center(cf_char_t* dst, cf_size_t size, cf_char_t* s, cf_char_t c, cf_size_t total);
+
+/**
+ * numbers of a character in string
+ * @param   s       the searched string
+ * @param   c       the searched character
+ * @return numbers of the character
+ */
+cf_size_t cf_str_count_for(cf_char_t* s, cf_char_t c);
+
+/**
+ * true if the string `s` start with the string `search`
+ */
 #define cf_str_startwith(s, search) (s == cf_strstr((s), (search)))
+
+/**
+ * true if the string `s` end with the string `search`
+ */
 #define cf_str_endwith(s, search) ((s - cf_strlen(search)) == cf_strstr((s), search)))
 
 CF_DECLS_END

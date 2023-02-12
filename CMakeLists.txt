@@ -94,6 +94,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(TESTS
         array
         list
+        str
         bytes
         types
         tls

@@ -86,3 +86,129 @@ cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format,
     va_end(args);
     return ret;
 }
+
+cf_bool_t cf_str_strip(cf_char_t* s) {
+    cf_char_t* start = CF_NULL_PTR;
+    cf_char_t* end = CF_NULL_PTR;
+    cf_size_t len = 0;
+    cf_size_t i = 0;
+    if (!s) return CF_FALSE;
+
+    len = strlen(s);
+    if (len == 0) return CF_TRUE;
+
+    /* strip left */
+    start = s;
+    while (CF_IS_BLANK(*start)) {
+        start++;
+    }
+    // all chars are \b or \t
+    if (*start == '\0') {
+        s[0] = '\0';
+        return CF_TRUE;
+    }
+
+    /* strip right */
+    end = s + len - 1;
+    while (CF_IS_BLANK(*end)) {
+        end--;
+    }
+
+    len = end - start + 1;    
+    for (i = 0; i < len; i++) {
+        s[i] = *(start + i);
+    }
+    s[len] = '\0';
+    return CF_TRUE;
+}
+
+cf_bool_t cf_str_capitalize(cf_char_t* s) {
+    if (!s) return CF_FALSE;
+    if (strlen(s) == 0) return CF_TRUE;
+    // is upper already
+    s[0] = CF_TO_UPPER_ALPHA(s[0]);
+    return CF_TRUE;
+}
+
+cf_bool_t cf_str_to_upper(cf_char_t* s) {
+    cf_char_t* p = CF_NULL_PTR;
+    if (!s) return CF_FALSE;
+
+    for (p = s; *p != '\0'; p++) {
+        *p = CF_TO_UPPER_ALPHA(*p);
+    }
+    return CF_TRUE;
+}
+
+cf_bool_t cf_str_to_lower(cf_char_t* s) {
+    cf_char_t* p = CF_NULL_PTR;
+    if (!s) return CF_FALSE;
+
+    for (p = s; *p != '\0'; p++) {
+        *p = CF_TO_LOWER_ALPHA(*p);
+    }
+    return CF_TRUE;
+}
+
+cf_bool_t cf_str_switch_case(cf_char_t* s) {
+    cf_char_t* p = CF_NULL_PTR;
+    if (!s) return CF_FALSE;
+
+    for (p = s; *p != '\0'; p++) {
+        if (CF_IS_LOWER_ALPHA(*p)) {
+            *p = CF_TO_UPPER_ALPHA(*p);
+        } else {
+            *p = CF_TO_LOWER_ALPHA(*p);
+        }
+    }
+    return CF_TRUE;
+}
+
+cf_bool_t cf_str_center(cf_char_t* dst, cf_size_t size, cf_char_t* s, cf_char_t c, cf_size_t total) {
+    cf_size_t left = 0, right = 0, len = 0;
+    cf_char_t* p = CF_NULL_PTR;
+    if (!dst || !s) {
+        return CF_FALSE;
+    }
+    // no enough space to hold 
+    len = strlen(s);
+    if (len + 1 > size || total + 1 > size) {
+        return CF_FALSE;
+    }
+
+    left = (total - len) / 2;
+    p = dst;
+    // fill left
+    while (p < dst + left) {
+        *p = c;
+        p++;
+    }
+    // copy string
+    while (*s != '\0') {
+        *p = *s;
+        s++;
+        p++;
+    }
+    // fill right
+    while (p < dst + total) {
+        *p = c;
+        p++;
+    }
+    dst[total] = '\0';
+    
+    return CF_TRUE;
+}
+
+cf_size_t cf_str_count_for(cf_char_t* s, cf_char_t c) {
+    cf_size_t cnt = 0;
+
+    if (!s) return 0;
+    if (c == '\0') return 1;
+
+    while (*s != '\0') {
+        if (*s == c) cnt ++;
+        s++;
+    }
+    return cnt;
+}
+
