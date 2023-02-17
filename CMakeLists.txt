@@ -4,9 +4,15 @@ project(cfast C)
 
 option(CF_ENABLE_TEST "Enable Unittest" ON)
 option(USE_CFEXP_LIBTELNET_SERVER "use libtelnet server in cfexp"  OFF)
+option(CF_ENABLE_COV "Enable Coverage" OFF)
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
     SET(CMAKE_BUILD_TYPE Debug)
+endif()
+
+if (CF_ENABLE_COV)
+    set(CMAKE_C_FLAGS " -fprofile-arcs -ftest-coverage --coverage")
+    SET(CMAKE_C_LINK_FLAGS "-fprofile-arcs -fprofile-generate --coverage")
 endif()
 
 
@@ -53,6 +59,8 @@ set(SRC_LIST src/cf/list.c
     src/cf/tls.c
     src/cf/bytes.c
     src/cf/task_queue.c
+    src/cf/version.c
+    src/cf/numerics.c
     src/cfx/cli.c
     src/cfx/fec.c
     )
@@ -106,6 +114,8 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         queue
         logging
         task_queue
+        version
+        numerics
         fec
     )
     foreach(TEST_NAME ${TESTS})

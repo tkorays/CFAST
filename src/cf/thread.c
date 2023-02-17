@@ -107,6 +107,8 @@ cf_bool_t cf_thread_equal(cf_thread_t t1, cf_thread_t t2) {
 void cf_thread_setname(cf_thread_t t, const char* name) {
 #ifdef CF_OS_WIN
     SetThreadName(GetThreadId(t), name);
+#elif defined(CF_OS_MAC)
+    pthread_setname_np(name);
 #else
     pthread_setname_np(t, name);
 #endif
