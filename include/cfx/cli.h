@@ -24,7 +24,7 @@ CF_DECLS_BEGIN
  * @{
  */
 
-
+#define CFX_CLI_OPT_NONE     (0)
 #define CFX_CLI_OPT_REQ      (1)
 #define CFX_CLI_OPT_IS_FLAG  (1 << 1)
 

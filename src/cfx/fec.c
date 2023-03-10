@@ -103,7 +103,7 @@ cf_bool_t cfx_fec_encode_output(cfx_fec_t* self, void* data, cf_size_t size) {
 }
 
 cf_bool_t cfx_fec_decode(cfx_fec_t* self, const void* data, cf_size_t size) {
-
+    return CF_FALSE;
 }
 
 cf_bool_t cfx_fec_decode_output(cfx_fec_t* self, void* data, cf_size_t size) {
