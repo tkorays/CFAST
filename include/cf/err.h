@@ -11,55 +11,56 @@
 
 CF_DECLS_BEGIN
 
+
+typedef const cf_char_t*(*cf_strerr_fn)(cf_uint_t eid);
+
 /**
- * Errno Description
+ * module id should start at 100.
  */
-typedef struct {
-    cf_errno_t          err;    /** errno */
-    const cf_char_t*    desc;   /** description */
-} cf_err_info_t;
+#define CF_ERR_MODULE_START         100
 
-typedef const cf_char_t*(*cf_err_pfn_strerror)(cf_uint_t eid);
-
-#define CF_ERR_DESC_MAX_BUFF        128
+/**
+ * we can only define 16 modules.
+ * you can modify this value to support more modules.
+ */
 #define CF_ERR_MODULE_MAX_NUM       16
-#define CF_MAKE_ERRNO(m, no) ((m)<<16 | no)
-#define CF_ERR_GET_MODULE(err) (((err)>>16) & 0x0000FFFF)
-#define CF_ERR_GET_MERR(err) ((err) & 0x0000FFFF)
+
+/**
+ * err code has 16 bits.
+ */
+#define CF_ERR_CODE_BITS            16
+
+/**
+ * module has 16 bits.
+ */
+#define CF_ERR_MODULE_BITS          16
+#define CF_ERR_CODE_MASK            0x00FFFF
+#define CF_MAKE_ERRNO(m, no)        ((m) << CF_ERR_CODE_BITS | no)
+#define CF_ERR_GET_MODULE(err)      (((err) >> CF_ERR_CODE_BITS) & CF_ERR_CODE_MASK)
+#define CF_ERR_GET_MERR(err)        ((err) & CF_ERR_CODE_MASK)
+#define CF_ERR_DESC_MAX_BUFF        128
 #define CF_ERR_STR_BUILD(code, desc) {code, desc " (" #code ")"}
 
-#define CF_ERR_MODULE_COMMON    0
-#define CF_ERR_MODULE_FILE      1
-#define CF_ERR_MODULE_MEM       2
-#define CF_ERR_MODULE_SOCKET    3
-#define CF_ERR_MODULE_DSO       4
-#define CF_ERR_MODULE_SELECT    5
-#define CF_ERR_MODULE_PLUGIN    6
 
-
-#define CF_EOK          CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 0)
-#define CF_ENOK         CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 1)
-#define CF_EPARAM       CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 2)
-#define CF_ENULLPTR     CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 3)
-#define CF_ENOTFOUND    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 4)
-#define CF_EFULL        CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 5)
-#define CF_EEMPTY       CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 6)
-#define CF_ETOOBIG      CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 7)
-#define CF_ETOOSHORT    CF_MAKE_ERRNO(CF_ERR_MODULE_COMMON, 8)
-
-#define CF_EFOPEN       CF_MAKE_ERRNO(CF_ERR_MODULE_FILE, 0)
-#define CF_EFCLOSE      CF_MAKE_ERRNO(CF_ERR_MODULE_FILE, 1)
-#define CF_EFWRITE      CF_MAKE_ERRNO(CF_ERR_MODULE_FILE, 2)
-#define CF_EEOF         CF_MAKE_ERRNO(CF_ERR_MODULE_FILE, 3)
-#define CF_EFREAD       CF_MAKE_ERRNO(CF_ERR_MODULE_FILE, 4)
-
-#define CF_EMALLOC      CF_MAKE_ERRNO(CF_ERR_MODULE_MEM, 0)
-#define CF_EMFREE       CF_MAKE_ERRNO(CF_ERR_MODULE_MEM, 1)
-
-#define CF_EDSO_OPEN    CF_MAKE_ERRNO(CF_ERR_MODULE_DSO, 0)
-#define CF_EDSO_GETSYM  CF_MAKE_ERRNO(CF_ERR_MODULE_DSO, 1)
-
-#define CF_ESELECT_TOUT CF_MAKE_ERRNO(CF_ERR_MODULE_SELECT, 0)
+#define CF_EOK          CF_MAKE_ERRNO(CF_ERR_MODULE_START, 0)
+#define CF_ENOK         CF_MAKE_ERRNO(CF_ERR_MODULE_START, 1)
+#define CF_EPARAM       CF_MAKE_ERRNO(CF_ERR_MODULE_START, 2)
+#define CF_ENULLPTR     CF_MAKE_ERRNO(CF_ERR_MODULE_START, 3)
+#define CF_ENOTFOUND    CF_MAKE_ERRNO(CF_ERR_MODULE_START, 4)
+#define CF_EFULL        CF_MAKE_ERRNO(CF_ERR_MODULE_START, 5)
+#define CF_EEMPTY       CF_MAKE_ERRNO(CF_ERR_MODULE_START, 6)
+#define CF_ETOOBIG      CF_MAKE_ERRNO(CF_ERR_MODULE_START, 7)
+#define CF_ETOOSHORT    CF_MAKE_ERRNO(CF_ERR_MODULE_START, 8)
+#define CF_EFOPEN       CF_MAKE_ERRNO(CF_ERR_MODULE_START, 9)
+#define CF_EFCLOSE      CF_MAKE_ERRNO(CF_ERR_MODULE_START, 10)
+#define CF_EFWRITE      CF_MAKE_ERRNO(CF_ERR_MODULE_START, 11)
+#define CF_EEOF         CF_MAKE_ERRNO(CF_ERR_MODULE_START, 12)
+#define CF_EFREAD       CF_MAKE_ERRNO(CF_ERR_MODULE_START, 13)
+#define CF_EMALLOC      CF_MAKE_ERRNO(CF_ERR_MODULE_START, 14)
+#define CF_EMFREE       CF_MAKE_ERRNO(CF_ERR_MODULE_START, 15)
+#define CF_EDSO_OPEN    CF_MAKE_ERRNO(CF_ERR_MODULE_START, 16)
+#define CF_EDSO_GETSYM  CF_MAKE_ERRNO(CF_ERR_MODULE_START, 17)
+#define CF_ESELECT_TOUT CF_MAKE_ERRNO(CF_ERR_MODULE_START, 18)
 
 #define CF_OK   CF_EOK
 #define CF_NOK  CF_ENOK
@@ -67,11 +68,10 @@ typedef const cf_char_t*(*cf_err_pfn_strerror)(cf_uint_t eid);
 /**
  * Register error info to global config.
  * @param module        Module number.
- * @param errs          Errors.
- * @param size          Size of 'errs'.
+ * @param fn            strerr function.
  * @param reg ok
  */
-cf_void_t cf_err_register(cf_uint32_t module, cf_err_pfn_strerror fn);
+cf_void_t cf_err_register(cf_uint32_t module, cf_strerr_fn fn);
 
 /**
  * strerror.

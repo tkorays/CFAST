@@ -61,6 +61,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/task_queue.c
     src/cf/version.c
     src/cf/numerics.c
+    src/cf/hashtbl.c
     src/cfx/cli.c
     src/cfx/fec.c
     )
@@ -116,6 +117,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         task_queue
         version
         numerics
+        hashtbl
         fec
     )
     foreach(TEST_NAME ${TESTS})
