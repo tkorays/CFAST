@@ -1,5 +1,6 @@
 #include "cf/types.h"
 #include "cfx/cli.h"
+#include "cf/str.h"
 #include "cf/assert.h"
 #include <stdio.h>
 

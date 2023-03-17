@@ -75,12 +75,11 @@ cfx_cli_t* cfx_cli_new(cfx_cli_io_t* io, const char* name, const char* desc, con
         return CF_NULL_PTR;
     }
 
-    cf_string_init(&self->name, cf_strlen(name), name);
-    cf_string_init(&self->desc, cf_strlen(desc), desc);
-    cf_string_init(&self->version, cf_strlen(ver), ver);
-
-    cf_string_init_with_ref(&self->root.name, cf_string_ptr(&self->name), cf_string_len(&self->name));
-    cf_string_init_with_ref(&self->root.desc, cf_string_ptr(&self->desc), cf_string_len(&self->desc));
+    self->name      = cf_string_dup_c(name, cf_strlen(name));
+    self->desc      = cf_string_dup_c(desc, cf_strlen(desc));
+    self->version   = cf_string_dup_c(ver, cf_strlen(ver));
+    self->root.name = cf_string_ref(&self->name);
+    self->root.desc = cf_string_ref(&self->desc);
 
     if (!io) {
         self->io    = _cfx_cli_default_io_;
@@ -259,7 +258,7 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
                 break;
             } else if (substate == CLI_OPT_SUBSTATE_WAITING_FOR_VAL && !is_opt) {
                 opt->has_value = CF_TRUE;
-                cf_string_init_with_ref(&opt->value, argv[i], cf_strlen(argv[i]));
+                opt->value = cf_string_ref_c(argv[i], cf_strlen(argv[i]));
                 substate = CLI_OPT_SUBSTATE_WAITING_FOR_OPT;
             }
         }
@@ -308,8 +307,8 @@ cfx_cli_cmd_t* cfx_cli_cmd_add(cfx_cli_cmd_t* parent, const char* name, const ch
     if (!cmd) return CF_NULL_PTR;
 
 
-    cf_string_init(&cmd->name, cf_strlen(name), name);
-    cf_string_init(&cmd->desc, cf_strlen(desc), desc);
+    cmd->name   = cf_string_dup_c(name, cf_strlen(name));
+    cmd->desc   = cf_string_dup_c(desc, cf_strlen(desc));
     cmd->proc = fn;
 
     if (!parent->child) {
@@ -335,8 +334,8 @@ cf_bool_t cfx_cli_cmd_init(cfx_cli_cmd_t* self, const char* name, const char* de
     }
 
     cf_membzero(self, sizeof(cfx_cli_cmd_t));
-    cf_string_init(&self->name, cf_strlen(name), name);
-    cf_string_init(&self->desc, cf_strlen(desc), desc);
+    self->name  = cf_string_dup_c(name, cf_strlen(name));
+    self->desc  = cf_string_dup_c(desc, cf_strlen(desc));
     self->proc = fn;
 
     return CF_TRUE;
@@ -425,14 +424,14 @@ cfx_cli_opt_t* cfx_cli_opt_add(cfx_cli_cmd_t* cmd, char sn, const char* ln, cons
     opt = cf_malloc_z(sizeof(cfx_cli_opt_t));
     opt->short_name = sn;
     if (ln) {
-        cf_string_init(&opt->long_name, cf_strlen(ln), ln);
+        opt->long_name  = cf_string_dup_c(ln, cf_strlen(ln));
     }
-    cf_string_init(&opt->desc, cf_strlen(desc), desc);
+    opt->desc   = cf_string_dup_c(desc, cf_strlen(desc));
     opt->next = CF_NULL_PTR;
     opt->required = (flags & CFX_CLI_OPT_REQ) ? CF_TRUE : CF_FALSE;
     opt->flag = (flags & CFX_CLI_OPT_IS_FLAG) ? CF_TRUE : CF_FALSE;
     if (def) {
-        cf_string_init(&opt->value, cf_strlen(def), def);
+        opt->value  = cf_string_dup_c(def, cf_strlen(def));
     }
 
     if (!cmd->opts) {
