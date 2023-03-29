@@ -29,8 +29,8 @@ struct cf_hashtbl {
     /** track the item count */
     cf_size_t               size;
 
-    /** capacity of table */
-    cf_size_t               capacity;
+    /** hash mask is used to convert uint32 hash to a limited value. */
+    cf_uint32_t             hashmsk;
 };
 
 
@@ -39,7 +39,7 @@ struct cf_hashtbl {
  */
 hashtbl_node_t* hashtbl_get_node_by_hash(cf_hashtbl_t* tbl, cf_uint32_t hash, cf_bool_t try_new) {
     hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR;
-    list_entry = &tbl->table[hash]; /* point to list */
+    list_entry = &tbl->table[hash & tbl->hashmsk]; /* point to list */
     if (*list_entry) {
         return *list_entry;
     }
@@ -74,7 +74,7 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, cf_void_t* key, cf_size_t le
         } 
     }
 
-    for (list_entry = &tbl->table[hash], node = *list_entry;
+    for (list_entry = &tbl->table[hash & tbl->hashmsk], node = *list_entry;
          node;
          list_entry = &node->next, node = *list_entry) {
         if (node->hash == hash && len == node->keylen
@@ -106,9 +106,9 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size) {
     do { init_size <<= 1; } while (init_size < size);
     init_size -= 1;
     
-    tbl->capacity = init_size;
+    tbl->hashmsk = init_size;
     tbl->size = 0;
-    tbl->table = cf_malloc(sizeof(hashtbl_node_t*) * (init_size + 1));
+    tbl->table = cf_malloc_z(sizeof(hashtbl_node_t*) * (init_size + 1));
     if (!tbl->table) {
         cf_free(tbl);
         return CF_NULL_PTR;
@@ -164,5 +164,9 @@ cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, cf_void_t* key, cf_size_t len, cf_v
             node->value = value;
         }
     }
+}
+
+cf_size_t cf_hashtbl_size(cf_hashtbl_t* self) {
+    return self->size;
 }
 
