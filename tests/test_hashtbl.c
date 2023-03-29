@@ -14,6 +14,9 @@ int main(int argc, char *argv[]) {
     cf_assert(p2 == cf_hashtbl_get_by_hash(tbl, 9));
     cf_hashtbl_set_by_hash(tbl, 5, p1);
     cf_assert(p1 == cf_hashtbl_get_by_hash(tbl, 5));
+
+    cf_hashtbl_set(tbl, "abc", CF_HASH_STRING_KEY_LEN_AUTO, p1);
+    cf_assert(p1 == cf_hashtbl_get(tbl, "abc", CF_HASH_STRING_KEY_LEN_AUTO));
     return 0;
 }
 
