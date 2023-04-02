@@ -43,7 +43,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/file.c
     src/cf/queue.c
     src/cf/config.c
-    src/cf/socket.c
+    src/cf/sock.c
     src/cf/mutex.c
     src/cf/dso.c
     src/cf/dbg.c
