@@ -64,11 +64,11 @@ typedef struct in6_addr cf_in6_addr_t;
 typedef struct {
 #if defined(CF_OS_MAC)
     cf_uint8_t      sin_len;        /** length of this structure */
-    cf_uint8_t      sim_family;     /** socket family */
+    cf_uint8_t      sin_family;     /** socket family */
 #else
-    cf_uint16_t     sim_family;     /** sock family */
+    cf_uint16_t     sin_family;     /** sock family */
 #endif 
-    cf_uint16_t     sim_port;       /** port of this socket */
+    cf_uint16_t     sin_port;       /** port of this socket */
     cf_in4_addr_t   sin_addr;       /** ipv4 address */
     char            sin_pad[8];     /** zero paddings */
 } cf_sockaddr_in4_t;
@@ -77,16 +77,16 @@ typedef struct {
  * socket address for ipv6
  */
 typedef struct {
-#if defined(CF_OS_MAC)
+#if defined(__APPLE__)
     cf_uint8_t      sin_len;        /** length of this structure */
-    cf_uint8_t      sim_family;     /** socket family */
+    cf_uint8_t      sin_family;     /** socket family */
 #else
-    cf_uint16_t     sim_family;     /** socket family */
+    cf_uint16_t     sin_family;     /** socket family */
 #endif 
-    cf_uint16_t     sim_port;       /** port of this socket */
-    cf_uint32_t     sim_flowinfo;   /** flow information */
-    cf_in6_addr_t   sim_addr;       /** ipv6 address */
-    cf_uint32_t     sim_scope_id;   /** scope id for ipv6 */
+    cf_uint16_t     sin_port;       /** port of this socket */
+    cf_uint32_t     sin_flowinfo;   /** flow information */
+    cf_in6_addr_t   sin_addr;       /** ipv6 address */
+    cf_uint32_t     sin_scope_id;   /** scope id for ipv6 */
 } cf_sockaddr_in6_t;
 
 typedef union {
@@ -94,6 +94,86 @@ typedef union {
     cf_sockaddr_in4_t   v4;
     cf_sockaddr_in6_t   v6;
 } cf_sockaddr_t;
+
+/**
+ * @brief convert network byte order to host byte order for 16-bit values
+ * 
+ * @param n the value to be converted
+ * @return cf_uint16_t the converted value
+ */
+cf_uint16_t cf_sock_ntohs(cf_uint16_t n);
+
+/**
+ * @brief convert host byte order to network byte order for 16-bit values
+ * 
+ * @param n the value to be converted
+ * @return cf_uint16_t the converted value
+ */
+cf_uint16_t cf_sock_htons(cf_uint16_t n);
+
+/**
+ * @brief convert network byte order to host byte order for 32-bit values
+ * 
+ * @param n the value to be converted
+ * @return cf_uint32_t the converted value
+ */
+cf_uint32_t cf_sock_ntohl(cf_uint32_t n);
+
+/**
+ * @brief convert host byte order to network byte order for 32-bit values
+ * 
+ * @param n the value to be converted
+ * @return cf_uint32_t the converted value
+ */
+cf_uint32_t cf_sock_htonl(cf_uint32_t n);
+/**
+ * @brief convert ipv4 address to string
+ * 
+ * @param addr      ipv4 address
+ * @param buf       buffer to hold the string
+ * @param len       length of the buffer
+ * @return cf_bool_t    CF_TRUE on success.
+ */
+cf_bool_t cf_sock_inet_ntoa(cf_in4_addr_t addr, cf_char_t* buf, cf_size_t len);
+
+/**
+ * @brief convert string to ipv4 address
+ * 
+ * @param s         string to be converted
+ * @param addr      ipv4 address
+ * @return cf_bool_t    CF_TRUE on success.
+ */
+cf_bool_t cf_sock_inet_aton(const cf_char_t* s, cf_in4_addr_t* addr);
+/**
+ * @brief convert presentation format address to network format address
+ * 
+ * @param af    address family
+ * @param src   presentation format address
+ * @param dst   network format address
+ * @return cf_bool_t   CF_TRUE on success.
+ */
+cf_bool_t cf_sock_pton(cf_int_t af, const cf_char_t* src, cf_void_t* dst);
+
+/**
+ * @brief convert network format address to presentation format address
+ * 
+ * @param af        address family
+ * @param src       network format address
+ * @param dst       presentation format address
+ * @param dstsize   size of the presentation format address buffer
+ * @return cf_bool_t   CF_TRUE on success.
+ */
+cf_bool_t cf_sock_ntop(cf_int_t af, const cf_void_t* src, cf_char_t* dst, cf_size_t dstsize);
+
+/**
+ * @brief initialize ipv4 socket address
+ * 
+ * @param addr      ipv4 socket address
+ * @param addr_str  ipv4 address string
+ * @param port      port number
+ * @return cf_bool_t    CF_TRUE on success.
+ */
+cf_bool_t cf_sockaddr_in4_init(cf_sockaddr_in4_t* addr, const cf_char_t* addr_str, cf_uint16_t port);
 
 /**
  * @brief prepare for socket.
@@ -221,15 +301,14 @@ cf_bool_t cf_sock_setopt(cf_sock_t sock,
                          cf_uint16_t optname,
                          const cf_void_t* optval,
                          int optlen);
-
 /**
  * @brief send data to network.
  * 
  * @param sock      the native socket handle
- * @param buf       buffer to be send
- * @param len       length of sent data
- * @param flags     flags for send
- * @return int  sent bytes
+ * @param buf       buffer to be sent
+ * @param len       length of data to be sent
+ * @param flags     flags for sending
+ * @return int      number of bytes sent
  */
 int cf_sock_send(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags);
 
@@ -237,12 +316,12 @@ int cf_sock_send(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags);
  * @brief send data to specified address.
  * 
  * @param sock      the native socket handle.
- * @param buf       buffer to be send.
- * @param len       lenght of the sent data
- * @param flags     flags for send
+ * @param buf       buffer to be sent.
+ * @param len       length of data to be sent
+ * @param flags     flags for sending
  * @param to        destination address
  * @param tolen     length of the address
- * @return int 
+ * @return int      number of bytes sent
  */
 int cf_sock_sendto(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags, const cf_sockaddr_t* to, int tolen);
 
@@ -252,24 +331,23 @@ int cf_sock_sendto(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags, con
  * @param sock      the native socket handle.
  * @param buf       buffer to hold the received data.
  * @param len       length of the receive buffer.
- * @param flags     recv flags
- * @return int      received bytes.
+ * @param flags     receive flags
+ * @return int      number of bytes received
  */
 int cf_sock_recv(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags);
 
 /**
- * @brief receive data from sepeicifed address.
+ * @brief receive data from specified address.
  * 
  * @param sock      the native socket handle.
- * @param buf       buffer to hold the receive data.
+ * @param buf       buffer to hold the received data.
  * @param len       length of the receive buffer
- * @param flags     recv flags
+ * @param flags     receive flags
  * @param from      address for receiving data
  * @param fromlen   length of address
- * @return int      received bytes.
+ * @return int      number of bytes received
  */
 int cf_sock_recvfrom(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags, cf_sockaddr_t* from, int* fromlen);
-
 
 CF_DECLS_END
 

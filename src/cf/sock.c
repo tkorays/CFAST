@@ -1,4 +1,6 @@
 #include "cf/sock.h"
+#include "cf/str.h"
+#include "cf/memory.h"
 
 const cf_int_t CF_AF_UNSPEC = AF_UNSPEC;
 const cf_int_t CF_AF_UNIX   = AF_UNIX;
@@ -29,6 +31,51 @@ const cf_int_t CF_SOCK_SHUTDOWN_SEND = SHUT_WR;
 const cf_int_t CF_SOCK_SHUTDOWN_RECV = SHUT_RD;
 const cf_int_t CF_SOCK_SHUTDOWN_BOTH = SHUT_RDWR;
 #endif
+
+cf_uint16_t cf_sock_ntohs(cf_uint16_t n) {
+    return ntohs(n);
+}
+
+cf_uint16_t cf_sock_htons(cf_uint16_t n) {
+    return htons(n);
+}
+
+cf_uint32_t cf_sock_ntohl(cf_uint32_t n) {
+    return ntohl(n);
+}
+
+cf_uint32_t cf_sock_htonl(cf_uint32_t n) {
+    return htonl(n);
+}
+
+cf_bool_t cf_sock_inet_ntoa(cf_in4_addr_t addr, cf_char_t* buf, cf_size_t len) {
+    cf_char_t* p = (cf_char_t*)&(addr.S_un.S_addr);
+    return cf_snprintf(buf, len, "%s.%s.%s.%s", p[0], p[1], p[2], p[3]) > 0;
+}
+
+cf_bool_t cf_sock_inet_aton(const cf_char_t* s, cf_in4_addr_t* addr) {
+    return inet_pton(CF_AF_INET, s, addr) == 0;
+}
+
+cf_bool_t cf_sock_pton(cf_int_t af, const cf_char_t* src, cf_void_t* dst) {
+    return inet_pton(af, src, dst) == 0;
+}
+
+cf_bool_t cf_sock_ntop(cf_int_t af, const cf_void_t* src, cf_char_t* dst, cf_size_t dstsize) {
+    return inet_ntop(af, src, dst, dstsize) == 0;
+}
+
+cf_bool_t cf_sockaddr_in4_init(cf_sockaddr_in4_t* addr, const cf_char_t* addr_str, cf_uint16_t port) {
+    char buf[4] = {0};
+#if defined(__APPLE__)
+    addr->sin_len = sizeof(cf_sockaddr_in4_init);
+#endif
+    addr->sin_family    = CF_AF_INET;
+    addr->sin_port      = cf_hton_u16(port);
+    cf_sock_pton(CF_AF_INET, addr_str, &addr->sin_addr);
+    cf_membzero(addr->sin_pad, sizeof(addr->sin_pad));
+    return CF_TRUE;
+}
 
 cf_bool_t cf_sock_bootstrap() {
 #ifdef CF_OS_WIN
