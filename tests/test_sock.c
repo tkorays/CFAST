@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
 
     cf_assert(cf_sockaddr_in4_init(&addr.v4, "127.0.0.1", 1234) == CF_TRUE);
     cf_assert(1234 == cf_sock_ntohs(addr.v4.sin_port));
-    cf_assert(addr.v4.sin_addr.S_un.S_addr ==  0x0100007F);
+    cf_assert(*(cf_uint32_t*)&addr.v4.sin_addr ==  0x0100007F);
 
     cf_assert(cf_sock_bind(sock, &addr, sizeof(addr.v4)) == CF_TRUE);
     cf_assert(cf_sock_listen(sock, 5) == CF_TRUE);

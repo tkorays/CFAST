@@ -31,7 +31,6 @@ extern const cf_int_t       CF_AF_UNSPEC;
 extern const cf_int_t       CF_AF_UNIX;
 extern const cf_int_t       CF_AF_INET;
 extern const cf_int_t       CF_AF_INET6;
-extern const cf_int_t       CF_AF_IRDA;
 
 extern const cf_int_t       CF_SOCK_STREAM;
 extern const cf_int_t       CF_SOCK_DGRAM;
@@ -57,6 +56,12 @@ typedef struct in_addr cf_in4_addr_t;
  * define the internet ip address for ipv6
  */
 typedef struct in6_addr cf_in6_addr_t;
+
+/**
+ * @brief socket length
+ * 
+ */
+typedef socklen_t cf_socklen_t;
 
 /**
  * socket address for ipv4
@@ -233,7 +238,7 @@ cf_bool_t cf_sock_shutdown(cf_sock_t sock, int how_sd);
  */
 cf_bool_t cf_sock_bind(cf_sock_t sock,
                        const cf_sockaddr_t* addr,
-                       int addrlen);
+                       cf_socklen_t addrlen);
 
 /**
  * @brief listen for incomming connections.
@@ -256,7 +261,7 @@ cf_bool_t cf_sock_listen(cf_sock_t sock, int backlog);
 cf_bool_t cf_sock_accept(cf_sock_t sock,
                          cf_sock_t* newsock,
                          cf_sockaddr_t* addr,
-                         int *addrlen);
+                         cf_socklen_t *addrlen);
 
 /**
  * @brief connect to a remote socket.
@@ -268,7 +273,7 @@ cf_bool_t cf_sock_accept(cf_sock_t sock,
  */
 cf_bool_t cf_sock_connect(cf_sock_t sock,
                           const cf_sockaddr_t* addr,
-                          int addrlen);
+                          cf_socklen_t addrlen);
 
 /**
  * @brief get opt for socket
@@ -284,7 +289,7 @@ cf_bool_t cf_sock_getopt(cf_sock_t sock,
                          cf_uint16_t level,
                          cf_uint16_t optname,
                          cf_void_t* optval,
-                         int* optlen);
+                         cf_socklen_t* optlen);
 
 /**
  * @brief set option for socket
@@ -300,7 +305,7 @@ cf_bool_t cf_sock_setopt(cf_sock_t sock,
                          cf_uint16_t level,
                          cf_uint16_t optname,
                          const cf_void_t* optval,
-                         int optlen);
+                         cf_socklen_t optlen);
 /**
  * @brief send data to network.
  * 
@@ -323,7 +328,7 @@ int cf_sock_send(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags);
  * @param tolen     length of the address
  * @return int      number of bytes sent
  */
-int cf_sock_sendto(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags, const cf_sockaddr_t* to, int tolen);
+int cf_sock_sendto(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags, const cf_sockaddr_t* to, cf_socklen_t tolen);
 
 /**
  * @brief receive data
@@ -347,7 +352,7 @@ int cf_sock_recv(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags);
  * @param fromlen   length of address
  * @return int      number of bytes received
  */
-int cf_sock_recvfrom(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags, cf_sockaddr_t* from, int* fromlen);
+int cf_sock_recvfrom(cf_sock_t sock, void* buf, cf_size_t len, unsigned flags, cf_sockaddr_t* from, cf_socklen_t* fromlen);
 
 CF_DECLS_END
 
