@@ -31,6 +31,7 @@
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #define CF_PCHAR(s) ((cf_char_t*)(s))
 #define CF_TYPE_CAST(t, v) ((t)(v))
+#define CF_P2V_CAST(t, v) (*(t)(v))
 #define CF_ARRAY_GET(cast_to, addr, size, index) CF_TYPE_CAST(cast_to, CF_TYPE_CAST(cf_uint8_t*, addr) +(index) * (size))
 #define CF_ASCII_LF '\012'
 #define CF_ASCII_CR '\015'

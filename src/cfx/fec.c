@@ -71,7 +71,7 @@ cf_bool_t cfx_fec_encode(cfx_fec_t* self, const void* data, cf_size_t size) {
     if (!data) return CF_FALSE;
 
     // fix lint, we will not modify data
-    cf_list_insert(&self->input, CF_LIST_POS_TAIL, (void*)data);
+    cf_list_push_back(&self->input, (void*)data);
 
     if (cf_list_size(&self->input) >= self->param.num_of_data_blocks) {
         if (self->fec_type == CFX_FEC_TYPE_XOR) {
@@ -90,13 +90,13 @@ cf_bool_t cfx_fec_encode(cfx_fec_t* self, const void* data, cf_size_t size) {
 cf_bool_t cfx_fec_encode_output(cfx_fec_t* self, void* data, cf_size_t size) {
     if (!data) {
         // invalid buffer, we will remove one fec anyway.
-        cf_list_erase(&self->output, CF_LIST_POS_HEAD);
+        // cf_list_erase(&self->output, CF_LIST_POS_HEAD);
         return CF_FALSE;
     }
 
     if (cf_list_size(&self->output) > 0) {
         /** cf_memcpy_s(data, size, cf_list_head(&self->output), 0); */
-        cf_list_erase(&self->output, CF_LIST_POS_HEAD);
+        // cf_list_erase(&self->output, CF_LIST_POS_HEAD);
         return CF_TRUE;
     }
     return CF_FALSE;
@@ -109,13 +109,13 @@ cf_bool_t cfx_fec_decode(cfx_fec_t* self, const void* data, cf_size_t size) {
 cf_bool_t cfx_fec_decode_output(cfx_fec_t* self, void* data, cf_size_t size) {
     if (!data) {
         // invalid buffer, we will remove one fec anyway.
-        cf_list_erase(&self->output, CF_LIST_POS_HEAD);
+        // cf_list_erase(&self->output, CF_LIST_POS_HEAD);
         return CF_FALSE;
     }
 
     if (cf_list_size(&self->output) > 0) {
         /** cf_memcpy_s(data, size, cf_list_head(&self->output), 0); */
-        cf_list_erase(&self->output, CF_LIST_POS_HEAD);
+        // cf_list_erase(&self->output, CF_LIST_POS_HEAD);
         return CF_TRUE;
     }
     return CF_FALSE;

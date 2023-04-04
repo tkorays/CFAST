@@ -56,7 +56,7 @@ cf_logger_t* cf_logger_new() {
 void cf_logger_delete(cf_logger_t* self) {
     cf_list_iter_t it;
     cf_logger_sink_t* sink = CF_NULL_PTR;
-    for (it = cf_list_iter_init(&self->sinks); it; it = cf_list_iter_next(it)) {
+    for (it = cf_list_iter_init(&self->sinks); !cf_list_iter_end(&self->sinks, it); it = cf_list_iter_next(it)) {
         sink = CF_TYPE_CAST(cf_logger_sink_t*, cf_list_iter_data(it));
         if (sink) {
             cf_logger_sink_delete(sink);
@@ -85,7 +85,7 @@ void cf_logger_write(
     vsprintf(buf, fmt, args);
     va_end(args);
 
-    for (it = cf_list_iter_init(&self->sinks); it; it = cf_list_iter_next(it)) {
+    for (it = cf_list_iter_init(&self->sinks); !cf_list_iter_end(&self->sinks, it); it = cf_list_iter_next(it)) {
         sink = CF_TYPE_CAST(cf_logger_sink_t*, cf_list_iter_data(it));
         if (sink && sink->write && level >= self->level) {
             sink->write(sink->instance, pid, tid, filename, line, func, level, buf);
@@ -98,7 +98,8 @@ void cf_logger_set_level(cf_logger_t* self, cf_log_level_t level) {
 }
 
 cf_bool_t cf_logger_add_sink(cf_logger_t* self, cf_logger_sink_t* sink) {
-    return cf_list_insert(&self->sinks, CF_LIST_POS_TAIL, sink);
+    cf_list_push_back(&self->sinks, sink);
+    return CF_TRUE;
 }
 
 void _log_to_file(

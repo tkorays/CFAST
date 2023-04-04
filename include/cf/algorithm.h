@@ -24,13 +24,22 @@
 CF_DECLS_BEGIN
 
 /**
+ * @brief function pointer type for comparison
+ * 
+ * @param a pointer to the first element
+ * @param b pointer to the second element
+ * @return 0 if equal, -1 if a < b, 1 if a > b
+ */
+typedef cf_int_t(*cf_alg_cmp_f)(const cf_void_t* a, const cf_void_t* b);
+
+/**
  * @brief function pointer type for equal comparison
  * 
  * @param a pointer to the first element
  * @param b pointer to the second element
  * @return cf_bool_t true if equal, false otherwise
  */
-typedef cf_bool_t(*cf_alg_equal_f)(cf_void_t* a, cf_void_t* b);
+typedef cf_bool_t(*cf_alg_equal_f)(const cf_void_t* a, const cf_void_t* b);
 
 /**
  * @brief function pointer type for greater comparison
@@ -39,7 +48,7 @@ typedef cf_bool_t(*cf_alg_equal_f)(cf_void_t* a, cf_void_t* b);
  * @param b pointer to the second element
  * @return cf_bool_t true if a is greater than b, false otherwise
  */
-typedef cf_bool_t(*cf_alg_greater_to_f)(cf_void_t* a, cf_void_t* b);
+typedef cf_bool_t(*cf_alg_greater_to_f)(const cf_void_t* a, const cf_void_t* b);
 
 /**
  * @brief function pointer type for lower comparison
@@ -48,7 +57,7 @@ typedef cf_bool_t(*cf_alg_greater_to_f)(cf_void_t* a, cf_void_t* b);
  * @param b pointer to the second element
  * @return cf_bool_t true if a is lower than b, false otherwise
  */
-typedef cf_bool_t(*cf_alg_lower_to_f)(cf_void_t* a, cf_void_t* b);
+typedef cf_bool_t(*cf_alg_lower_to_f)(const cf_void_t* a, const cf_void_t* b);
 
 CF_DECLS_END
 

@@ -1,7 +1,7 @@
 #include "cf/array.h"
 #include "cf/assert.h"
 
-cf_bool_t array_cmp(cf_void_t* a, cf_void_t* b) {
+cf_bool_t array_cmp(const cf_void_t* a, const cf_void_t* b) {
     if (a == CF_NULL_PTR || b == CF_NULL_PTR) {
         return CF_FALSE;
     }

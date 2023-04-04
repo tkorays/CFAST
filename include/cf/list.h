@@ -12,6 +12,7 @@
 #define __CF_LIST_H__
 
 #include <cf/types.h>
+#include <cf/algorithm.h>
 
 /**
  * @defgroup CF_LIST list
@@ -19,32 +20,30 @@
  * @{
  */
 
+CF_DECLS_BEGIN
+
+/**
+ * node in a linked list
+ * NOTE: don't use structure's members directly, use functions instead.
+ */
+typedef struct cf_list_node {
+    cf_void_t*              data;   /** node data */
+    struct cf_list_node*    prev;   /** prev node */
+    struct cf_list_node*    next;   /** next node */
+} cf_list_node_t;
+
 /**
  * a linked list
- * creating and releasing node data is users' responsibility.
+ * we use the `data` filed in cf_list_node_t to count items.
  */
-typedef struct cf_list {
-    cf_size_t           count;      /*< number of list items */
-    cf_void_t*          head;       /*< head of list */
-    cf_void_t*          tail;       /*< tail of list */
-} cf_list_t;
+typedef cf_list_node_t  cf_list_t;
 
-CF_DECLS_BEGIN
 
 /**
  * Iterator of a list
  */
-typedef cf_void_t* cf_list_iter_t;
+typedef struct cf_list_node* cf_list_iter_t;
 
-/**
- * CF_LIST_POS_HEAD indicates the head of a list.
- */
-#define CF_LIST_POS_HEAD 0
-
-/**
- * CF_LIST_POS_TAIL indicates the tail of a list.
- */
-#define CF_LIST_POS_TAIL -1
 
 /**
  * Initialize a list.
@@ -62,32 +61,59 @@ cf_bool_t cf_list_init(cf_list_t* self);
 cf_void_t cf_list_deinit(cf_list_t* self);
 
 /**
- * Insert item to list.
- * @param li        The list.
- * @param data      Insert data item.
- * @param pos       Inset position, range from -N-1 to N.
- * @return          The result.
+ * @brief insert data before a iterator
+ * 
+ * @param self  this pointer
+ * @param iter  iterator
+ * @param data  inserted data
+ * @return cf_void_t 
  */
-cf_bool_t cf_list_insert(cf_list_t* li, cf_int32_t pos, cf_void_t* data);
+cf_void_t cf_list_insert_before(cf_list_t* self, cf_list_iter_t iter, void* data);
 
 /**
- * Remove item from list, NOT free data.
- * @param li        The list.
- * @param data      Data item address.
- * @param pos       Inset position, range from -N-1 to N.
- * @return          The result.
+ * @brief insert data after a iterator
+ * 
+ * @param self  this pointer
+ * @param iter  iterator
+ * @param data  inserted data
+ * @return cf_void_t 
  */
-cf_void_t* cf_list_erase(cf_list_t* li, cf_int32_t pos);
-
+cf_void_t cf_list_insert_after(cf_list_t* self, cf_list_iter_t iter, void* data);
 
 /**
- * get list data by position
- *
- * @param li        this pointer
- * @param pos       position of the item
- * @return          returned data
+ * @brief erase a node in list
+ * 
+ * @param self  this pointer
+ * @param iter  iterator
+ * @return cf_void_t 
  */
-cf_void_t* cf_list_get(cf_list_t* li, cf_int32_t pos);
+cf_void_t cf_list_erase(cf_list_t* self, cf_list_iter_t iter);
+
+/**
+ * @brief insert data in the end
+ * 
+ * @param self  this pointer
+ * @param data  inserted data
+ * @return cf_void_t 
+ */
+CF_FORCE_INLINE cf_void_t cf_list_push_back(cf_list_t* self, void* data) {
+    cf_list_insert_after(self, self->prev, data);
+}
+
+/**
+ * @brief insert data in the font
+ * 
+ * @param self  this pointer
+ * @param data  inserted data
+ * @return cf_void_t 
+ */
+CF_FORCE_INLINE cf_void_t cf_list_push_front(cf_list_t* self, void* data) {
+    if (self->prev == self->next) {
+        cf_list_insert_after(self, self, data);
+    } else {
+        cf_list_insert_before(self, self->next, data);
+    }
+}
 
 /**
  * Get list head
@@ -95,7 +121,12 @@ cf_void_t* cf_list_get(cf_list_t* li, cf_int32_t pos);
  * @param li        this pointer
  * @return          returned data
  */
-cf_void_t* cf_list_head(cf_list_t* li);
+CF_FORCE_INLINE cf_void_t* cf_list_head(cf_list_t* self) {
+    if (self->next != self) {
+        return self->next->data;
+    }
+    return CF_NULL_PTR;
+}
 
 /**
  * Get list tail
@@ -103,32 +134,69 @@ cf_void_t* cf_list_head(cf_list_t* li);
  * @param li        this pointer
  * @return          returned data
  */
-cf_void_t* cf_list_tail(cf_list_t* li);
-
+CF_FORCE_INLINE cf_void_t* cf_list_tail(cf_list_t* self) {
+    if (self->prev != self) {
+        return self->prev->data;
+    }
+    return CF_NULL_PTR;
+}
 
 /**
  * Init the iterator, return the first iterator.
  * @param li        The list.
  * @return          The result.
  */
-cf_list_iter_t cf_list_iter_init(cf_list_t* li);
+CF_FORCE_INLINE cf_list_iter_t cf_list_iter_init(cf_list_t* self) {
+    return self->next;
+}
 
 /**
  * Get next iterator.
  * @param it        The iterator.
  * @return          The next iterator.
  */
-cf_list_iter_t  cf_list_iter_next(cf_list_iter_t it);
+CF_FORCE_INLINE cf_list_iter_t cf_list_iter_next(cf_list_iter_t it) {
+    return it->next;
+}
+
+/**
+ * it the iterator end?
+ * 
+ * @param it            The iterator
+ * @return cf_bool_t    CF_TRUE on end    
+ */
+CF_FORCE_INLINE cf_bool_t cf_list_iter_end(cf_list_t* self, cf_list_iter_t it) {
+    return it == self ? CF_TRUE : CF_FALSE;
+}
 
 /**
  * Get data from iterator.
  * @param it        The iterator.
  * @return          The result.
  */
-cf_void_t* cf_list_iter_data(cf_list_iter_t it);
+CF_FORCE_INLINE cf_void_t* cf_list_iter_data(cf_list_iter_t it) {
+    return it->data;
+}
 
+/**
+ * @brief find data from list, and return the iterator
+ * 
+ * @param self  this pointer
+ * @param data  data to be found
+ * @param eqf   compare function
+ * @return cf_list_iter_t NULL on failed
+ */
+cf_list_iter_t cf_list_find(cf_list_t* self, void* data, cf_alg_equal_f eqf);
 
-#define cf_list_size(li) ((li)->count)
+/**
+ * @brief return the list size
+ * 
+ * @param self  this pointer
+ * @return cf_size_t    list size
+ */
+CF_FORCE_INLINE cf_size_t cf_list_size(cf_list_t* self) {
+    return CF_TYPE_CAST(cf_size_t, CF_TYPE_CAST(cf_uintptr_t, self->data));
+}
 
 CF_DECLS_END
 
