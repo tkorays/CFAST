@@ -1,17 +1,19 @@
 #include "cf/shm.h"
+#include "cf/err.h"
 #include "cf/types.h"
 #include "cf/memory.h"
+#include <Windows.h>
 
 struct cf_shm {
     HANDLE handle;
-    LPCTSTR buf;
+    LPTSTR buf;
     cf_size_t size;
 };
 
 
-CF_DECLARE(cf_errno_t) cf_shm_create(cf_shm_t** shm, cf_size_t size, const cf_char_t* filename) {
+cf_errno_t cf_shm_create(cf_shm_t** shm, cf_size_t size, const cf_char_t* filename) {
     HANDLE hMapFile;
-    LPCTSTR pBuf;
+    LPTSTR pBuf;
 
     hMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
@@ -46,18 +48,18 @@ CF_DECLARE(cf_errno_t) cf_shm_create(cf_shm_t** shm, cf_size_t size, const cf_ch
     return CF_EOK;
 }
 
-CF_DECLARE(cf_errno_t) cf_shm_destroy(cf_shm_t* shm) {
+cf_errno_t cf_shm_destroy(cf_shm_t* shm) {
     UnmapViewOfFile(shm->buf);
     CloseHandle(shm->handle);
     cf_free(shm);
     return CF_EOK;
 }
 
-CF_DECLARE(cf_void_t*) cf_shm_get_buf(cf_shm_t* shm) {
+cf_void_t* cf_shm_get_buf(cf_shm_t* shm) {
     return shm->buf;
 }
 
-CF_DECLARE(cf_size_t)  cf_shm_get_size(cf_shm_t* shm) {
+cf_size_t  cf_shm_get_size(cf_shm_t* shm) {
     return shm->size;
 }
 
