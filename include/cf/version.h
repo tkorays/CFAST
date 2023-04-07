@@ -37,7 +37,7 @@ typedef struct {
  * parse version from string
  * @param   v   output version
  * @param   t   version string
- * @return true if success
+ * @return true if parsing is successful
  */
 cf_bool_t cf_version_from(cf_version_t* v, const char* t);
 
@@ -50,7 +50,7 @@ cf_bool_t cf_version_from(cf_version_t* v, const char* t);
 int cf_version_compare(const cf_version_t* v1, const cf_version_t* v2);
 
 /**
- * return true if v1 == v2
+ * check if two versions are equal
  * @param   v1  version1
  * @param   v2  version2
  * @return  true if v1 == v2
@@ -58,7 +58,7 @@ int cf_version_compare(const cf_version_t* v1, const cf_version_t* v2);
 cf_bool_t cf_version_eq(const cf_version_t* v1, const cf_version_t* v2);
 
 /**
- * return true if v1 > v2
+ * check if v1 is greater than v2
  * @param   v1  version1
  * @param   v2  version2
  * @return  true if v1 > v2
@@ -66,7 +66,7 @@ cf_bool_t cf_version_eq(const cf_version_t* v1, const cf_version_t* v2);
 cf_bool_t cf_version_gt(const cf_version_t* v1, const cf_version_t* v2);
 
 /**
- * return true if v1 < v2
+ * check if v1 is less than v2
  * @param   v1  version1
  * @param   v2  version2
  * @return  true if v1 < v2
@@ -74,7 +74,7 @@ cf_bool_t cf_version_gt(const cf_version_t* v1, const cf_version_t* v2);
 cf_bool_t cf_version_lt(const cf_version_t* v1, const cf_version_t* v2);
 
 /**
- * return true if v1 >= v2
+ * check if v1 is greater than or equal to v2
  * @param   v1  version1
  * @param   v2  version2
  * @return  true if v1 >= v2
@@ -82,7 +82,7 @@ cf_bool_t cf_version_lt(const cf_version_t* v1, const cf_version_t* v2);
 cf_bool_t cf_version_ge(const cf_version_t* v1, const cf_version_t* v2);
 
 /**
- * return true if v1 <= v2
+ * check if v1 is less than or equal to v2
  * @param   v1  version1
  * @param   v2  version2
  * @return  true if v1 <= v2

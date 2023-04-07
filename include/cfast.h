@@ -11,6 +11,15 @@
 #ifndef __CFAST_H__
 #define __CFAST_H__
 
+
+/* 
+ * CFAST is a C library that provides a collection of useful functions and data structures.
+ * It includes functionality for types, assertions, command-line interfaces, debugging, dynamic shared objects, 
+ * error handling, file I/O, linked lists, logging, memory management, memory pools, messaging, mutexes, 
+ * options parsing, plugins, queues, select loops, sockets, strings, threads, time, polling, paths, and system calls.
+ */
+
+
 #include <cf/types.h>
 #include <cf/assert.h>
 #include <cf/cli.h>

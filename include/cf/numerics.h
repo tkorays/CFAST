@@ -23,11 +23,13 @@ CF_DECLS_BEGIN
 
 /**
  * unwarpper for uint8/uit16/uint32
+ * This struct is used to unwrap uint8, uint16, and uint32 values. It contains the last unwrapped value, 
+ * a boolean indicating whether or not the struct has a value, and the last value. 
  */
 typedef struct {
-    cf_int64_t      last_unwrapped; /** unwrapped value */
-    cf_bool_t       has_value;      /** has last value */
-    cf_uint64_t     last_value;     /** last value */
+    cf_int64_t      last_unwrapped; /** The last unwrapped value */
+    cf_bool_t       has_value;      /** A boolean indicating whether or not the struct has a value */
+    cf_uint64_t     last_value;     /** The last value */
 } cf_unwrapper_t;
 
 

@@ -8,7 +8,8 @@ CF_DECLS_BEGIN
 /**
  * @defgroup CF_HASH hash
  *
- * This module provides a simple hash table implementation.
+ * This module provides a simple hash table implementation. It includes functions to create and destroy a hash table instance, 
+ * get and set values with a uint32 hash key or a common key, and return the count of items in the hashtable. 
  *
  * @{
  */
@@ -21,6 +22,11 @@ CF_DECLS_BEGIN
 
 /**
  * @brief this is the type declaration for hash table.
+ * 
+ * This module provides a simple hash table implementation. It includes functions to create and destroy a hash table instance, 
+ * get and set values with a uint32 hash key or a common key, and return the count of items in the hashtable. 
+ * 
+ * @{
  */
 typedef struct cf_hashtbl cf_hashtbl_t;
 

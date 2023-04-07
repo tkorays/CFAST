@@ -16,7 +16,9 @@
 
 /**
  * @defgroup CF_MEMORY memory
- * memory allocation and memory allocator
+ * Memory allocation and memory allocator.
+ * This module provides functions for allocating, reallocating, and freeing memory, as well as functions for copying and setting memory.
+ * It also defines an interface for a memory allocator, which allows for custom memory allocation strategies.
  * @{
  */
 

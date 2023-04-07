@@ -35,20 +35,23 @@ CF_DECLS_BEGIN
 
 /**
  * Log level.
- * lower levels are include in high levels.
  */
 typedef enum {
-    CF_LOG_LNONE    = 0,
-    CF_LOG_LDEBUG   = 1,
-    CF_LOG_LINFO    = 2,
-    CF_LOG_LWARNING = 3,
-    CF_LOG_LERROR   = 4,
-    CF_LOG_LFATAL   = 5,
+    CF_LOG_LNONE    = 0, /* no log */
+    CF_LOG_LDEBUG   = 1, /* debug level log */
+    CF_LOG_LINFO    = 2, /* info level log */
+    CF_LOG_LWARNING = 3, /* warning level log */
+    CF_LOG_LERROR   = 4, /* error level log */
+    CF_LOG_LFATAL   = 5, /* fatal level log */
 } cf_log_level_t;
 
 
 /**
  * logger instance
+ * 
+ * This struct represents a logger instance, which is responsible for writing logs to various sinks.
+ * It contains a pointer to the default logger, as well as functions for creating and deleting logger instances,
+ * writing logs, setting the default logger level, and adding logger sinks.
  */
 typedef struct cf_logger cf_logger_t;
 

@@ -39,7 +39,7 @@ cf_void_t cf_list_insert_before(cf_list_t* self, cf_list_iter_t iter, void* data
     iter->prev->next = node;
     iter->prev = node;
 
-    self->data = CF_TYPE_CAST(cf_uintptr_t, self->data) + 1;
+    self->data = CF_TYPE_CAST(cf_void_t*, CF_TYPE_CAST(cf_uintptr_t, self->data) + 1);
 }
 
 cf_void_t cf_list_insert_after(cf_list_t* self, cf_list_iter_t iter, void* data) {
@@ -53,7 +53,7 @@ cf_void_t cf_list_insert_after(cf_list_t* self, cf_list_iter_t iter, void* data)
     iter->next->prev = node;
     iter->next = node;
 
-    self->data = CF_TYPE_CAST(cf_uintptr_t, self->data) + 1;
+    self->data = CF_TYPE_CAST(cf_void_t*, CF_TYPE_CAST(cf_uintptr_t, self->data) + 1);
 }
 
 cf_void_t cf_list_erase(cf_list_t* self, cf_list_iter_t iter) {
@@ -63,7 +63,7 @@ cf_void_t cf_list_erase(cf_list_t* self, cf_list_iter_t iter) {
     iter->next->prev = iter->prev;
     cf_free(node);
 
-    self->data = CF_TYPE_CAST(cf_uintptr_t, self->data) - 1;
+    self->data = CF_TYPE_CAST(cf_void_t*, CF_TYPE_CAST(cf_uintptr_t, self->data) - 1);
 }
 
 cf_list_iter_t cf_list_find(cf_list_t* self, void* data, cf_alg_equal_f eqf) {

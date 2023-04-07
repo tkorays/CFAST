@@ -16,7 +16,7 @@
 
 /**
  * @defgroup CF_TPES types
- * types
+ * This is the types module, which contains all the type definitions used in CFAST.
  * @{
  */
 

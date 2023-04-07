@@ -37,85 +37,89 @@ CF_DECLS_BEGIN
 #define CF_ARRAY_INVALID_INDEX -2
 
 /**
- * init a array.
+ * Initialize an array.
  *
- * @param self      this pointer
- * @param el_size   element size, not exceed 1024 bytes
- * @param capacity  initial capacity
- * @return          true for success
+ * @param self      Pointer to the array to be initialized
+ * @param el_size   Size of each element in bytes, should not exceed 1024 bytes
+ * @param capacity  Initial capacity of the array
+ * @return          True for success, false for failure
  */
 cf_bool_t cf_array_init(cf_array_t* self, cf_size_t el_size, cf_int_t capacity);
 
 /**
- * destroy array
+ * Deinitialize an array.
  *
- * @param self      this pointer
+ * @param self      Pointer to the array to be deinitialized
  */
 cf_void_t cf_array_deinit(cf_array_t* self);
 
 /**
- * insert element to the array
+ * Insert an element into the array.
  *
- * @param self      this pointer
- * @param index     insert index, CF_ARRAY_BEGIN_INDEX = 0, CF_ARRAY_END_INDEX = -1
- * @param elm       element address
- * @param size      size of element
- * @return          true for success
+ * @param self      Pointer to the array
+ * @param index     Index at which to insert the element, CF_ARRAY_BEGIN_INDEX = 0, CF_ARRAY_END_INDEX = -1
+ * @param elm       Pointer to the element to be inserted
+ * @param size      Size of the element in bytes
+ * @return          True for success, false for failure
  */
 cf_bool_t cf_array_insert(cf_array_t* self, int index, cf_void_t* elm, cf_size_t size);
 
 /**
- * remove a element.
+ * Remove an element from the array.
  *
- * @param self      this pointer
- * @param index     element index
- * @return          true for success
+ * @param self      Pointer to the array
+ * @param index     Index of the element to be removed
+ * @return          True for success, false for failure
  */
 cf_bool_t cf_array_erase(cf_array_t* self, int index);
 
 /**
- * set the array element
+ * Set the value of an element in the array.
  *
- * @param self      this pointer
- * @param index     element index
- * @param elm       element address
- * @param size      size of element
- * @return          true for success
+ * @param self      Pointer to the array
+ * @param index     Index of the element to be set
+ * @param elm       Pointer to the new value of the element
+ * @param size      Size of the element in bytes
+ * @return          True for success, false for failure
  */
 cf_bool_t cf_array_set(cf_array_t* self, int index, cf_void_t* elm, cf_size_t size);
 
 /**
- * get array element by index
+ * Get the value of an element in the array.
  *
- * @param self      this pointer
- * @param index     element index
- * @return          the returned element
+ * @param self      Pointer to the array
+ * @param index     Index of the element to be retrieved
+ * @return          Pointer to the retrieved element
  */
 cf_void_t* cf_array_get(cf_array_t* self, int index);
 
 /**
- * find element by a given comapre function
+ * Find an element in the array using a given comparison function.
  *
- * @param self      this pointer
- * @param elm       element address 
- * @param size      size of element
- * @param cmp       compare function
- * @return          the found element index, -2 for CF_ARRAY_INVALID_INDEX
+ * @param self      Pointer tothe array
+ * @param elm       Pointer to the element to be found
+ * @param size      Size of the element in bytes
+ * @param cmp       Comparison function to be used for finding the element
+ * @return          Index of the found element, or CF_ARRAY_INVALID_INDEX (-2) if not found
  */
 cf_int_t cf_array_find(cf_array_t* self, cf_void_t* elm, cf_size_t size, cf_alg_equal_f cmp);
 
 /**
- * reset the array and clear elements
+ * Reset the array and clear all elements.
  *
- * @param self      this pointer
- * @return          true for success, false for failed
+ * @param self      Pointer to the array to be reset
+ * @return          True for success, false for failure
  */
 cf_bool_t cf_array_reset(cf_array_t* self);
 
 /**
- * get array size
+ * Get the size of the array.
+ *
+ * @param arr       Pointer to the array
+ * @return          Number of elements in the array
  */
 #define cf_array_size(arr) ((arr)->elm_count)
+
 
 CF_DECLS_END
 

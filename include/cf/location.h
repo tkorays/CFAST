@@ -21,6 +21,12 @@
 
 CF_DECLS_BEGIN
 
+/**
+ * @brief Struct representing a code location.
+ * 
+ * This struct contains information about the location of a piece of code,
+ * including the filename, function name, and line number.
+ */
 typedef struct {
     const char* file_name;      //< filename of this location
     const char* function_name;  //< function name of this location

@@ -15,7 +15,7 @@
 
 /**
  * @defgroup CF_STR str
- * c-style str
+ * This is the string module of the CFAST library. It provides a set of functions for manipulating strings in C.
  * @{
  */
 

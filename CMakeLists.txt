@@ -73,10 +73,12 @@ if(USE_CFEXP_LIBTELNET_SERVER)
 endif()
 
 if(WIN32)
-
+    set(SRC_LIST ${SRC_LIST}
+        src/cf/shm_win.c)
 else()
     set(SRC_LIST ${SRC_LIST}
-        src/cf/poll.c)
+        src/cf/poll.c
+        src/cf/shm_linux.c)
 endif()
 
 add_library(cfast STATIC ${SRC_LIST})

@@ -22,49 +22,59 @@
 CF_DECLS_BEGIN
 
 /**
- * @brief a cross-platform event
+ * @brief A cross-platform event that can be used to signal and wait for events.
  * 
+ * This is a system independent event implementation that can be used to signal and wait for events.
+ * It provides functions to create, destroy, set, reset and wait for events.
+ * 
+ * @note This implementation is based on the Win32 event object and the POSIX condition variable.
+ * 
+ * @see cf_event_new
+ * @see cf_event_delete
+ * @see cf_event_set
+ * @see cf_event_reset
+ * @see cf_event_wait
  */
 typedef struct cf_event cf_event_t;
 
 /**
- * @brief create new event
+ * @brief create a new event instance
  * 
- * @param manual_reset 
- * @param signaled 
- * @return cf_event_t* 
+ * @param manual_reset  if true, the event needs to be manually reset
+ * @param signaled      if true, the event is initially signaled
+ * @return cf_event_t*  a pointer to the new event instance
  */
 cf_event_t* cf_event_new(
     cf_bool_t manual_reset,
     cf_bool_t signaled);
 
 /**
- * @brief destroy event instance
+ * @brief destroy an event instance
  * 
- * @param self 
+ * @param self  a pointer to the event instance to destroy
  */
 void cf_event_delete(cf_event_t* self);
 
 /**
- * @brief set event
+ * @brief set an event
  * 
- * @param self this pointer
+ * @param self  a pointer to the event instance to set
  */
 void cf_event_set(cf_event_t* self);
 
 /**
- * @brief reset event
+ * @brief reset an event
  * 
- * @param self this pointer
+ * @param self  a pointer to the event instance to reset
  */
 void cf_event_reset(cf_event_t* self);
 
 /**
- * @brief wait a event
+ * @brief wait for an event
  * 
- * @param self          this pointer
- * @param timeout_ms    wait timeout
- * @return cf_bool_t    success or not
+ * @param self          a pointer to the event instance to wait for
+ * @param timeout_ms    the timeout in milliseconds
+ * @return cf_bool_t    true if the event was signaled, false if the timeout was reached
  */
 cf_bool_t cf_event_wait(cf_event_t* self, int timeout_ms);
 
