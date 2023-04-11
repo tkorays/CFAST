@@ -64,6 +64,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/hashtbl.c
     src/cfx/cli.c
     src/cfx/fec.c
+    src/cfx/ascii_art.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
@@ -122,6 +123,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         hashtbl
         fec
         sock
+        ascii_art
     )
     foreach(TEST_NAME ${TESTS})
         add_executable(test_${TEST_NAME} tests/test_${TEST_NAME}.c ${ADDL_SOURCE})
