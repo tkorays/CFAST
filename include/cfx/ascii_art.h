@@ -20,9 +20,9 @@ typedef enum {
  * @param buff The buffer to print the ASCII art to.
  * @param size The size of the buffer.
  * @param font font of the output ASCII.
- * @return cf_bool_t Returns true if the ASCII art was printed successfully, false otherwise.
+ * @return cf_int_t write bytes count.
  */
-cf_bool_t cfx_art_print(const char* input, cf_char_t* buff, cf_size_t size, cfx_art_font_t font);
+cf_int_t cfx_art_print(const char* input, cf_char_t* buff, cf_size_t size, cfx_art_font_t font);
 
 CF_DECLS_END
 

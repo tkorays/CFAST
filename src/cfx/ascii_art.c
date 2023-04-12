@@ -217,15 +217,15 @@ const cf_char_t* art_space = "  \n  \n  \n  \n  \n  \n";
 const cf_char_t* art_tab = "  \n  \n  \n  \n  \n  \n";
 
 
-cf_bool_t cfx_art_print(const cf_char_t* input, cf_char_t* buff, cf_size_t size, cfx_art_font_t font) {
-    const cf_char_t** pp = CF_NULL_PTR;
+cf_int_t cfx_art_print(const cf_char_t* input, cf_char_t* buff, cf_size_t size, cfx_art_font_t font) {
+    cf_char_t** pp = CF_NULL_PTR;
     cf_size_t i = 0, j = 0, cnt = 0, len;
-    if (input == CF_NULL_PTR || buff == CF_NULL_PTR) return CF_FALSE;
+    if (input == CF_NULL_PTR || buff == CF_NULL_PTR) return -1;
 
     len = cf_strlen(input);
-    if (len == 0) return CF_FALSE;
+    if (len == 0) return 0;
 
-    pp = cf_malloc_z(len);
+    pp = cf_malloc_z(sizeof(cf_char_t*) * len);
 
     /* initialize the map pointer */
     i = 0;
@@ -267,11 +267,12 @@ cf_bool_t cfx_art_print(const cf_char_t* input, cf_char_t* buff, cf_size_t size,
         buff[cnt++] = '\n';
         i++;
     }
+    cf_free(pp);
     buff[cnt] = '\0';
-    return CF_TRUE;
+    return cnt;
 
 CFX_ART_FAIL:
     cf_free(pp);
     buff[0] = '\0';
-    return CF_FALSE;
+    return -1;
 }

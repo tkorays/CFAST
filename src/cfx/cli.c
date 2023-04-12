@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include "cf/optional.h"
 #include "cf/types.h"
+#include "cfx/ascii_art.h"
 
 
 #define CFX_DEF_CLI_LICENSE "CFAST CLI v1.0, Author(tkorays), All right reserved!"
@@ -106,6 +107,7 @@ void cfx_cli_help(cfx_cli_t* self, cfx_cli_cmd_t* cmd) {
     cfx_cli_opt_t* opt;
     char buf[2048];
     int i = 0;
+    i += cfx_art_print(cf_string_ptr(&p->name), buf, sizeof(buf) - i, CFX_ART_FONT_SLANT);
     i += cf_snprintf(buf + i, sizeof(buf) - i, "Usage: ");
     while (p && p != cmd) {
         i += cf_snprintf(buf + i, sizeof(buf) - i, "%s ", cf_string_ptr(&p->name));
