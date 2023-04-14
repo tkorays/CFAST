@@ -46,6 +46,7 @@ typedef struct cf_value {
         cf_uint64_t u64;        /**< unsigned 64-bit integer data */
         float       f32;        /**< 32-bit floating point data */
         double      f64;        /**< 64-bit floating point data */
+        cf_char_t   arr[8];     /**< char array for small string */
         cf_char_t*  str;        /**< string data */
         cf_void_t*  ptr;        /**< pointer data */
     } data;
@@ -332,7 +333,10 @@ CF_FORCE_INLINE double cf_value_double(cf_value_t* value) { return value->data.f
  * @param value the value to get
  * @return the string value
  */
-CF_FORCE_INLINE cf_char_t* cf_value_string(cf_value_t* value) { return value->data.str; }
+CF_FORCE_INLINE cf_char_t* cf_value_string(cf_value_t* value) {
+    if (value->len <= 8) return &value->data.arr[0];
+    return value->data.str;
+}
 
 /**
  * @brief Get the value of a cf_value_t struct as a custom data type
