@@ -63,6 +63,7 @@ struct cfx_cli {
 
 void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self);
 void cfx_cli_opt_deinit(cfx_cli_opt_t* self);
+cfx_cli_cmd_t* cfx_cli_cmd_sub(cfx_cli_cmd_t* self, char* name);
 
 void _cfx_cli_io_output_fn(cf_void_t* ctx, const cf_char_t* fmt, ...) {
     va_list args;
@@ -303,39 +304,8 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
     return CF_TRUE;
 }
 
-cfx_cli_cmd_t* cfx_cli_root_cmd(cfx_cli_t* self) {
+cfx_cli_cmd_t* cfx_cli_get_root_cmd(cfx_cli_t* self) {
     return &self->root;
-}
-
-cfx_cli_cmd_t* cfx_cli_cmd_add(cfx_cli_cmd_t* parent, const char* name, const char* desc, cfx_cli_proc_fn fn) {
-    cfx_cli_cmd_t* cmd = CF_NULL_PTR, *p;
-    if (!name || !desc) {
-        return CF_FALSE;
-    }
-
-    cmd = cf_malloc_z(sizeof(cfx_cli_cmd_t));
-    if (!cmd) return CF_NULL_PTR;
-
-
-    cmd->name   = cf_string_dup_c(name, cf_strlen(name));
-    cmd->desc   = cf_string_dup_c(desc, cf_strlen(desc));
-    cmd->proc = fn;
-
-    if (!parent->child) {
-        parent->child = cmd;
-        parent->child->prev = CF_NULL_PTR;
-        parent->child->next = CF_NULL_PTR;
-    }
-    else {
-        p = parent->child;
-        while (p->next) {
-             p= p->next;
-        }
-        cmd->prev = p;
-        cmd->next = CF_NULL_PTR;
-        p->next = cmd;
-    }
-    return cmd;
 }
 
 cf_bool_t cfx_cli_cmd_init(cfx_cli_cmd_t* self, const char* name, const char* desc, cfx_cli_proc_fn fn) {
@@ -491,4 +461,48 @@ cf_char_t* cfx_cli_opt_val(cfx_cli_cmd_t* self, char* name) {
         return opt->value.ptr;
     }
     return CF_NULL_PTR;
+}
+
+
+cfx_cli_cmd_t* cfx_cli_cmd_new(const char* name, const char* desc, cfx_cli_proc_fn fn) {
+    cfx_cli_cmd_t* cmd = CF_NULL_PTR;
+    if (!name || !desc) {
+        return CF_NULL_PTR;
+    }
+
+    cmd = cf_malloc_z(sizeof(cfx_cli_cmd_t));
+    if (!cmd) return CF_NULL_PTR;
+
+
+    cmd->name   = cf_string_dup_c(name, cf_strlen(name));
+    cmd->desc   = cf_string_dup_c(desc, cf_strlen(desc));
+    cmd->proc = fn;
+    return cmd;
+}
+
+cf_void_t cfx_cli_cmd_delete(cfx_cli_cmd_t* cmd) {
+    if (!cmd) return;
+
+    cf_string_deinit(&cmd->name);
+    cf_string_deinit(&cmd->desc);
+    cf_free(cmd);
+}
+
+cf_void_t cfx_cli_cmd_add_sub(cfx_cli_cmd_t* parent, cfx_cli_cmd_t* subcmd) {
+    cfx_cli_cmd_t* p;
+
+    if (!parent->child) {
+        parent->child = subcmd;
+        parent->child->prev = CF_NULL_PTR;
+        parent->child->next = CF_NULL_PTR;
+    }
+    else {
+        p = parent->child;
+        while (p->next) {
+             p= p->next;
+        }
+        subcmd->prev = p;
+        subcmd->next = CF_NULL_PTR;
+        p->next = subcmd;
+    }
 }

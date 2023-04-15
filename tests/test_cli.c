@@ -22,9 +22,12 @@ int main(int argc, char const *argv[]) {
 
     cli = cfx_cli_new("mycli", "this is a simple CLI", "1.0.0");
 
-    cmd = cfx_cli_root_cmd(cli);
-    cmd1 = cfx_cli_cmd_add(cmd, "cmd1", "help for cmd1", CF_NULL_PTR);
-    cmd11 = cfx_cli_cmd_add(cmd1, "cmd11", "help for cmd1", cmd_proc);
+    cmd = cfx_cli_get_root_cmd(cli);
+    cmd1 = cfx_cli_cmd_new("cmd1", "help for cmd1", CF_NULL_PTR);
+    cmd11 = cfx_cli_cmd_new("cmd11", "help for cmd1", cmd_proc);
+
+    cfx_cli_cmd_add_sub(cmd, cmd1);
+    cfx_cli_cmd_add_sub(cmd1, cmd11);
 
     cfx_cli_opt_add(cmd11, 'a', "aaa", "help for option a", CFX_CLI_OPT_REQ, "");
     cfx_cli_opt_add(cmd11, 'b', "bbb", "help for option b", CFX_CLI_OPT_REQ, "");

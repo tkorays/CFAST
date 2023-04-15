@@ -12,15 +12,18 @@ int main(int argc, char* argv[]) {
     cfx_cli_cmd_t *cmd = CF_NULL_PTR, *cmd1 = CF_NULL_PTR, * cmd11 = CF_NULL_PTR;
 
     cli = cfx_cli_new("mycli", "this is a simple CLI", "1.0.0");
+    cmd = cfx_cli_get_root_cmd(cli);
 
-    cmd = cfx_cli_root_cmd(cli);
-    cmd1 = cfx_cli_cmd_add(cmd, "cmd1", "help for cmd1", CF_NULL_PTR);
-    cmd11 = cfx_cli_cmd_add(cmd1, "cmd11", "help for cmd1", cmd_proc);
-
+    cmd1 = cfx_cli_cmd_new("cmd1", "help for cmd1", CF_NULL_PTR);
+    
+    cmd11 = cfx_cli_cmd_new("cmd11", "help for cmd1", cmd_proc);
     cfx_cli_opt_add(cmd11, 'a', "aaa", "help for option a", CFX_CLI_OPT_REQ, "");
     cfx_cli_opt_add(cmd11, 'b', "bbb", "help for option b", CFX_CLI_OPT_REQ, "");
     cfx_cli_opt_add(cmd11, 'c', "", "help for option c", CFX_CLI_OPT_REQ | CFX_CLI_OPT_IS_FLAG, "");
     cfx_cli_opt_add(cmd11, 'd', "ddd", "help for option d", CFX_CLI_OPT_REQ | CFX_CLI_OPT_IS_FLAG, "");
+
+    cfx_cli_cmd_add_sub(cmd, cmd1);
+    cfx_cli_cmd_add_sub(cmd1, cmd11);
 
     cfx_cli_input(cli, CF_NULL_PTR, argc, argv);
     cfx_cli_delete(cli);

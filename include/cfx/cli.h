@@ -90,18 +90,34 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]);
  * @param self CLI object
  * @return cfx_cli_cmd_t* the root command
  */
-cfx_cli_cmd_t* cfx_cli_root_cmd(cfx_cli_t* self);
+cfx_cli_cmd_t* cfx_cli_get_root_cmd(cfx_cli_t* self);
 
 /**
- * @brief add a new command to the parent command
+ * @brief create a new command
  * 
- * @param parent    parent command
- * @param name      name of this new command
- * @param desc      description of this new command
- * @param fn        process function, NULL if it is a group
- * @return cfx_cli_cmd_t* new command
+ * @param name name of command
+ * @param desc description of this command
+ * @param fn command processor
+ * @return cfx_cli_cmd_t*   the created command
  */
-cfx_cli_cmd_t* cfx_cli_cmd_add(cfx_cli_cmd_t* parent, const char* name, const char* desc, cfx_cli_proc_fn fn);
+cfx_cli_cmd_t* cfx_cli_cmd_new(const char* name, const char* desc, cfx_cli_proc_fn fn);
+
+/**
+ * @brief destroy a command
+ * 
+ * @param cmd the command to be destroyed
+ * @return cf_void_t 
+ */
+cf_void_t cfx_cli_cmd_delete(cfx_cli_cmd_t* cmd);
+
+/**
+ * @brief add a sub command to a parent command
+ * 
+ * @param parent parent command
+ * @param subcmd sub command
+ * @return cf_void_t 
+ */
+cf_void_t cfx_cli_cmd_add_sub(cfx_cli_cmd_t* parent, cfx_cli_cmd_t* subcmd);
 
 /**
  * @brief add a new option to a command
@@ -115,15 +131,6 @@ cfx_cli_cmd_t* cfx_cli_cmd_add(cfx_cli_cmd_t* parent, const char* name, const ch
  * @return cfx_cli_opt_t* new option
  */
 cfx_cli_opt_t* cfx_cli_opt_add(cfx_cli_cmd_t* cmd, char sn, const char* ln, const char* desc, cf_uint32_t flags, const char* def);
-
-/**
- * @brief get subcommand by name
- * 
- * @param self parent command
- * @param name name of the command
- * @return cfx_cli_cmd_t* found command
- */
-cfx_cli_cmd_t* cfx_cli_cmd_sub(cfx_cli_cmd_t* self, char* name);
 
 /**
  * @brief get the option by short name or long name
