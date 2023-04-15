@@ -10,6 +10,18 @@
 
 #define CFX_DEF_CLI_LICENSE "CFAST CLI v1.0, Author(tkorays), All right reserved!"
 
+/**
+ * @brief input/output function.
+ * 
+ */
+typedef struct cfx_cli_io cfx_cli_io_t;
+
+/**
+ * @brief CLI output function
+ * 
+ */
+typedef void(*cfx_cli_io_output_fn)(cf_void_t*, const cf_char_t*, ...);
+
 /** see `cfx_cli_io_t` */
 struct cfx_cli_io {
     cfx_cli_io_output_fn  output;   /** output function for CLI */
@@ -65,7 +77,7 @@ cfx_cli_io_t _cfx_cli_default_io_ = {
     .output = _cfx_cli_io_output_fn
 };
 
-cfx_cli_t* cfx_cli_new(cfx_cli_io_t* io, const char* name, const char* desc, const char* ver) {
+cfx_cli_t* cfx_cli_new(const char* name, const char* desc, const char* ver) {
     cfx_cli_t* self;
     if (!name || !desc || !ver || cf_strlen(name) == 0 || cf_strlen(desc) == 0 || cf_strlen(ver) == 0) {
         return CF_NULL_PTR;
@@ -81,12 +93,8 @@ cfx_cli_t* cfx_cli_new(cfx_cli_io_t* io, const char* name, const char* desc, con
     self->version   = cf_string_dup_c(ver, cf_strlen(ver));
     self->root.name = cf_string_ref(&self->name);
     self->root.desc = cf_string_ref(&self->desc);
-
-    if (!io) {
-        self->io    = _cfx_cli_default_io_;
-    } else {
-        self->io    = *io;
-    }
+    self->io        = _cfx_cli_default_io_;
+    
     return self;
 }
 

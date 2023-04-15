@@ -48,11 +48,6 @@ typedef struct cfx_cli_cmd cfx_cli_cmd_t;
  */
 typedef struct cfx_cli_opt cfx_cli_opt_t;
 
-/**
- * @brief input/output function.
- * 
- */
-typedef struct cfx_cli_io cfx_cli_io_t;
 
 /**
  * @brief command process function
@@ -60,23 +55,16 @@ typedef struct cfx_cli_io cfx_cli_io_t;
  */
 typedef int(*cfx_cli_proc_fn)(const cfx_cli_t* cli, cf_void_t* sess, cfx_cli_cmd_t* cmd, cf_size_t argc, cf_char_t* argv[]);
 
-/**
- * @brief CLI output function
- * 
- */
-typedef void(*cfx_cli_io_output_fn)(cf_void_t*, const cf_char_t*, ...);
-
 
 /**
  * @brief create a CLI object with name, description and version
  * 
- * @param io    CLI input/output callback 
  * @param name  name of this CLI 
  * @param desc  decription 
  * @param ver   version of this CLI 
  * @return cfx_cli_t* a new CLI object
  */
-cfx_cli_t* cfx_cli_new(cfx_cli_io_t* io, const char* name, const char* desc, const char* ver);
+cfx_cli_t* cfx_cli_new(const char* name, const char* desc, const char* ver);
 
 /**
  * @brief destroy CLI object
