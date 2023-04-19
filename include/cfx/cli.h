@@ -53,7 +53,10 @@ typedef struct cfx_cli_opt cfx_cli_opt_t;
  * @brief command process function
  * 
  */
-typedef int(*cfx_cli_proc_fn)(const cfx_cli_t* cli, cf_void_t* sess, cfx_cli_cmd_t* cmd, cf_size_t argc, cf_char_t* argv[]);
+typedef int(*cfx_cli_proc_fn)(cf_void_t* sess,
+                               const cfx_cli_opt_t* opts,
+                               cf_size_t argc,
+                               cf_char_t* argv[]);
 
 
 /**
@@ -135,15 +138,12 @@ cfx_cli_opt_t* cfx_cli_opt_add(cfx_cli_cmd_t* cmd, char sn, const char* ln, cons
 /**
  * @brief get the option by short name or long name
  * 
- * @param self  command belongs to
- * @param opt   option name
- * @return cfx_cli_opt_t* the found option
+ * @param opts  entry of options
+ * @param opt   option name, short or long style
+ * @return cf_char_t* option value, return NULL if option is not found
  */
-cfx_cli_opt_t* cfx_cli_cmd_opt(cfx_cli_cmd_t* self, char* opt);
 
-cf_char_t* cfx_cli_opt_val(cfx_cli_cmd_t* self, char* name);
-
-#define cfx_cli_opt_exist(self, name) (cfx_cli_cmd_opt((self), (name)) ? CF_TRUE : CF_FALSE)
+cf_char_t* cfx_cli_opt_val(const cfx_cli_opt_t* opts, char* name);
 
 /** @} */
 

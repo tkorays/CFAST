@@ -4,15 +4,32 @@
 #include "cf/assert.h"
 #include <stdio.h>
 
-int cmd_proc(const cfx_cli_t* cli, cf_void_t* sess, cfx_cli_cmd_t* cmd, cf_size_t argc, cf_char_t* argv[]) {
-    printf("cmd1 proc cnt: %zu argv0: %s \n", argc, argv[0]);
-    cf_assert(cfx_cli_opt_exist(cmd, "a") == CF_TRUE);
-    cf_assert(cfx_cli_opt_exist(cmd, "aaa") == CF_TRUE);
-    cf_assert(cfx_cli_opt_exist(cmd, "s") == CF_FALSE);
-    cf_assert(cfx_cli_opt_exist(cmd, "sss") == CF_FALSE);
-    cf_assert(cf_strcmp(cfx_cli_opt_val(cmd, "a"), "abc") == 0);
-    cf_assert(cfx_cli_opt_val(cmd, "ddd") == CF_NULL_PTR);
-    printf("a: %s, b: %s\n", cfx_cli_opt_val(cmd, "a"), cfx_cli_opt_val(cmd, "bbb"));
+int cmd_proc(cf_void_t* sess,
+             const cfx_cli_opt_t* opts,
+             cf_size_t argc,
+             cf_char_t* argv[]) {
+    printf("%p\n", opts);
+
+    cf_assert(cfx_cli_opt_val(opts, "a") != CF_NULL_PTR);
+    printf("1\n");
+    printf("%p\n", opts);
+    cf_assert(cfx_cli_opt_val(opts, "aaa") != CF_NULL_PTR);
+    printf("2\n");
+    cf_assert(cfx_cli_opt_val(opts, "s") == CF_NULL_PTR);
+    printf("3\n");
+    cf_assert(cfx_cli_opt_val(opts, "sss") == CF_NULL_PTR);
+    printf("%p\n", opts);
+    cf_assert(cf_strcmp(cfx_cli_opt_val(opts, "a"), "abc") == 0);
+    cf_assert(cfx_cli_opt_val(opts, "d") != CF_NULL_PTR);
+    
+    // printf("cmd1 proc cnt: %zu argv0: %s \n", argc, argv[0]);
+    // cf_assert(cfx_cli_opt_exist(cmd, "a") == CF_TRUE);
+    // cf_assert(cfx_cli_opt_exist(cmd, "aaa") == CF_TRUE);
+    // cf_assert(cfx_cli_opt_exist(cmd, "s") == CF_FALSE);
+    // cf_assert(cfx_cli_opt_exist(cmd, "sss") == CF_FALSE);
+    // cf_assert(cf_strcmp(cfx_cli_opt_val(cmd, "a"), "abc") == 0);
+    // cf_assert(cfx_cli_opt_val(cmd, "ddd") == CF_NULL_PTR);
+    // printf("a: %s, b: %s\n", cfx_cli_opt_val(cmd, "a"), cfx_cli_opt_val(cmd, "bbb"));
     return 0;
 }
 

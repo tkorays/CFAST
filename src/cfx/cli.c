@@ -61,9 +61,10 @@ struct cfx_cli {
     cfx_cli_io_t        io;         /** input and output function */
 };
 
-void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self);
+void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self, cf_bool_t destroy_subling);
 void cfx_cli_opt_deinit(cfx_cli_opt_t* self);
 cfx_cli_cmd_t* cfx_cli_cmd_sub(cfx_cli_cmd_t* self, char* name);
+cfx_cli_opt_t* cfx_cli_cmd_opt(cfx_cli_cmd_t* self, char* opt);
 
 void _cfx_cli_io_output_fn(cf_void_t* ctx, const cf_char_t* fmt, ...) {
     va_list args;
@@ -100,10 +101,10 @@ cfx_cli_t* cfx_cli_new(const char* name, const char* desc, const char* ver) {
 }
 
 void cfx_cli_delete(cfx_cli_t* self) {
+    cfx_cli_cmd_deinit(&self->root, CF_TRUE);
     cf_string_deinit(&self->name);
     cf_string_deinit(&self->desc);
     cf_string_deinit(&self->version);
-    cfx_cli_cmd_deinit(&self->root);
     self->root.prev = CF_NULL_PTR;
     self->root.next = CF_NULL_PTR;
     self->root.child = CF_NULL_PTR;
@@ -116,7 +117,13 @@ void cfx_cli_help(cfx_cli_t* self, cfx_cli_cmd_t* cmd) {
     cfx_cli_opt_t* opt;
     char buf[2048];
     int i = 0;
-    i += cfx_art_print(cf_string_ptr(&p->name), buf, sizeof(buf) - i, CFX_ART_FONT_SLANT);
+    
+    /** only show loga for root command */
+    if (cmd == p) {
+        i += cfx_art_print(cf_string_ptr(&p->name), buf, sizeof(buf) - i, CFX_ART_FONT_SLANT);
+        i += cf_snprintf(buf + i, sizeof(buf) - i, "\n");
+    }
+
     i += cf_snprintf(buf + i, sizeof(buf) - i, "Usage: ");
     while (p && p != cmd) {
         i += cf_snprintf(buf + i, sizeof(buf) - i, "%s ", cf_string_ptr(&p->name));
@@ -288,18 +295,24 @@ cf_bool_t cfx_cli_input(cfx_cli_t* self, void* context, int argc, char* argv[]) 
     opt = cmd->opts;
     while (opt) {
         if (opt->required && !opt->has_value) {
-            if (opt->short_name) {
-                self->io.output(CF_NULL_PTR, "missing option -%c! use --help to get options", opt->short_name);
+            if (opt->short_name && cf_string_len(&opt->long_name) > 0) {
+                self->io.output(CF_NULL_PTR, "missing option -%c/--%s! use --help to get options\n\n",
+                    opt->short_name,
+                    cf_string_ptr(&opt->long_name));
+            } else if (opt->short_name) {
+                self->io.output(CF_NULL_PTR, "missing option -%c! use --help to get options\n\n", opt->short_name);
             } else {
-                self->io.output(CF_NULL_PTR, "missing option -%s! use --help to get options", cf_string_ptr(&opt->long_name));
+                self->io.output(CF_NULL_PTR, "missing option -%s! use --help to get options\n\n", cf_string_ptr(&opt->long_name));
             }
+
+            cfx_cli_help(self, cmd);
             return CF_FALSE;
         }
         opt = opt->next;
     }
 
     if (cmd && cmd->proc) {
-        cmd->proc(self, CF_NULL_PTR, cmd, argc - i, &argv[i]);
+        cmd->proc(CF_NULL_PTR, CF_TYPE_CAST(const cfx_cli_opt_t*, cmd->opts), argc - i, &argv[i]);
     }
     return CF_TRUE;
 }
@@ -321,24 +334,28 @@ cf_bool_t cfx_cli_cmd_init(cfx_cli_cmd_t* self, const char* name, const char* de
     return CF_TRUE;
 }
 
-void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self) {
+void cfx_cli_cmd_deinit(cfx_cli_cmd_t* self, cf_bool_t destroy_subling) {
     cfx_cli_cmd_t* cmd, *cmd_next;
     cfx_cli_opt_t* opt, *opt_next;
     if (!self) return;
 
     /* deinit child */
-    cfx_cli_cmd_deinit(self->child);
-    cf_free(self->child);
-    self->child = CF_NULL_PTR;
+    if (self->child) {
+        cfx_cli_cmd_deinit(self->child, CF_TRUE);
+        cf_free(self->child);
+        self->child = CF_NULL_PTR;
+    }
 
     
     /* deinit sublings */
-    cmd = self->next;
-    while (cmd) {
-        cmd_next = cmd->next;
-        cfx_cli_cmd_deinit(cmd);
-        cf_free(cmd);
-        cmd = cmd_next;
+    if (destroy_subling) {
+        cmd = self->next;
+        while (cmd) {
+            cmd_next = cmd->next;
+            cfx_cli_cmd_deinit(cmd, CF_FALSE);
+            cf_free(cmd);
+            cmd = cmd_next;
+        }
     }
 
     /* deinit self */
@@ -455,10 +472,24 @@ cf_bool_t cfx_cli_opt_has_val_ln(cfx_cli_opt_t* opt, const char* long_name) {
 }
 
 
-cf_char_t* cfx_cli_opt_val(cfx_cli_cmd_t* self, char* name) {
-    cfx_cli_opt_t* opt = cfx_cli_cmd_opt(self, name);
-    if (opt && opt->has_value) {
-        return opt->value.ptr;
+cf_char_t* cfx_cli_opt_val(const cfx_cli_opt_t* opts, char* name) {
+    if (!opts || !name || cf_strlen(name) == 0) return CF_NULL_PTR;
+
+    while (opts) {
+        if (cf_strlen(name) == 1 && name[0] == opts->short_name) {
+            /** FIXIT: return "" for a flag, this is not a good code!! */
+            if (opts->flag) {
+                return "";
+            }
+            return opts->value.ptr;
+        }
+        if (opts->long_name.ptr && cf_strcmp(name, opts->long_name.ptr) == 0) {
+            if (opts->flag) {
+                return "";
+            }
+            return opts->value.ptr;
+        }
+        opts = opts->next;
     }
     return CF_NULL_PTR;
 }
@@ -476,7 +507,7 @@ cfx_cli_cmd_t* cfx_cli_cmd_new(const char* name, const char* desc, cfx_cli_proc_
 
     cmd->name   = cf_string_dup_c(name, cf_strlen(name));
     cmd->desc   = cf_string_dup_c(desc, cf_strlen(desc));
-    cmd->proc = fn;
+    cmd->proc   = fn;
     return cmd;
 }
 
