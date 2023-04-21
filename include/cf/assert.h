@@ -11,6 +11,8 @@
 #ifndef __CF_ASSERT_H__
 #define __CF_ASSERT_H__
 
+#include "cf/config.h"
+
 #if CF_HAS_ASSERT
 #  include <assert.h>
 #else

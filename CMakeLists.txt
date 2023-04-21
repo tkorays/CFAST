@@ -63,6 +63,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/numerics.c
     src/cf/hashtbl.c
     src/cf/value.c
+    src/cf/fifobuf.c
     src/cfx/cli.c
     src/cfx/fec.c
     src/cfx/ascii_art.c
@@ -125,6 +126,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         fec
         sock
         ascii_art
+        fifobuf
     )
     foreach(TEST_NAME ${TESTS})
         add_executable(test_${TEST_NAME} tests/test_${TEST_NAME}.c ${ADDL_SOURCE})
