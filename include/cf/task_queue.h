@@ -34,8 +34,9 @@ typedef struct cf_task_queue cf_task_queue_t;
 typedef void(*CF_FN_TASK_QUEUE_RUN)(void* data);
 
 typedef struct {
-    CF_FN_TASK_QUEUE_RUN    run;    /** executed function by task queue */
-    void*                   data;   /** this memory should be managed by user */
+    CF_FN_TASK_QUEUE_RUN    run;        /** executed function by task queue */
+    void*                   data;       /** this memory should be managed by user */
+    cf_int64_t              due_time;   /** post time of this task */
 } cf_task_queue_task_t;
 
 /**

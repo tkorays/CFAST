@@ -22,6 +22,7 @@ cf_clock_t* cf_clock_global() {
     if (CF_NULL_PTR == _g_clock_global_) {
         _g_clock_global_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc(sizeof(cf_clock_t)));
         cf_clock_init(_g_clock_global_);
+        _g_clock_global_->steady_flag = 1;
     }
     return _g_clock_global_;
 }
