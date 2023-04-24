@@ -67,6 +67,7 @@ set(SRC_LIST src/cf/list.c
     src/cfx/cli.c
     src/cfx/fec.c
     src/cfx/ascii_art.c
+    src/cfx/ini.c
     )
 
 if(USE_CFEXP_LIBTELNET_SERVER)
