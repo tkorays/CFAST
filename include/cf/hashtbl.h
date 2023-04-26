@@ -80,7 +80,7 @@ cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t
  * @param   len     bytes of key
  * @return          hash value for this key
  */
-cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, cf_void_t* key, cf_size_t len);
+cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len);
 
 
 /**
@@ -93,7 +93,7 @@ cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, cf_void_t* key, cf_size_t len);
  * @param   len     bytes of this key
  * @param   value   value to be set
  */
-cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, cf_void_t* key, cf_size_t len, cf_void_t* value);
+cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* value);
 
 /**
  * @brief return the count of items in hashtable.

@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-    cf_char_t s[] = "  12345\t ";   
+    cf_char_t s[] = "  12345\t ";
     cf_char_t s1[] = "a1234bcdefg";
 
     cf_char_t buf[100];

@@ -71,8 +71,9 @@ cf_char_t* cf_strrchr(const cf_char_t* s, cf_char_t c) {
     cf_size_t n;
     if(!s) return CF_NULL_PTR;
     n = cf_strlen(s);
-    while(n > 0 && *s != c) n--, s++;
-    return (n == 0 ? CF_NULL_PTR : (cf_char_t*)s);
+    s += n;
+    while(n > 0 && *s != c) n--, s--;
+    return (n < 0 ? CF_NULL_PTR : s);
 }
 
 cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format, ...) {
@@ -99,7 +100,7 @@ cf_bool_t cf_str_strip(cf_char_t* s) {
 
     /* strip left */
     start = s;
-    while (CF_IS_BLANK(*start)) {
+    while (CF_IS_SPACE(*start)) {
         start++;
     }
     // all chars are \b or \t
@@ -110,7 +111,7 @@ cf_bool_t cf_str_strip(cf_char_t* s) {
 
     /* strip right */
     end = s + len - 1;
-    while (CF_IS_BLANK(*end)) {
+    while (CF_IS_SPACE(*end)) {
         end--;
     }
 

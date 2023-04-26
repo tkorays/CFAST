@@ -15,13 +15,15 @@ cf_bool_t cfx_ini_parse(cfx_ini_t* self, const cf_char_t* file);
 
 cf_bool_t cfx_ini_save(cfx_ini_t* self, const cf_char_t* file);
 
+cf_bool_t cfx_ini_input(cfx_ini_t* self, const cf_char_t* line);
 
-cf_void_t cfx_ini_set(cfx_ini_t* self,
+
+cf_bool_t cfx_ini_set(cfx_ini_t* self,
                       const cf_char_t* section,
                       const cf_char_t* key,
                       const cf_char_t* value);
 
-cf_bool_t cf_ini_get(cfx_ini_t* self,
+cf_bool_t cfx_ini_get(cfx_ini_t* self,
                      const cf_char_t* section,
                      const cf_char_t* key,
                      cf_char_t* buffer,

@@ -52,7 +52,7 @@ hashtbl_node_t* hashtbl_get_node_by_hash(cf_hashtbl_t* tbl, cf_uint32_t hash, cf
     return node;
 }
 
-hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, cf_void_t* key, cf_size_t len) {
+hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_size_t len) {
     cf_uint32_t hash = 0;
     hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR;
     const cf_uint8_t* p = CF_TYPE_CAST(const cf_uint8_t*, key);
@@ -146,13 +146,13 @@ cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t
 }
 
 
-cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, cf_void_t* key, cf_size_t len) {
+cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len) {
     hashtbl_node_t* node = CF_NULL_PTR;
     node = hashtbl_get_node(self, key, len);
     return node ? node->value : CF_NULL_PTR;
 }
 
-cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, cf_void_t* key, cf_size_t len, cf_void_t* value) {
+cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* value) {
     hashtbl_node_t* node = CF_NULL_PTR;
     cf_bool_t create = value ? CF_TRUE : CF_FALSE;
     node = hashtbl_get_node(self, key, len);
