@@ -91,7 +91,17 @@ cf_int64_t cf_clock_current_ns(cf_clock_t* self) {
         return -1;
     }
 #else
-    return -1;
+    struct timespec ts;
+    if (self->steady_high_flag || self->steady_flag) {
+        if (clock_gettime(CLOCK_MONOTONIC, &ts) == -1) {
+            return -1;
+        }
+    } else {
+        if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
+            return -1;
+        }
+    }
+    return 1000000000 * CF_TYPE_CAST(cf_int64_t, ts.tv_sec) + ts.tv_nsec;
 #endif
 }
 

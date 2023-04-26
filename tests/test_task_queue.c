@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
     cf_task_queue_post(task_queue, task);
 
     /** wait for the delayed task done */
-    cf_time_sleep(20);
+    cf_time_sleep(10);
     cf_task_queue_delete(task_queue);
     return 0;
 }

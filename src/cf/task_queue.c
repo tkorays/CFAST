@@ -44,7 +44,10 @@ CF_THREAD_DEF_PROC(task_queue_proc, args) {
         while (CF_TRUE) {
             cf_mutex_lock(&task_queue->mutex);
             cnt = cf_array_size(&task_queue->delayed_tasks);
-            if (idx >= cnt) break;
+            if (idx >= cnt) {
+                cf_mutex_unlock(&task_queue->mutex);
+                break;
+            }
 
             task = CF_TYPE_CAST(cf_task_queue_task_t*, cf_array_get(&task_queue->delayed_tasks, idx));
             
@@ -63,7 +66,10 @@ CF_THREAD_DEF_PROC(task_queue_proc, args) {
         /* process the realtime task */
         while (CF_TRUE) {
             cf_mutex_lock(&task_queue->mutex);
-            if (cf_lite_queue_empty(&task_queue->tasks)) { break; }
+            if (cf_lite_queue_empty(&task_queue->tasks)) {
+                cf_mutex_unlock(&task_queue->mutex);
+                break;
+            }
             task = CF_TYPE_CAST(cf_task_queue_task_t*, cf_lite_queue_pop_front(&task_queue->tasks));
             cf_mutex_unlock(&task_queue->mutex);
 
@@ -139,10 +145,9 @@ void cf_task_queue_delete(cf_task_queue_t* self) {
     self->exit = CF_TRUE;
     cf_event_set(self->notify);
 
+    cf_thread_join(self->thread, 0);
     cf_mutex_lock(&self->mutex);
     {
-        cf_thread_join(self->thread, 0);
-
         cf_lite_queue_deinit(&self->tasks);
         cf_array_deinit(&self->delayed_tasks);
         cf_event_delete(self->notify);
