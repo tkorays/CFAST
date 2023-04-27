@@ -5,10 +5,10 @@
 char* ini_str[] = {
     "; abc",
     "a = 1234",
-    "b=1234",
+    "b=5678",
     "[section]",
     "asd = 1234",
-    "asdf = 1234"
+    "asdf = 1234",
     "",
     "[sss]",
     "asdasdf = 1234"
@@ -26,6 +26,10 @@ int main(int argc, char const *argv[])
     }
 
     cf_assert(cfx_ini_get(ini, "section", "asdf", buffer, sizeof(buffer)));
+    cf_assert(cfx_ini_set(ini, "section", "hello", "world"));
+    cf_assert(cfx_ini_set(ini, "biu", "hello", "world"));
+    cf_assert(cfx_ini_save(ini, CF_NULL_PTR) == CF_FALSE);
+    cf_assert(cfx_ini_save(ini, "test.ini"));
     cfx_ini_delete(ini);
     return 0;
 }

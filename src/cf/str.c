@@ -73,7 +73,7 @@ cf_char_t* cf_strrchr(const cf_char_t* s, cf_char_t c) {
     n = cf_strlen(s);
     s += n;
     while(n > 0 && *s != c) n--, s--;
-    return (n < 0 ? CF_NULL_PTR : s);
+    return (n < 0 ? CF_NULL_PTR : (cf_char_t*)s);
 }
 
 cf_int_t cf_snprintf(cf_char_t* dst, cf_size_t dstsize, const cf_char_t* format, ...) {

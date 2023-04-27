@@ -30,6 +30,19 @@ CF_DECLS_BEGIN
  */
 typedef struct cf_hashtbl cf_hashtbl_t;
 
+/**
+ * hashtable iterator.
+ * This struct is used to iterate through the items in the hashtable.
+ * You can use the functions cf_hashtbl_iter_init, cf_hashtbl_iter_next, and cf_hashtbl_iter_end to iterate through the items.
+ */
+typedef struct hashtbl_node* cf_hashtbl_iter_t;
+
+
+/**
+ * This is a callback function that is used to destroy values in the hashtable.
+ * You can pass this function as an argument to the cf_hashtbl_delete function to destroy all values in the hashtable.
+ */
+typedef cf_void_t(*cf_hashtbl_cb_f)(cf_void_t* value);
 
 /**
  * @brief create a new hash table instance with fixed table size.
@@ -43,8 +56,9 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size);
  * @brief destroy a hash table instance.
  *
  * @param   self    this pointer.
+ * @param   cb      callback for destroy value items
  */
-cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self);
+cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self, cf_hashtbl_cb_f cb);
 
 /**
  * @brief get value from hash table with a uint32 hash key.
@@ -102,6 +116,59 @@ cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len
  * @return          item count of this hashtable
  */
 cf_size_t cf_hashtbl_size(cf_hashtbl_t* self);
+
+/**
+ * @brief initialize a hashtable iterator.
+ * 
+ * @param   self    this pointer.
+ * @return          an iterator pointing to the first item in the hashtable.
+ */
+cf_hashtbl_iter_t cf_hashtbl_iter_init(cf_hashtbl_t* self);
+
+/**
+ * @brief move the iterator to the next item in the hashtable.
+ * 
+ * @param   self    this pointer.
+ * @param   it      the current iterator.
+ * @return          an iterator pointing to the next item in the hashtable.
+ */
+cf_hashtbl_iter_t cf_hashtbl_iter_next(cf_hashtbl_t* self, cf_hashtbl_iter_t it);
+
+/**
+ * @brief check if the iterator has reached the end of the hashtable.
+ * 
+ * @param   self    this pointer.
+ * @param   it      the current iterator.
+ * @return          CF_TRUE if the iterator has reached the end of the hashtable, CF_FALSE otherwise.
+ */
+CF_FORCE_INLINE cf_bool_t cf_hashtbl_iter_end(cf_hashtbl_t* self, cf_hashtbl_iter_t it) {
+    return it == CF_NULL_PTR ? CF_TRUE : CF_FALSE;
+}
+
+/**
+ * @brief get the hash value of the item pointed to by the iterator.
+ * 
+ * @param   it      the current iterator.
+ * @return          the hash value of the item pointed to by the iterator.
+ */
+cf_uint32_t cf_hashtbl_iter_hash(cf_hashtbl_iter_t it);
+
+/**
+ * @brief get the key of the item pointed to by the iterator.
+ * 
+ * @param   it      the current iterator.
+ * @return          the key of the item pointed to by the iterator.
+ */
+cf_void_t* cf_hashtbl_iter_key(cf_hashtbl_iter_t it);
+
+/**
+ * @brief get the value of the item pointed to by the iterator.
+ * 
+ * @param   it      the current iterator.
+ * @return          the value of the item pointed to by the iterator.
+ */
+cf_void_t* cf_hashtbl_iter_value(cf_hashtbl_iter_t it);
+
 
 /**
  * @}

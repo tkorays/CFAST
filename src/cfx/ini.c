@@ -4,25 +4,37 @@
 #include "cf/file.h"
 #include "cf/str.h"
 #include "cf/hashtbl.h"
-#include "cf/mpool.h"
+#include "cf/assert.h"
 #include <stdio.h>
 
+cf_void_t delete_value_cb(cf_void_t* value) {
+    if (value) {
+        cf_free(value);
+    }
+}
+
+cf_void_t delete_section_cb(cf_void_t* value) {
+    cf_hashtbl_t* tbl = CF_TYPE_CAST(cf_hashtbl_t*, value);
+    cf_hashtbl_delete(tbl, delete_value_cb);
+}
 
 struct cfx_ini {
     cf_char_t           path[CF_MAX_PATH_SIZE];     /** the opened path */
     cf_char_t*          buffer;                     /** parse buffer */
     cf_size_t           buffer_size;                /** buffer size */
     cf_int_t            line;                       /** line */
-    cf_hashtbl_t*       sect;                       /** sections */
-    cf_hashtbl_t*       cur_sect;
+    cf_hashtbl_t*       sections;                   /** sections */
+    cf_hashtbl_t*       cur_section;                /** point to currenet section */
 };
 
 cfx_ini_t* cfx_ini_new() {
     cfx_ini_t* ini = cf_malloc_z(sizeof(cfx_ini_t));
 
-    ini->sect = cf_hashtbl_new(8);
-    ini->cur_sect = cf_hashtbl_new(16);
-    cf_hashtbl_set(ini->sect, "@", CF_HASH_STRING_KEY_LEN_AUTO, ini->cur_sect);
+    ini->sections = cf_hashtbl_new(8);
+    ini->cur_section = cf_hashtbl_new(16);
+
+    /* the first one is always the global section */
+    cf_hashtbl_set_by_hash(ini->sections, 0, ini->cur_section);
 
     ini->buffer         = cf_malloc(1024);
     ini->buffer_size    = 1024;
@@ -31,7 +43,7 @@ cfx_ini_t* cfx_ini_new() {
 
 cf_void_t cfx_ini_delete(cfx_ini_t* self) {
     if (self) {
-        /* TODO: destroy the hashtbl */
+        cf_hashtbl_delete(self->sections, delete_section_cb);
         if (self->buffer) {
             cf_free(self->buffer);
         }
@@ -98,8 +110,8 @@ cf_bool_t cfx_ini_input(cfx_ini_t* self, const cf_char_t* line) {
         }
 
         tbl = cf_hashtbl_new(8);
-        cf_hashtbl_set(self->sect, L + 1, CF_HASH_STRING_KEY_LEN_AUTO, tbl);
-        self->cur_sect = tbl;
+        cf_hashtbl_set(self->sections, L + 1, CF_HASH_STRING_KEY_LEN_AUTO, tbl);
+        self->cur_section = tbl;
     } else if (L[0] == '=') {
         cf_snprintf(self->buffer, self->buffer_size, "ERR: ini key is NULL!");
         return CF_FALSE;
@@ -125,27 +137,55 @@ cf_bool_t cfx_ini_input(cfx_ini_t* self, const cf_char_t* line) {
         len = cf_strlen(L1);
         value = cf_malloc_z(len + 1);
         cf_strcpy_s(value, len + 1, L1);
-        cf_hashtbl_set(self->cur_sect, L, CF_HASH_STRING_KEY_LEN_AUTO, value);
+        cf_hashtbl_set(self->cur_section, L, CF_HASH_STRING_KEY_LEN_AUTO, value);
     }
     return CF_TRUE;
 }
 
 cf_bool_t cfx_ini_save(cfx_ini_t* self, const cf_char_t* file) {
     cf_file_t f = CF_NULL_PTR;
+    cf_hashtbl_iter_t iter, iter2;
+    cf_hashtbl_t* sect = CF_NULL_PTR;
+    cf_char_t* key = CF_NULL_PTR;
+    cf_char_t* value = CF_NULL_PTR;
 
     if (file) {
-        if (CF_EOK != cf_file_open(&f, file, "r")) {
+        if (CF_EOK != cf_file_open(&f, file, "w+")) {
             return CF_FALSE;
         }
     } else {
-        if (CF_EOK != cf_file_open(&f, self->path, "r")) {
+        if (CF_EOK != cf_file_open(&f, self->path, "w+")) {
             return CF_FALSE;
         }
     }
     
-    cf_file_printf(f, "; generate by CFAST\n");
+    cf_file_printf(f, "; generate by CFAST(tkorays)\n\n");
 
-    /** interate hashtbl */
+    iter = cf_hashtbl_iter_init(self->sections);
+    while (!cf_hashtbl_iter_end(self->sections, iter)) {
+        key = cf_hashtbl_iter_key(iter);
+        value = cf_hashtbl_iter_value(iter);
+        if (key != CF_NULL_PTR) {
+            /* print section header */
+            cf_file_printf(f, "[%s]\n", key);
+        }
+
+        cf_assert(value != CF_NULL_PTR);
+
+        sect = CF_TYPE_CAST(cf_hashtbl_t*, value);
+        iter2 = cf_hashtbl_iter_init(sect);
+        while (!cf_hashtbl_iter_end(sect, iter2)) {
+            key = cf_hashtbl_iter_key(iter2);
+            value = cf_hashtbl_iter_value(iter2);
+            cf_assert(key != CF_NULL_PTR);
+            cf_assert(value != CF_NULL_PTR);
+
+            cf_file_printf(f, "%s = %s\n", key, value);
+
+            iter2 = cf_hashtbl_iter_next(sect, iter2);
+        }
+        iter = cf_hashtbl_iter_next(self->sections, iter);
+    }
 
     cf_file_close(f);
     return CF_TRUE;
@@ -158,13 +198,19 @@ cf_bool_t cfx_ini_set(cfx_ini_t* self,
                       const cf_char_t* value) {
     cf_hashtbl_t* sect = CF_NULL_PTR;
     cf_char_t* new_value = CF_NULL_PTR;
+
+    if (CF_NULL_PTR == key || CF_NULL_PTR == value) return CF_FALSE;
+    if (key && cf_strlen(key) == 0) return CF_FALSE;
+
     if (section == CF_NULL_PTR || (section && cf_strlen(section) == 0)) {
-        sect = cf_hashtbl_get(self->sect, "@", CF_HASH_STRING_KEY_LEN_AUTO);
+        sect = cf_hashtbl_get_by_hash(self->sections, 0); 
+        cf_assert(sect != CF_NULL_PTR);
     } else {
-        sect = cf_hashtbl_get(self->sect, section, CF_HASH_STRING_KEY_LEN_AUTO);
+        sect = cf_hashtbl_get(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO);
     }
     if (!sect) {
-        return CF_FALSE;
+        sect = cf_hashtbl_new(8);
+        cf_hashtbl_set(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO, sect);
     }
 
     new_value = cf_malloc(cf_strlen(value) + 1);
@@ -182,9 +228,9 @@ cf_bool_t cfx_ini_get(cfx_ini_t* self,
     cf_hashtbl_t* sect = CF_NULL_PTR;
     cf_char_t* value = CF_NULL_PTR;
     if (section == CF_NULL_PTR || (section && cf_strlen(section) == 0)) {
-        sect = cf_hashtbl_get(self->sect, "@", CF_HASH_STRING_KEY_LEN_AUTO);
+        sect = cf_hashtbl_get_by_hash(self->sections, 0);
     } else {
-        sect = cf_hashtbl_get(self->sect, section, CF_HASH_STRING_KEY_LEN_AUTO);
+        sect = cf_hashtbl_get(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO);
     }
     if (!sect) {
         return CF_FALSE;

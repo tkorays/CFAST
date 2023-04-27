@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 cf_event_t* event = CF_NULL_PTR;
+cf_uint16_t port = 6967;
 
 CF_THREAD_DEF_PROC(thread_proc, arg) {
     cf_sock_t sock = CF_SOCK_INVALID;
@@ -17,7 +18,7 @@ CF_THREAD_DEF_PROC(thread_proc, arg) {
     cf_event_wait(event, 1000);
 
     sock = cf_sock_open(CF_AF_INET, CF_SOCK_STREAM, CF_SOCK_PROTO_AUTO);
-    cf_assert(cf_sockaddr_in4_init(&addr.v4, "127.0.0.1", 1234) == CF_TRUE);
+    cf_assert(cf_sockaddr_in4_init(&addr.v4, "127.0.0.1", port) == CF_TRUE);
     cf_assert(cf_sock_connect(sock, &addr, sizeof(addr.v4)) == CF_TRUE);
 
     cf_assert(cf_sock_send(sock, "hello", 6, 0) == 6);
@@ -43,8 +44,8 @@ int main(int argc, char const *argv[])
     sock = cf_sock_open(CF_AF_INET, CF_SOCK_STREAM, CF_SOCK_PROTO_AUTO);
     cf_assert(sock != CF_SOCK_INVALID);
 
-    cf_assert(cf_sockaddr_in4_init(&addr.v4, "127.0.0.1", 1234) == CF_TRUE);
-    cf_assert(1234 == cf_sock_ntohs(addr.v4.sin_port));
+    cf_assert(cf_sockaddr_in4_init(&addr.v4, "127.0.0.1", port) == CF_TRUE);
+    cf_assert(port == cf_sock_ntohs(addr.v4.sin_port));
     cf_assert(*(cf_uint32_t*)&addr.v4.sin_addr ==  0x0100007F);
 
     cf_assert(cf_sock_bind(sock, &addr, sizeof(addr.v4)) == CF_TRUE);

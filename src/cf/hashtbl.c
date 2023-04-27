@@ -34,12 +34,27 @@ struct cf_hashtbl {
 };
 
 
+cf_void_t hashtbl_destroy_node(hashtbl_node_t* node) {
+    hashtbl_node_t* p = node;
+    while (p) {
+        node = p->next;
+        if(p->key) {
+            cf_free(p->key);
+        }
+        /** callback for destroy value */
+        cf_free(node);
+        p = node;
+    }
+}
+
+
 /**
  * find or create hash node from a uint32 hash key.
  */
 hashtbl_node_t* hashtbl_get_node_by_hash(cf_hashtbl_t* tbl, cf_uint32_t hash, cf_bool_t try_new) {
     hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR;
-    list_entry = &tbl->table[hash & tbl->hashmsk]; /* point to list */
+    hash &= tbl->hashmsk;
+    list_entry = &tbl->table[hash]; /* point to list */
     if (*list_entry) {
         return *list_entry;
     }
@@ -62,19 +77,21 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
     if (len == CF_HASH_STRING_KEY_LEN_AUTO) {
         len = 0;
         // determin string length automaticlly.
-        while (*p) {
+        while (*p != '\0') {
             hash = (hash * 33) + *p;
             ++p;
             ++len;
         }
+        len++;
     } else {
         end = p + len;
         for (; p != end; p++) {
             hash = (hash* 33) + *p;
         } 
     }
+    hash &= tbl->hashmsk;
 
-    for (list_entry = &tbl->table[hash & tbl->hashmsk], node = *list_entry;
+    for (list_entry = &tbl->table[hash], node = *list_entry;
          node;
          list_entry = &node->next, node = *list_entry) {
         if (node->hash == hash && len == node->keylen
@@ -116,13 +133,34 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size) {
     return tbl;
 }
 
-cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self) {
-    if (self != CF_NULL_PTR) {
-        if (self->table) {
-            cf_free(self->table);
+cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self, cf_hashtbl_cb_f cb) {
+    hashtbl_node_t* p, *n;
+    int i;
+    if (CF_NULL_PTR == self) return ;
+
+    /* destroy table items and apply callback */
+    for (i = 0; i < self->hashmsk + 1; i++) {
+        n = self->table[i]; 
+        if (!n) continue;
+
+        p = n;
+        while (p) {
+            n = p->next;
+            if(p->key) {
+                cf_free(p->key);
+            }
+            if (cb) {
+                cb(p->value);
+            }
+            cf_free(p);
+            p = n;
         }
-        cf_free(self);
+    } 
+
+    if (self->table) {
+        cf_free(self->table);
     }
+    cf_free(self);
 }
 
 cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash) {
@@ -168,5 +206,43 @@ cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len
 
 cf_size_t cf_hashtbl_size(cf_hashtbl_t* self) {
     return self->size;
+}
+
+cf_hashtbl_iter_t cf_hashtbl_iter_init(cf_hashtbl_t* self) {
+    cf_uint32_t i;
+    /* find the first table index */
+    for (i = 0; i <= self->hashmsk; i++) {
+        if (self->table[i]) {
+            return self->table[i];
+        }
+    }
+    return CF_NULL_PTR;
+}
+
+cf_hashtbl_iter_t cf_hashtbl_iter_next(cf_hashtbl_t* self, cf_hashtbl_iter_t it) {
+    /* the next index */
+    cf_uint32_t i = it->hash + 1;
+    if (it->next) {
+        return it->next;
+    }
+    while (i <= self->hashmsk) {
+        if (self->table[i]) {
+            return self->table[i];
+        }
+        i++;
+    }
+    return CF_NULL_PTR;
+}
+
+cf_uint32_t cf_hashtbl_iter_hash(cf_hashtbl_iter_t it) {
+    return it->hash;
+}
+
+cf_void_t* cf_hashtbl_iter_key(cf_hashtbl_iter_t it) {
+    return it->key;
+}
+
+cf_void_t* cf_hashtbl_iter_value(cf_hashtbl_iter_t it) {
+    return it->value;
 }
 
