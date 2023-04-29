@@ -64,6 +64,7 @@ set(SRC_LIST src/cf/list.c
     src/cf/hashtbl.c
     src/cf/value.c
     src/cf/fifobuf.c
+    src/cf/rwlock.c
     src/cfx/cli.c
     src/cfx/fec.c
     src/cfx/ascii_art.c
