@@ -24,17 +24,40 @@
  * @brief a simple array.
  */
 typedef struct cf_array {
-    cf_size_t   capacity;   /* capacity of this array */
-    cf_size_t   elm_size;   /* bytes of each element, should be lower to 1024 bytes */
-    cf_size_t   elm_count;  /* count for elements */
-    cf_void_t*  elm_start;  /* start memory for elements */
+    /* capacity of this array in elements, space will expand when not enough */
+    cf_size_t   capacity;
+
+    /* bytes of each element, should be lower to 1024 bytes */
+    cf_size_t   elm_size;
+    
+    /* count for elements */
+    cf_size_t   elm_count;
+
+    /* array memory for elements, capacity * elm_size is the bytes of memory. */
+    cf_void_t*  elm_start;
 } cf_array_t;
 
 CF_DECLS_BEGIN
 
+/**
+ * magic index: the first element in array
+ */
 #define CF_ARRAY_BEGIN_INDEX 0
-#define CF_ARRAY_END_INDEX -1
-#define CF_ARRAY_INVALID_INDEX -2
+
+/**
+ * magic index: the last element in array
+ */
+#define CF_ARRAY_END_INDEX (-1)
+
+/**
+ * invalid array index
+ */
+#define CF_ARRAY_INVALID_INDEX (0x7FFFFFFF)
+
+/**
+ * max size of array elements
+ */
+#define CF_ARRAY_MAX_ELM_SIZE (1024)
 
 /**
  * Initialize an array.

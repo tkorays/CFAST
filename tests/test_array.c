@@ -8,55 +8,87 @@ cf_bool_t array_cmp(const cf_void_t* a, const cf_void_t* b) {
     return *CF_TYPE_CAST(int*, a) == *CF_TYPE_CAST(int*, b);
 }
 
-
-void test_array_insert() {
+void test_array_expand() {
     cf_array_t arr;
-    int a;
+    int i;
+    int elm = 1234;
     cf_array_init(&arr, sizeof(int), 5);
 
-    a = 1234;
-    cf_array_insert(&arr, 0, &a, sizeof(a));
-    cf_assert(cf_array_size(&arr) == 1);
-
-    a = 4567;
-    cf_array_insert(&arr, 1, &a, sizeof(a));
-    cf_assert(cf_array_size(&arr) == 2);
-
-    a = 7890;
-    cf_array_insert(&arr, CF_ARRAY_END_INDEX, &a, sizeof(a));
-    cf_assert(cf_array_size(&arr) == 3);
-
-    a = 9876;
-    cf_array_insert(&arr, CF_ARRAY_BEGIN_INDEX, &a, sizeof(a));
-    cf_assert(cf_array_size(&arr) == 4);
-
-
-    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 0)) == 9876);
-    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 1)) == 1234);
-    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 2)) == 4567);
-    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 3)) == 7890);
-
-
-    a = 1111;
-    cf_array_set(&arr, 0, &a, sizeof(a));
-    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 0)) == a);
-
-    a = 2222;
-    cf_array_set(&arr, CF_ARRAY_END_INDEX, &a, sizeof(a));
-    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, CF_ARRAY_END_INDEX)) == a);
-
-    a = 4567;
-    cf_assert(cf_array_find(&arr, &a, sizeof(a), array_cmp) == 2);
-
-    cf_array_reset(&arr);
-    cf_assert(cf_array_size(&arr) == 0);
-    cf_assert(cf_array_get(&arr, 0) == CF_NULL_PTR);
+    for (i = 0; i < 5; i++) {
+        cf_array_insert(&arr, CF_ARRAY_END_INDEX, &elm, sizeof(int));
+    }
+    cf_assert(cf_array_size(&arr) == 5);
+    cf_assert(arr.capacity == 5);
+    cf_array_insert(&arr, CF_ARRAY_END_INDEX, &elm, sizeof(int));
+    cf_assert(arr.capacity == 10);
 
     cf_array_deinit(&arr);
 }
+void test_array_insert_front_back() {
+    int items_front[] = {1, 2, 3, 4};
+    int items_back[] = {5, 6, 7, 8};
+    cf_array_t arr;
+    cf_array_init(&arr, sizeof(int), 5);
+    int i;
 
+    for (i = 0; i < CF_ARRAY_SIZE(items_front); i++) {
+        cf_array_insert(&arr, CF_ARRAY_BEGIN_INDEX, &items_front[i], sizeof(int));
+    }
+    for (i = 0; i < CF_ARRAY_SIZE(items_back); i++) {
+        cf_array_insert(&arr, CF_ARRAY_END_INDEX, &items_back[i], sizeof(int));
+    }
+
+    for (i = 0; i < CF_ARRAY_SIZE(items_front); i++) {
+        cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, i)) == items_front[CF_ARRAY_SIZE(items_front) - 1 - i]);
+    }
+
+    for (i = CF_ARRAY_SIZE(items_front); i < CF_ARRAY_SIZE(items_back) + CF_ARRAY_SIZE(items_front); i++) {
+        cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, i)) == items_back[i - CF_ARRAY_SIZE(items_front)]);
+    }
+    cf_array_deinit(&arr);
+}
+
+void test_array_insert_to_position() {
+    cf_array_t arr;
+    int i;
+    int elm = 1234, elm1 = 6789;
+    cf_array_init(&arr, sizeof(int), 5);
+
+    for (i = 0; i < 5; i++) {
+        cf_array_insert(&arr, CF_ARRAY_END_INDEX, &elm, sizeof(int));
+    }
+    cf_assert(cf_array_size(&arr) == 5);
+    cf_assert(arr.capacity == 5);
+    cf_array_insert(&arr, 3, &elm1, sizeof(int));
+    cf_assert(arr.capacity == 10);
+
+    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 3)) == elm1);
+
+    cf_array_set(&arr, 3, &elm, sizeof(int));
+    cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 3)) == elm);
+    
+    cf_array_deinit(&arr);
+}
+
+void test_array_find() {
+    int items[] = {1, 2, 3, 4, 5, 6, 7};
+    cf_array_t arr;
+    cf_array_init(&arr, sizeof(int), 5);
+    int i;
+    for (i = 0; i < CF_ARRAY_SIZE(items); i++) {
+        cf_array_insert(&arr, CF_ARRAY_END_INDEX, &items[i], sizeof(int));
+    }
+
+    for (i = 0; i < CF_ARRAY_SIZE(items); i++) {
+        cf_assert(cf_array_find(&arr, &items[i], sizeof(int), array_cmp) == i);
+    }
+    cf_array_deinit(&arr);
+}
 
 int main(int argc, char* argv[]) {
-    test_array_insert();
+    test_array_expand();
+    test_array_insert_front_back();
+    test_array_insert_to_position();
+    test_array_find();
     return 0;
 }

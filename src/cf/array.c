@@ -12,7 +12,7 @@
     (arr)->elm_start = CF_NULL_PTR; } while(0)
 
 cf_bool_t cf_array_init(cf_array_t* self, cf_size_t el_size, cf_int_t capacity) {
-    if (el_size > 1024) {
+    if (el_size > CF_ARRAY_MAX_ELM_SIZE) {
         return CF_FALSE;;
     }
     cf_array_clear(self);

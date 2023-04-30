@@ -3,6 +3,7 @@
 
 #include "cf/types.h"
 #ifdef CF_OS_WIN
+#include <Windows.h>
 #include <synchapi.h>
 #else
 #include <pthread.h>
