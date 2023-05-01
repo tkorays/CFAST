@@ -20,7 +20,7 @@ static cf_clock_t* _g_clock_system_ = CF_NULL_PTR;
 
 cf_clock_t* cf_clock_global() {
     if (CF_NULL_PTR == _g_clock_global_) {
-        _g_clock_global_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc(sizeof(cf_clock_t)));
+        _g_clock_global_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc_native(sizeof(cf_clock_t)));
         cf_clock_init(_g_clock_global_);
         _g_clock_global_->steady_flag = 1;
     }
@@ -33,7 +33,7 @@ void cf_clock_set_global(cf_clock_t* clock) {
 
 cf_clock_t* cf_clock_steady() {
     if (CF_NULL_PTR == _g_clock_steady_) {
-        _g_clock_steady_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc(sizeof(cf_clock_t)));
+        _g_clock_steady_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc_native(sizeof(cf_clock_t)));
         cf_clock_init(_g_clock_steady_);
         _g_clock_steady_->steady_flag = 1;
     }
@@ -42,7 +42,7 @@ cf_clock_t* cf_clock_steady() {
 
 cf_clock_t* cf_clock_steady_high() {
     if (CF_NULL_PTR == _g_clock_steady_high_) {
-        _g_clock_steady_high_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc(sizeof(cf_clock_t)));
+        _g_clock_steady_high_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc_native(sizeof(cf_clock_t)));
         cf_clock_init(_g_clock_steady_high_);
         _g_clock_steady_high_->steady_high_flag = 1;
     }
@@ -51,7 +51,7 @@ cf_clock_t* cf_clock_steady_high() {
 
 cf_clock_t* cf_clock_system() {
     if (CF_NULL_PTR == _g_clock_system_) {
-        _g_clock_system_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc(sizeof(cf_clock_t)));
+        _g_clock_system_ = CF_TYPE_CAST(cf_clock_t*, cf_malloc_native(sizeof(cf_clock_t)));
         cf_clock_init(_g_clock_system_);
         _g_clock_system_->system_flag = 1;
     }

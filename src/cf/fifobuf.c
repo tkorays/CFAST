@@ -37,7 +37,7 @@ cf_void_t* cf_fifobuf_delete(cf_fifobuf_t* self) {
     } else {
         buffer = self->first;
     }
-    
+    cf_free(self);
     return buffer;
 }
 

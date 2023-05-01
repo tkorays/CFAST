@@ -23,30 +23,34 @@
  */
 
 #ifdef CF_MEMORY_DBG
-#   define cf_malloc(size) cf_malloc_dbg(size)
+#   define cf_malloc(size) cf_malloc_dbg(size, CF_FALSE, __FILE__, __FUNCTION__, __LINE__)
 #   define cf_free(p) cf_free_dbg(p)
 #   define cf_realloc(p, size) cf_realloc_dbg(p, size)
+#   define cf_malloc_z(size) cf_malloc_dbg(size, CF_TRUE, __FILE__, __FUNCTION__, __LINE__)
 #else 
 #   define cf_malloc(size) malloc(size)
 #   define cf_free(p) free(p)
 #   define cf_realloc(p, size) realloc(p, size)
+#   define cf_malloc_z(size) calloc(1, size)
 #endif
 
+#define cf_malloc_native(size) malloc(size)
+#define cf_free_native(p) free(p)
+#define cf_realloc_native(p, size) realloc(p, size)
+#define cf_malloc_z_native(size) calloc(1, size)
 CF_DECLS_BEGIN
 
-/**
- * Allocate memory and set zero.
- * @param size          memory size
- * @return cf_void_t*   address of memory
- */
-cf_void_t* cf_malloc_z(cf_size_t size);
 
 /**
  * Allocate memory, debug version.
  * @param size       Memory size
  * @return           Address of memory.
  */
-cf_void_t* cf_malloc_dbg(cf_size_t size);
+cf_void_t* cf_malloc_dbg(cf_size_t size,
+                         cf_bool_t clear,
+                         const cf_char_t* file,
+                         const cf_char_t* function,
+                         int line);
 
 /**
  * Destory memory, debug version.
@@ -61,6 +65,22 @@ cf_void_t  cf_free_dbg(cf_void_t* addr);
  * @return           Address of memory.
  */
 cf_void_t* cf_realloc_dbg(cf_void_t* addr, cf_size_t size);
+
+/**
+ * @brief initialize a instance to check the memory problem
+ * 
+ * don't use this in production
+ * 
+ * @return cf_void_t 
+ */
+cf_void_t cf_memchk_init();
+
+/**
+ * @brief deinitialize the check and return success or not
+ * 
+ * @return cf_bool_t true for zero problems
+ */
+cf_bool_t cf_memchk_deinit_and_summary();
 
 /**
  * Copy memory from destination(Safety).

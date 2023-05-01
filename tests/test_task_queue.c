@@ -1,5 +1,7 @@
 #include "cf/task_queue.h"
 #include "cf/time.h"
+#include "cf/memory.h"
+#include "cf/assert.h"
 #include <stdio.h>
 
 void task1(void* data) {
@@ -13,7 +15,7 @@ void delay_task1(void* data) {
 
 int main(int argc, char const *argv[])
 {
-    cf_task_queue_t* task_queue = cf_task_queue_new("wtf", 0);
+    cf_task_queue_t* task_queue;
     
     cf_task_queue_task_t task;
     cf_task_queue_task_t delay_task;
@@ -23,6 +25,10 @@ int main(int argc, char const *argv[])
     delay_task.data = CF_NULL_PTR;
     delay_task.run = delay_task1;
 
+    cf_memchk_init();
+
+    task_queue = cf_task_queue_new("wtf", 0);
+
     cf_task_queue_post_delayed(task_queue, delay_task, 5);
     cf_task_queue_post(task_queue, task);
     cf_task_queue_post(task_queue, task);
@@ -30,5 +36,7 @@ int main(int argc, char const *argv[])
     /** wait for the delayed task done */
     cf_time_sleep(10);
     cf_task_queue_delete(task_queue);
+
+    cf_assert(cf_memchk_deinit_and_summary());
     return 0;
 }

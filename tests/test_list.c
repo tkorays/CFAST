@@ -1,5 +1,6 @@
 #include "cf/list.h"
 #include "cf/assert.h"
+#include "cf/memory.h"
 #include <stdio.h>
 
 cf_bool_t li_item_cmp(const cf_void_t* a, const cf_void_t* b) {
@@ -55,6 +56,8 @@ void test_list() {
 
 
 int main(int argc, char* argv[]) {
+    cf_memchk_init();
     test_list();
+    cf_assert(cf_memchk_deinit_and_summary());
     return 0;
 }

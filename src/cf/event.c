@@ -49,6 +49,7 @@ void cf_event_delete(cf_event_t* self) {
     pthread_mutex_destroy(&self->mutex);
     pthread_cond_destroy(&self->cond);
 #endif
+    cf_free(self);
 }
 
 void cf_event_set(cf_event_t* self) {

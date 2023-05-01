@@ -15,6 +15,9 @@ if (CF_ENABLE_COV)
     SET(CMAKE_C_LINK_FLAGS "-fprofile-arcs -fprofile-generate --coverage")
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions("-DCF_MEMORY_DBG")
+endif()
 
 include(TestBigEndian)
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)

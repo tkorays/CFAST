@@ -39,10 +39,10 @@ cf_void_t hashtbl_destroy_node(hashtbl_node_t* node) {
     while (p) {
         node = p->next;
         if(p->key) {
-            cf_free(p->key);
+            cf_free_native(p->key);
         }
         /** callback for destroy value */
-        cf_free(node);
+        cf_free_native(node);
         p = node;
     }
 }
@@ -59,7 +59,8 @@ hashtbl_node_t* hashtbl_get_node_by_hash(cf_hashtbl_t* tbl, cf_uint32_t hash, cf
         return *list_entry;
     }
 
-    node = cf_malloc_z(sizeof(hashtbl_node_t));
+    node = cf_malloc_native(sizeof(hashtbl_node_t));
+    cf_membzero(node, sizeof(hashtbl_node_t));
     node->hash = hash; 
 
     *list_entry = node;
@@ -99,9 +100,10 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
             return node;
         }
     }
-    node = cf_malloc_z(sizeof(hashtbl_node_t));
+    node = cf_malloc_native(sizeof(hashtbl_node_t));
+    cf_membzero(node, sizeof(hashtbl_node_t));
     node->hash = hash; 
-    node->key = cf_malloc(len);
+    node->key = cf_malloc_native(len);
     node->keylen = len;
     cf_memcpy_s(node->key, len, key, len);
 
@@ -115,7 +117,8 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size) {
     cf_size_t init_size = 8;
     cf_hashtbl_t* tbl = CF_NULL_PTR;
 
-    tbl = cf_malloc_z(sizeof(cf_hashtbl_t));
+    tbl = cf_malloc_native(sizeof(cf_hashtbl_t));
+    cf_membzero(tbl, sizeof(cf_hashtbl_t));
     if (!tbl) {
         return CF_NULL_PTR;
     }
@@ -125,9 +128,10 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size) {
     
     tbl->hashmsk = init_size;
     tbl->size = 0;
-    tbl->table = cf_malloc_z(sizeof(hashtbl_node_t*) * (init_size + 1));
+    tbl->table = cf_malloc_native(sizeof(hashtbl_node_t*) * (init_size + 1));
+    cf_membzero(tbl->table, sizeof(hashtbl_node_t*) * (init_size + 1));
     if (!tbl->table) {
-        cf_free(tbl);
+        cf_free_native(tbl);
         return CF_NULL_PTR;
     }
     return tbl;
@@ -147,20 +151,20 @@ cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self, cf_hashtbl_cb_f cb) {
         while (p) {
             n = p->next;
             if(p->key) {
-                cf_free(p->key);
+                cf_free_native(p->key);
             }
             if (cb) {
                 cb(p->value);
             }
-            cf_free(p);
+            cf_free_native(p);
             p = n;
         }
     } 
 
     if (self->table) {
-        cf_free(self->table);
+        cf_free_native(self->table);
     }
-    cf_free(self);
+    cf_free_native(self);
 }
 
 cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash) {

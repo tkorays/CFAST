@@ -10,7 +10,11 @@ int main(int argc, char const *argv[])
     cf_char_t buf[100];
     cf_char_t r[10];
     cf_size_t size;
-    cf_fifobuf_t* fifo = cf_fifobuf_new(buf, sizeof(buf));
+    cf_fifobuf_t* fifo;
+    
+    cf_memchk_init();
+
+    fifo = cf_fifobuf_new(buf, sizeof(buf));
 
     cf_assert(cf_fifobuf_write(fifo, "12345", 1));
     cf_assert(cf_fifobuf_write(fifo, "12345", 2));
@@ -52,5 +56,7 @@ int main(int argc, char const *argv[])
     cf_assert(cf_fifobuf_read(fifo, r, &size) == CF_FALSE);
 
     cf_fifobuf_delete(fifo);
+
+    cf_assert(cf_memchk_deinit_and_summary());
     return 0;
 }

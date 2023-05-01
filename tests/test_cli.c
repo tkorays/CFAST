@@ -2,6 +2,7 @@
 #include "cfx/cli.h"
 #include "cf/str.h"
 #include "cf/assert.h"
+#include "cf/memory.h"
 #include <stdio.h>
 
 int cmd_proc(cf_void_t* sess,
@@ -36,6 +37,7 @@ int cmd_proc(cf_void_t* sess,
 int main(int argc, char const *argv[]) {
     cfx_cli_t* cli;
     cfx_cli_cmd_t *cmd = CF_NULL_PTR, *cmd1 = CF_NULL_PTR, * cmd11 = CF_NULL_PTR;
+    cf_memchk_init();
 
     cli = cfx_cli_new("mycli", "this is a simple CLI", "1.0.0");
 
@@ -59,5 +61,7 @@ int main(int argc, char const *argv[]) {
 
     cfx_cli_input(cli, CF_NULL_PTR, argc1, argv1);
     cfx_cli_delete(cli);
+
+    cf_assert(cf_memchk_deinit_and_summary());
     return 0;
 }

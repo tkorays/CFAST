@@ -1,5 +1,6 @@
 #include "cf/array.h"
 #include "cf/assert.h"
+#include "cf/memory.h"
 
 cf_bool_t array_cmp(const cf_void_t* a, const cf_void_t* b) {
     if (a == CF_NULL_PTR || b == CF_NULL_PTR) {
@@ -66,7 +67,7 @@ void test_array_insert_to_position() {
 
     cf_array_set(&arr, 3, &elm, sizeof(int));
     cf_assert(*CF_TYPE_CAST(int*, cf_array_get(&arr, 3)) == elm);
-    
+
     cf_array_deinit(&arr);
 }
 
@@ -86,9 +87,11 @@ void test_array_find() {
 }
 
 int main(int argc, char* argv[]) {
+    cf_memchk_init();
     test_array_expand();
     test_array_insert_front_back();
     test_array_insert_to_position();
     test_array_find();
+    cf_assert(cf_memchk_deinit_and_summary());
     return 0;
 }
