@@ -9,7 +9,7 @@ cf_void_t cb(cf_void_t* value) {
 
 int main(int argc, char *argv[]) {
     cf_hashtbl_iter_t it;
-    cf_hashtbl_t* tbl = cf_hashtbl_new(15);
+    cf_hashtbl_t* tbl = cf_hashtbl_new(15, cb);
     cf_void_t* p1 = CF_TYPE_CAST(cf_void_t*, 1);
     cf_void_t* p2 = CF_TYPE_CAST(cf_void_t*, 2);
     cf_hashtbl_set_by_hash(tbl, 5, p1);
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
         it = cf_hashtbl_iter_next(tbl, it);
     }
 
-    cf_hashtbl_delete(tbl, cb);
+    cf_hashtbl_delete(tbl);
     return 0;
 }
 

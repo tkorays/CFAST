@@ -50,7 +50,7 @@ typedef cf_void_t(*cf_hashtbl_cb_f)(cf_void_t* value);
  * @param   size    a fixed size for table capacity.
  * @return          created hash table instance.
  */
-cf_hashtbl_t* cf_hashtbl_new(cf_size_t size);
+cf_hashtbl_t* cf_hashtbl_new(cf_size_t size, cf_hashtbl_cb_f value_cb);
 
 /**
  * @brief destroy a hash table instance.
@@ -58,7 +58,7 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size);
  * @param   self    this pointer.
  * @param   cb      callback for destroy value items
  */
-cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self, cf_hashtbl_cb_f cb);
+cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self);
 
 /**
  * @brief get value from hash table with a uint32 hash key.
@@ -79,7 +79,7 @@ cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash);
  *
  * @param   self    this pointer
  * @param   hash    hash key in uint32 format.
- * @param   value   value to be set.
+ * @param   value   value to be set, a null value means clear the item in hashtbl.
  */
 cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t* value);
 
@@ -105,7 +105,7 @@ cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t le
  * @param   self    this pointer
  * @param   key     hash key value
  * @param   len     bytes of this key
- * @param   value   value to be set
+ * @param   value   value to be set, a null value means clear the item in hashtbl
  */
 cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* value);
 

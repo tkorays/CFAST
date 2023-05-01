@@ -31,66 +31,41 @@ struct cf_hashtbl {
 
     /** hash mask is used to convert uint32 hash to a limited value. */
     cf_uint32_t             hashmsk;
+
+    /** callback for destroy hashtbl value */
+    cf_hashtbl_cb_f         callback;
 };
 
-
-cf_void_t hashtbl_destroy_node(hashtbl_node_t* node) {
-    hashtbl_node_t* p = node;
-    while (p) {
-        node = p->next;
-        if(p->key) {
-            cf_free_native(p->key);
-        }
-        /** callback for destroy value */
-        cf_free_native(node);
-        p = node;
-    }
-}
-
-
-/**
- * find or create hash node from a uint32 hash key.
- */
-hashtbl_node_t* hashtbl_get_node_by_hash(cf_hashtbl_t* tbl, cf_uint32_t hash, cf_bool_t try_new) {
-    hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR;
-    hash &= tbl->hashmsk;
-    list_entry = &tbl->table[hash]; /* point to list */
-    if (*list_entry) {
-        return *list_entry;
-    }
-
-    node = cf_malloc_native(sizeof(hashtbl_node_t));
-    cf_membzero(node, sizeof(hashtbl_node_t));
-    node->hash = hash; 
-
-    *list_entry = node;
-    tbl->size++;
-    return node;
-}
-
-hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_size_t len) {
-    cf_uint32_t hash = 0;
-    hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR;
+static CF_FORCE_INLINE cf_uint32_t hashtbl_calc_hash(const cf_void_t* key, cf_size_t* len) {
     const cf_uint8_t* p = CF_TYPE_CAST(const cf_uint8_t*, key);
     const cf_uint8_t* end = CF_NULL_PTR;
+    cf_uint32_t hash = 0;
 
     /* get the hash from key */
-    if (len == CF_HASH_STRING_KEY_LEN_AUTO) {
-        len = 0;
+    if (*len == CF_HASH_STRING_KEY_LEN_AUTO) {
+        *len = 0;
         // determin string length automaticlly.
         while (*p != '\0') {
             hash = (hash * 33) + *p;
             ++p;
-            ++len;
+            ++*len;
         }
-        len++;
+        *len++;
     } else {
-        end = p + len;
+        end = p + *len;
         for (; p != end; p++) {
             hash = (hash* 33) + *p;
         } 
     }
-    hash &= tbl->hashmsk;
+    return hash;
+}
+
+
+hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_size_t len, cf_bool_t create) {
+    cf_uint32_t hash = 0;
+    hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR;
+
+    hash = hashtbl_calc_hash(key, &len) & tbl->hashmsk;
 
     for (list_entry = &tbl->table[hash], node = *list_entry;
          node;
@@ -100,6 +75,11 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
             return node;
         }
     }
+
+    if (!create) {
+        return CF_NULL_PTR;
+    }
+
     node = cf_malloc_native(sizeof(hashtbl_node_t));
     cf_membzero(node, sizeof(hashtbl_node_t));
     node->hash = hash; 
@@ -112,13 +92,34 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
     return node;
 }
 
+cf_void_t hashtbl_remove_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_size_t len) {
+    cf_uint32_t hash = 0;
+    hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR, *next = CF_NULL_PTR;
 
-cf_hashtbl_t* cf_hashtbl_new(cf_size_t size) {
+    hash = hashtbl_calc_hash(key, &len) & tbl->hashmsk;
+
+    for (list_entry = &tbl->table[hash], node = *list_entry;
+         node;
+         list_entry = &node->next, node = *list_entry) {
+        if (*list_entry && (*list_entry)->hash == hash && (*list_entry)->keylen == len
+            && (*list_entry)->key && memcmp((*list_entry)->key, key, len) == 0) {
+            next = (*list_entry)->next;
+            tbl->callback((*list_entry)->value);
+            cf_free_native((*list_entry)->key);
+            cf_free_native(*list_entry);
+            node->next = next;
+            tbl->size--;
+            return;
+        }
+    }
+}
+
+
+cf_hashtbl_t* cf_hashtbl_new(cf_size_t size, cf_hashtbl_cb_f value_cb) {
     cf_size_t init_size = 8;
     cf_hashtbl_t* tbl = CF_NULL_PTR;
 
-    tbl = cf_malloc_native(sizeof(cf_hashtbl_t));
-    cf_membzero(tbl, sizeof(cf_hashtbl_t));
+    tbl = cf_malloc_z_native(sizeof(cf_hashtbl_t));
     if (!tbl) {
         return CF_NULL_PTR;
     }
@@ -128,8 +129,8 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size) {
     
     tbl->hashmsk = init_size;
     tbl->size = 0;
-    tbl->table = cf_malloc_native(sizeof(hashtbl_node_t*) * (init_size + 1));
-    cf_membzero(tbl->table, sizeof(hashtbl_node_t*) * (init_size + 1));
+    tbl->table = cf_malloc_z_native(sizeof(hashtbl_node_t*) * (init_size + 1));
+    tbl->callback = value_cb;
     if (!tbl->table) {
         cf_free_native(tbl);
         return CF_NULL_PTR;
@@ -137,9 +138,9 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size) {
     return tbl;
 }
 
-cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self, cf_hashtbl_cb_f cb) {
+cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self) {
     hashtbl_node_t* p, *n;
-    int i;
+    cf_uint32_t i;
     if (CF_NULL_PTR == self) return ;
 
     /* destroy table items and apply callback */
@@ -153,8 +154,8 @@ cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self, cf_hashtbl_cb_f cb) {
             if(p->key) {
                 cf_free_native(p->key);
             }
-            if (cb) {
-                cb(p->value);
+            if (self->callback) {
+                self->callback(p->value);
             }
             cf_free_native(p);
             p = n;
@@ -168,43 +169,63 @@ cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self, cf_hashtbl_cb_f cb) {
 }
 
 cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash) {
-    hashtbl_node_t* node = CF_NULL_PTR;
-    node = hashtbl_get_node_by_hash(self, hash, CF_FALSE);
-    return node ? node->value : CF_NULL_PTR;
+    hashtbl_node_t** list_entry = CF_NULL_PTR;
+    hash &= self->hashmsk;
+    list_entry = &self->table[hash];
+    if (*list_entry) {
+        return (*list_entry)->value;
+    }
+    return CF_NULL_PTR;
 }
 
 cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t* value) {
     hashtbl_node_t* node = CF_NULL_PTR;
-    cf_bool_t create = value ? CF_TRUE : CF_FALSE;
-    node = hashtbl_get_node_by_hash(self, hash, create);
-    if (node) {
-        if (CF_NULL_PTR == value) {
-            node = node->next;
+    hashtbl_node_t** list_entry = CF_NULL_PTR;
+    
+    hash &= self->hashmsk;
+    list_entry = &self->table[hash];
+
+    /* find the existed item and clear the item */
+    if (value == CF_NULL_PTR) {
+        if (*list_entry) {
+            self->callback((*list_entry)->value);
+
+            cf_free_native(*list_entry);
+            self->table[hash] = CF_NULL_PTR;
             self->size--;
-        } else {
-            node->value = value;
         }
+        return;
     }
+
+    if (!*list_entry) {
+        node = cf_malloc_z_native(sizeof(hashtbl_node_t));
+        node->hash = hash;
+
+        *list_entry = node;
+        self->size++;
+    }
+    (*list_entry)->value = value;
 }
 
 
 cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len) {
     hashtbl_node_t* node = CF_NULL_PTR;
-    node = hashtbl_get_node(self, key, len);
+    node = hashtbl_get_node(self, key, len, CF_FALSE);
     return node ? node->value : CF_NULL_PTR;
 }
 
 cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* value) {
     hashtbl_node_t* node = CF_NULL_PTR;
-    cf_bool_t create = value ? CF_TRUE : CF_FALSE;
-    node = hashtbl_get_node(self, key, len);
+
+    /* clear item */
+    if (value == CF_NULL_PTR) {
+        hashtbl_remove_node(self, key, len);
+        return;
+    }
+
+    node = hashtbl_get_node(self, key, len, CF_TRUE);
     if (node) {
-        if (CF_NULL_PTR == value) {
-            node = node->next;
-            self->size--;
-        } else {
-            node->value = value;
-        }
+        node->value = value;
     }
 }
 

@@ -15,7 +15,7 @@ cf_void_t delete_value_cb(cf_void_t* value) {
 
 cf_void_t delete_section_cb(cf_void_t* value) {
     cf_hashtbl_t* tbl = CF_TYPE_CAST(cf_hashtbl_t*, value);
-    cf_hashtbl_delete(tbl, delete_value_cb);
+    cf_hashtbl_delete(tbl);
 }
 
 struct cfx_ini {
@@ -24,17 +24,19 @@ struct cfx_ini {
     cf_size_t           buffer_size;                /** buffer size */
     cf_int_t            line;                       /** line */
     cf_hashtbl_t*       sections;                   /** sections */
-    cf_hashtbl_t*       cur_section;                /** point to currenet section */
+
+    /** current section to parse, the default is the global section */
+    cf_hashtbl_t*       cur_section;
 };
 
 cfx_ini_t* cfx_ini_new() {
     cfx_ini_t* ini = cf_malloc_z(sizeof(cfx_ini_t));
 
-    ini->sections = cf_hashtbl_new(8);
-    ini->cur_section = cf_hashtbl_new(16);
+    ini->sections = cf_hashtbl_new(8, delete_section_cb);
+    ini->cur_section = cf_hashtbl_new(16, delete_value_cb);
 
     /* the first one is always the global section */
-    cf_hashtbl_set_by_hash(ini->sections, 0, ini->cur_section);
+    cf_hashtbl_set(ini->sections, "__CF_GLB_SECT__", CF_HASH_STRING_KEY_LEN_AUTO, ini->cur_section);
 
     ini->buffer         = cf_malloc(1024);
     ini->buffer_size    = 1024;
@@ -43,7 +45,7 @@ cfx_ini_t* cfx_ini_new() {
 
 cf_void_t cfx_ini_delete(cfx_ini_t* self) {
     if (self) {
-        cf_hashtbl_delete(self->sections, delete_section_cb);
+        cf_hashtbl_delete(self->sections);
         if (self->buffer) {
             cf_free(self->buffer);
         }
@@ -109,7 +111,7 @@ cf_bool_t cfx_ini_input(cfx_ini_t* self, const cf_char_t* line) {
             return CF_FALSE;
         }
 
-        tbl = cf_hashtbl_new(8);
+        tbl = cf_hashtbl_new(8, delete_value_cb);
         cf_hashtbl_set(self->sections, L + 1, CF_HASH_STRING_KEY_LEN_AUTO, tbl);
         self->cur_section = tbl;
     } else if (L[0] == '=') {
@@ -203,13 +205,13 @@ cf_bool_t cfx_ini_set(cfx_ini_t* self,
     if (key && cf_strlen(key) == 0) return CF_FALSE;
 
     if (section == CF_NULL_PTR || (section && cf_strlen(section) == 0)) {
-        sect = cf_hashtbl_get_by_hash(self->sections, 0); 
+        sect = cf_hashtbl_get(self->sections, "__CF_GLB_SECT__", CF_HASH_STRING_KEY_LEN_AUTO); 
         cf_assert(sect != CF_NULL_PTR);
     } else {
         sect = cf_hashtbl_get(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO);
     }
     if (!sect) {
-        sect = cf_hashtbl_new(8);
+        sect = cf_hashtbl_new(8, delete_value_cb);
         cf_hashtbl_set(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO, sect);
     }
 
@@ -228,7 +230,7 @@ cf_bool_t cfx_ini_get(cfx_ini_t* self,
     cf_hashtbl_t* sect = CF_NULL_PTR;
     cf_char_t* value = CF_NULL_PTR;
     if (section == CF_NULL_PTR || (section && cf_strlen(section) == 0)) {
-        sect = cf_hashtbl_get_by_hash(self->sections, 0);
+        sect = cf_hashtbl_get(self->sections, "__CF_GLB_SECT__", CF_HASH_STRING_KEY_LEN_AUTO);
     } else {
         sect = cf_hashtbl_get(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO);
     }

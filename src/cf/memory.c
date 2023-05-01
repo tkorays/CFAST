@@ -65,14 +65,14 @@ void CF_MEMTRACE_FREE(void* p) {
         cf_free_native(info->location.file_name);
         cf_free_native(info->location.function_name);
         cf_free_native(info);
-        cf_hashtbl_set(g_memchk_ctx.alloc_info, pp, sizeof(void*), 0x12345678);
+        cf_hashtbl_set(g_memchk_ctx.alloc_info, pp, sizeof(void*), (void*)(cf_uintptr_t)0x12345678);
     }
 
     cf_mutex_unlock(&g_memchk_ctx.mutex);
 }
 
 #else
-#define CF_MEMTRACE_MALLOC(p, size) (void*)0
+#define CF_MEMTRACE_MALLOC(p, size, file, function, line) (void*)0
 #define CF_MEMTRACE_FREE(p) (void*)0
 #endif
 
@@ -105,7 +105,7 @@ cf_void_t cf_memchk_init() {
 #ifdef CF_MEMORY_DBG
     cf_membzero(&g_memchk_ctx, sizeof(g_memchk_ctx));
     g_memchk_ctx.inited = CF_TRUE;
-    g_memchk_ctx.alloc_info = cf_hashtbl_new(32);
+    g_memchk_ctx.alloc_info = cf_hashtbl_new(32, CF_NULL_PTR);
     cf_mutex_init(&g_memchk_ctx.mutex, CF_NULL_PTR);
 #endif
 }
@@ -113,8 +113,8 @@ cf_void_t cf_memchk_init() {
 cf_bool_t cf_memchk_deinit_and_summary() {
     cf_bool_t is_success = CF_TRUE;
     cf_hashtbl_iter_t it;
-    malloc_info* info;
 #ifdef CF_MEMORY_DBG
+    malloc_info* info;
     is_success = (g_memchk_ctx.alloc_size == 0);
     if (is_success) {
         printf("[memchk][leak] No leaks!\n");
@@ -132,7 +132,7 @@ cf_bool_t cf_memchk_deinit_and_summary() {
         }
     }
     
-    cf_hashtbl_delete(g_memchk_ctx.alloc_info, CF_NULL_PTR);
+    cf_hashtbl_delete(g_memchk_ctx.alloc_info);
     cf_mutex_destroy(&g_memchk_ctx.mutex);
     cf_membzero(&g_memchk_ctx, sizeof(g_memchk_ctx));
 #endif
