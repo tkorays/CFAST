@@ -39,11 +39,11 @@ void CF_MEMTRACE_MALLOC(void* p, cf_size_t size,
 
     len = cf_strlen(file);
     info->location.file_name = cf_malloc_z_native(len + 1);
-    cf_strcpy_s(info->location.file_name, len + 1, file);
+    cf_strcpy_s((char*)info->location.file_name, len + 1, file);
 
     len = cf_strlen(function);
     info->location.function_name = cf_malloc_z_native(cf_strlen(function) + 1);
-    cf_strcpy_s(info->location.function_name, len + 1, function);
+    cf_strcpy_s((char*)info->location.function_name, len + 1, function);
 
     info->location.line_number = line;
     info->size = size;
@@ -62,8 +62,8 @@ void CF_MEMTRACE_FREE(void* p) {
     if (info) {
         cf_assert(g_memchk_ctx.alloc_size >= info->size);
         g_memchk_ctx.alloc_size -= info->size;
-        cf_free_native(info->location.file_name);
-        cf_free_native(info->location.function_name);
+        cf_free_native((void*)info->location.file_name);
+        cf_free_native((void*)info->location.function_name);
         cf_free_native(info);
         cf_hashtbl_set(g_memchk_ctx.alloc_info, pp, sizeof(void*), (void*)(cf_uintptr_t)0x12345678);
     }
