@@ -7,36 +7,65 @@ cf_void_t cb(cf_void_t* value) {
     printf("%p\n", value);
 }
 
-int main(int argc, char *argv[]) {
-    cf_hashtbl_iter_t it;
+void test_hashtbl_set_get() {
+    int keys[] = {0x1234, 0x5678, 0x9abc, 0xdef0};
+    int values[] = {1, 2, 3, 4};
+    cf_size_t i, cnt = 4;
     cf_hashtbl_t* tbl = cf_hashtbl_new(15, cb);
-    cf_void_t* p1 = CF_TYPE_CAST(cf_void_t*, 1);
-    cf_void_t* p2 = CF_TYPE_CAST(cf_void_t*, 2);
-    cf_hashtbl_set_by_hash(tbl, 5, p1);
-    cf_assert(p1 == cf_hashtbl_get_by_hash(tbl, 5));
-    cf_hashtbl_set_by_hash(tbl, 9, p2);
-    cf_assert(p2 == cf_hashtbl_get_by_hash(tbl, 9));
-    cf_hashtbl_set_by_hash(tbl, 5, p1);
-    cf_assert(p1 == cf_hashtbl_get_by_hash(tbl, 5));
-
-    cf_hashtbl_set(tbl, "abc", CF_HASH_STRING_KEY_LEN_AUTO, p1);
-    cf_assert(p1 == cf_hashtbl_get(tbl, "abc", CF_HASH_STRING_KEY_LEN_AUTO));
-
-    /** don't mix set and set_by_hash */
-    cf_hashtbl_set_by_hash(tbl, 6, p2);
-    cf_assert(p2 == cf_hashtbl_get_by_hash(tbl, 6));
-
-    it = cf_hashtbl_iter_init(tbl);
-
-    while (!cf_hashtbl_iter_end(tbl, it)) {
-        if (cf_hashtbl_iter_key(it)) {
-            printf("%s  \n", (const char*)cf_hashtbl_iter_key(it));
-        }
-        printf("%d:%p\n", cf_hashtbl_iter_hash(it), cf_hashtbl_iter_value(it));
-        it = cf_hashtbl_iter_next(tbl, it);
+    for (i = 0; i < cnt; i++) {
+        cf_hashtbl_set(tbl, &keys[i], sizeof(int), &values[i]);
     }
 
+    cf_assert(cf_hashtbl_size(tbl) == cnt);
+
+    for (i = 0; i < cnt; i++) {
+        cf_assert(*(int*)cf_hashtbl_get(tbl, &keys[i], sizeof(int)) == values[i]);
+    }
     cf_hashtbl_delete(tbl);
+}
+
+void test_hashtbl_iter() {
+    int keys[] = {0x1234, 0x5678, 0x9abc, 0xdef0};
+    int values[] = {1, 2, 3, 4};
+    cf_size_t i, cnt = 4;
+    cf_hashtbl_iter_t it;
+    cf_hashtbl_t* tbl = cf_hashtbl_new(15, cb);
+    for (i = 0; i < cnt; i++) {
+        cf_hashtbl_set(tbl, &keys[i], sizeof(int), &values[i]);
+    }
+    
+    i = 0;
+    for (it = cf_hashtbl_iter_init(tbl);
+        !cf_hashtbl_iter_end(tbl, it);
+        it = cf_hashtbl_iter_next(tbl, it)) {
+        i++;
+    }
+    cf_assert(i == 4);
+
+    cf_hashtbl_delete(tbl);
+}
+
+void test_hashtbl_remove() {
+    int keys[] = {0x1234, 0x5678, 0x9abc, 0xdef0};
+    int values[] = {1, 2, 3, 4};
+    cf_size_t i, cnt = 4;
+    cf_hashtbl_t* tbl = cf_hashtbl_new(15, cb);
+    for (i = 0; i < cnt; i++) {
+        cf_hashtbl_set(tbl, &keys[i], sizeof(int), &values[i]);
+    }
+    
+    cf_assert(cf_hashtbl_size(tbl) == cnt);
+    cf_hashtbl_set(tbl, &keys[2], sizeof(int), CF_NULL_PTR);
+    cf_assert(cf_hashtbl_size(tbl) == (cnt - 1));
+    cf_assert(cf_hashtbl_get(tbl, &keys[2], sizeof(int)) == CF_NULL_PTR);
+
+    cf_hashtbl_delete(tbl);
+}
+
+int main(int argc, char *argv[]) {
+    test_hashtbl_set_get();
+    test_hashtbl_iter();
+    test_hashtbl_remove();
     return 0;
 }
 

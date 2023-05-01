@@ -94,20 +94,24 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
 
 cf_void_t hashtbl_remove_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_size_t len) {
     cf_uint32_t hash = 0;
-    hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR, *next = CF_NULL_PTR;
+    hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR, *prev = CF_NULL_PTR;
 
     hash = hashtbl_calc_hash(key, &len) & tbl->hashmsk;
 
     for (list_entry = &tbl->table[hash], node = *list_entry;
          node;
-         list_entry = &node->next, node = *list_entry) {
-        if (*list_entry && (*list_entry)->hash == hash && (*list_entry)->keylen == len
-            && (*list_entry)->key && memcmp((*list_entry)->key, key, len) == 0) {
-            next = (*list_entry)->next;
-            tbl->callback((*list_entry)->value);
-            cf_free_native((*list_entry)->key);
-            cf_free_native(*list_entry);
-            node->next = next;
+         prev = node, node = node->next) {
+        if (node->hash == hash && node->keylen == len
+            && node->key && memcmp(node->key, key, len) == 0) {
+            if (*list_entry == node) {
+                *list_entry = CF_NULL_PTR;
+            } else {
+                prev->next = node->next;   
+            }
+            tbl->callback(node->value);
+            cf_free_native(node->key);
+            cf_free_native(node);
+
             tbl->size--;
             return;
         }
