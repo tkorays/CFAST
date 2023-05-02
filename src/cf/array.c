@@ -88,8 +88,8 @@ cf_bool_t cf_array_insert(cf_array_t* self, int index, cf_void_t* elm, cf_size_t
 }
 
 cf_bool_t cf_array_erase(cf_array_t* self, int index) {
-    int i;
-    if (index < CF_ARRAY_END_INDEX || index >= self->elm_count || self->elm_count <= 0) {
+    cf_size_t i;
+    if (index < CF_ARRAY_END_INDEX || (cf_size_t)index >= self->elm_count || self->elm_count <= 0) {
         return CF_FALSE;
     }
     if (index == CF_ARRAY_END_INDEX) {
@@ -132,7 +132,7 @@ cf_void_t* cf_array_get(cf_array_t* self, int index) {
 }
 
 cf_int_t cf_array_find(cf_array_t* self, cf_void_t* elm, cf_size_t size, cf_alg_equal_f cmp) {
-    int i;
+    cf_size_t i;
     if (self->elm_count <= 0) {
         return CF_ARRAY_INVALID_INDEX;
     }

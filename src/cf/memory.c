@@ -18,6 +18,7 @@ typedef struct {
 
 struct cf_memchk_ctx {
     cf_bool_t       inited;
+
     /** address/size pair, we use the lower 32bits as hash and size as value */
     cf_hashtbl_t*   alloc_info;
     cf_mutex_t      mutex;
@@ -28,44 +29,66 @@ void CF_MEMTRACE_MALLOC(void* p, cf_size_t size,
                         const cf_char_t* file,
                         const cf_char_t* function,
                         int line) {
-    cf_void_t* pp = &p;
     malloc_info* info;
     cf_size_t len;
     if (!g_memchk_ctx.inited) return;
+
+    /* printf("ALLOC p: %p, size: %ld, file: %s, func: %s, line: %d\n", p, size, file, function, line); */
+
     cf_mutex_lock(&g_memchk_ctx.mutex);
+
     g_memchk_ctx.alloc_size += size;
 
-    info = cf_malloc_z_native(sizeof(malloc_info));
+    /**
+     * fill the malloc info and add to hashtbl
+     * use the allocated address as the key, eg:
+     * void* p = malloc(size);
+     * p is 0x12345678, then key is:
+     * char key[] = {0x12, 0x34, 0x56, 0x78};
+     * int keylen = sizeof(void*);
+     */
+    {
+        info = cf_malloc_z_native(sizeof(malloc_info));
 
-    len = cf_strlen(file);
-    info->location.file_name = cf_malloc_z_native(len + 1);
-    cf_strcpy_s((char*)info->location.file_name, len + 1, file);
+        len = cf_strlen(file);
+        info->location.file_name = cf_malloc_z_native(len + 1);
+        cf_strcpy_s((char*)info->location.file_name, len + 1, file);
 
-    len = cf_strlen(function);
-    info->location.function_name = cf_malloc_z_native(cf_strlen(function) + 1);
-    cf_strcpy_s((char*)info->location.function_name, len + 1, function);
+        len = cf_strlen(function);
+        info->location.function_name = cf_malloc_z_native(cf_strlen(function) + 1);
+        cf_strcpy_s((char*)info->location.function_name, len + 1, function);
 
-    info->location.line_number = line;
-    info->size = size;
+        info->location.line_number = line;
+        info->size = size;
+    }
+    cf_hashtbl_set(g_memchk_ctx.alloc_info, &p, sizeof(void*), (cf_void_t*)info);
 
-    cf_hashtbl_set(g_memchk_ctx.alloc_info, pp, sizeof(void*), (cf_void_t*)info);
     cf_mutex_unlock(&g_memchk_ctx.mutex);
 }
 
-void CF_MEMTRACE_FREE(void* p) {
-    cf_void_t* pp = &p;
+void CF_MEMTRACE_FREE(void* p,
+                      const cf_char_t* file,
+                      const cf_char_t* function,
+                      int line) {
     malloc_info* info;
     if (!g_memchk_ctx.inited) return;
+
+    /* printf("free: %p, file: %s, func: %s, line: %d\n", p, file, function, line); */
     cf_mutex_lock(&g_memchk_ctx.mutex);
 
-    info = CF_TYPE_CAST(malloc_info*, cf_hashtbl_get(g_memchk_ctx.alloc_info, pp, sizeof(void*)));
+    info = CF_TYPE_CAST(malloc_info*, cf_hashtbl_get(g_memchk_ctx.alloc_info, &p, sizeof(void*)));
     if (info) {
         cf_assert(g_memchk_ctx.alloc_size >= info->size);
         g_memchk_ctx.alloc_size -= info->size;
-        cf_free_native((void*)info->location.file_name);
-        cf_free_native((void*)info->location.function_name);
-        cf_free_native(info);
-        cf_hashtbl_set(g_memchk_ctx.alloc_info, pp, sizeof(void*), (void*)(cf_uintptr_t)0x12345678);
+
+        {
+            cf_free_native((void*)info->location.file_name);
+            cf_free_native((void*)info->location.function_name);
+            cf_free_native(info);
+        }
+        cf_hashtbl_set(g_memchk_ctx.alloc_info, &p, sizeof(void*), CF_NULL_PTR);
+    } else {
+        cf_assert(CF_FALSE);
     }
 
     cf_mutex_unlock(&g_memchk_ctx.mutex);
@@ -73,7 +96,7 @@ void CF_MEMTRACE_FREE(void* p) {
 
 #else
 #define CF_MEMTRACE_MALLOC(p, size, file, function, line) (void*)0
-#define CF_MEMTRACE_FREE(p) (void*)0
+#define CF_MEMTRACE_FREE(p, file, function, line) (void*)0
 #endif
 
 
@@ -91,10 +114,13 @@ cf_void_t* cf_malloc_dbg(cf_size_t size,
     return p;
 }
 
-cf_void_t  cf_free_dbg(cf_void_t* addr) {
+cf_void_t  cf_free_dbg(cf_void_t* addr, 
+                       const cf_char_t* file,
+                       const cf_char_t* function,
+                        int line) {
     free(addr);
     
-    CF_MEMTRACE_FREE(addr);
+    CF_MEMTRACE_FREE(addr, file, function, line);
 }
 
 cf_void_t* cf_realloc_dbg(cf_void_t* addr, cf_size_t size) {
@@ -126,7 +152,7 @@ cf_bool_t cf_memchk_deinit_and_summary() {
         !cf_hashtbl_iter_end(g_memchk_ctx.alloc_info, it);
         it = cf_hashtbl_iter_next(g_memchk_ctx.alloc_info, it)) {
         info = cf_hashtbl_iter_value(it);
-        if ((cf_uintptr_t)info != 0x12345678) {
+        if (info != CF_NULL_PTR) {
             printf("[%s@%d : %s] leak: %ldbytes\n", info->location.file_name,
                 info->location.line_number, info->location.function_name, info->size);
         }

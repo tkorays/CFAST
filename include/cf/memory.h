@@ -24,7 +24,7 @@
 
 #ifdef CF_MEMORY_DBG
 #   define cf_malloc(size) cf_malloc_dbg(size, CF_FALSE, __FILE__, __FUNCTION__, __LINE__)
-#   define cf_free(p) cf_free_dbg(p)
+#   define cf_free(p) cf_free_dbg(p, __FILE__, __FUNCTION__, __LINE__)
 #   define cf_realloc(p, size) cf_realloc_dbg(p, size)
 #   define cf_malloc_z(size) cf_malloc_dbg(size, CF_TRUE, __FILE__, __FUNCTION__, __LINE__)
 #else 
@@ -38,6 +38,7 @@
 #define cf_free_native(p) free(p)
 #define cf_realloc_native(p, size) realloc(p, size)
 #define cf_malloc_z_native(size) calloc(1, size)
+
 CF_DECLS_BEGIN
 
 
@@ -56,7 +57,10 @@ cf_void_t* cf_malloc_dbg(cf_size_t size,
  * Destory memory, debug version.
  * @param addr       Address of memory.
  */
-cf_void_t  cf_free_dbg(cf_void_t* addr);
+cf_void_t  cf_free_dbg(cf_void_t* addr,
+                       const cf_char_t* file,
+                       const cf_char_t* function,
+                       int line);
 
 /**
  * Re-Allocate memory, debug version.

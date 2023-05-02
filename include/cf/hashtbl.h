@@ -14,6 +14,9 @@ CF_DECLS_BEGIN
  * @{
  */
 
+#define CF_HASHTBL_FOREACH(tbl, it) for (it = cf_hashtbl_iter_init((tbl));\
+    !cf_hashtbl_iter_end((tbl), (it)); it = cf_hashtbl_iter_next((tbl), (it)))
+
 /**
  * when we pass -1 for a string length, it means that this string ends with `\0`,
  * and we can determin the string length automaticlly.

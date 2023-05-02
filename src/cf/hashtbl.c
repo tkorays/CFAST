@@ -2,7 +2,6 @@
 #include "cf/memory.h"
 #include <string.h>
 
-
 /**
  * use a linked list to store values with the same hash value.
  */
@@ -36,7 +35,7 @@ struct cf_hashtbl {
     cf_hashtbl_cb_f         callback;
 };
 
-static CF_FORCE_INLINE cf_uint32_t hashtbl_calc_hash(const cf_void_t* key, cf_size_t* len) {
+static CF_FORCE_INLINE cf_uint32_t cf_hashtbl_calc_hash(const cf_void_t* key, cf_size_t* len) {
     const cf_uint8_t* p = CF_TYPE_CAST(const cf_uint8_t*, key);
     const cf_uint8_t* end = CF_NULL_PTR;
     cf_uint32_t hash = 0;
@@ -65,13 +64,13 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
     cf_uint32_t hash = 0;
     hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR;
 
-    hash = hashtbl_calc_hash(key, &len) & tbl->hashmsk;
+    hash = cf_hashtbl_calc_hash(key, &len) & tbl->hashmsk;
 
     for (list_entry = &tbl->table[hash], node = *list_entry;
          node;
          list_entry = &node->next, node = *list_entry) {
         if (node->hash == hash && len == node->keylen
-            && node->key && memcmp(node->key, key, len) == 0) {
+            && node->key != CF_NULL_PTR && memcmp(node->key, key, len) == 0) {
             return node;
         }
     }
@@ -80,8 +79,7 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
         return CF_NULL_PTR;
     }
 
-    node = cf_malloc_native(sizeof(hashtbl_node_t));
-    cf_membzero(node, sizeof(hashtbl_node_t));
+    node = cf_malloc_z_native(sizeof(hashtbl_node_t));
     node->hash = hash; 
     node->key = cf_malloc_native(len);
     node->keylen = len;
@@ -96,19 +94,21 @@ cf_void_t hashtbl_remove_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_size_t
     cf_uint32_t hash = 0;
     hashtbl_node_t* node = CF_NULL_PTR, **list_entry = CF_NULL_PTR, *prev = CF_NULL_PTR;
 
-    hash = hashtbl_calc_hash(key, &len) & tbl->hashmsk;
+    hash = cf_hashtbl_calc_hash(key, &len) & tbl->hashmsk;
 
     for (list_entry = &tbl->table[hash], node = *list_entry;
          node;
          prev = node, node = node->next) {
         if (node->hash == hash && node->keylen == len
-            && node->key && memcmp(node->key, key, len) == 0) {
+            && node->key != CF_NULL_PTR && memcmp(node->key, key, len) == 0) {
             if (*list_entry == node) {
-                *list_entry = CF_NULL_PTR;
+                *list_entry = node->next;
             } else {
                 prev->next = node->next;   
             }
-            tbl->callback(node->value);
+            if (tbl->callback) {
+                tbl->callback(node->value);
+            }
             cf_free_native(node->key);
             cf_free_native(node);
 
