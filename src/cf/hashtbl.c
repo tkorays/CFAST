@@ -49,7 +49,7 @@ static CF_FORCE_INLINE cf_uint32_t cf_hashtbl_calc_hash(const cf_void_t* key, cf
             ++p;
             ++*len;
         }
-        *len++;
+        ++*len;
     } else {
         end = p + *len;
         for (; p != end; p++) {
@@ -171,46 +171,6 @@ cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self) {
     }
     cf_free_native(self);
 }
-
-cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash) {
-    hashtbl_node_t** list_entry = CF_NULL_PTR;
-    hash &= self->hashmsk;
-    list_entry = &self->table[hash];
-    if (*list_entry) {
-        return (*list_entry)->value;
-    }
-    return CF_NULL_PTR;
-}
-
-cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t* value) {
-    hashtbl_node_t* node = CF_NULL_PTR;
-    hashtbl_node_t** list_entry = CF_NULL_PTR;
-    
-    hash &= self->hashmsk;
-    list_entry = &self->table[hash];
-
-    /* find the existed item and clear the item */
-    if (value == CF_NULL_PTR) {
-        if (*list_entry) {
-            self->callback((*list_entry)->value);
-
-            cf_free_native(*list_entry);
-            self->table[hash] = CF_NULL_PTR;
-            self->size--;
-        }
-        return;
-    }
-
-    if (!*list_entry) {
-        node = cf_malloc_z_native(sizeof(hashtbl_node_t));
-        node->hash = hash;
-
-        *list_entry = node;
-        self->size++;
-    }
-    (*list_entry)->value = value;
-}
-
 
 cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len) {
     hashtbl_node_t* node = CF_NULL_PTR;

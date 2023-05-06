@@ -64,29 +64,6 @@ cf_hashtbl_t* cf_hashtbl_new(cf_size_t size, cf_hashtbl_cb_f value_cb);
 cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self);
 
 /**
- * @brief get value from hash table with a uint32 hash key.
- *
- * uint32 hash is used when the key type can be converted to uint32 type.
- * don't use this function when hash key is string or other types.
- *
- * @param   self    this pointer.
- * @param   hash    hash key in uint32 format.
- * @return          hash value for the key.
- */
-cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash);
-
-/**
- * @brief set value with a uint32 hash key.
- *
- * like `cf_hashtbl_get_by_hash`, only use this function when key can be converted to uint32 type.
- *
- * @param   self    this pointer
- * @param   hash    hash key in uint32 format.
- * @param   value   value to be set, a null value means clear the item in hashtbl.
- */
-cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t* value);
-
-/**
  * @brief get value from hash table with a common key.
  *
  * we will calculate a uint32 hash from the key memory.

@@ -7,6 +7,9 @@
 #include "cf/assert.h"
 #include <stdio.h>
 
+
+#define GLOBAL_SECTION_TAG "__CF_GLB_SECT__"
+
 cf_void_t delete_value_cb(cf_void_t* value) {
     if (value) {
         cf_free(value);
@@ -36,7 +39,7 @@ cfx_ini_t* cfx_ini_new() {
     ini->cur_section = cf_hashtbl_new(16, delete_value_cb);
 
     /* the first one is always the global section */
-    cf_hashtbl_set(ini->sections, "__CF_GLB_SECT__", CF_HASH_STRING_KEY_LEN_AUTO, ini->cur_section);
+    cf_hashtbl_set(ini->sections, GLOBAL_SECTION_TAG, CF_HASH_STRING_KEY_LEN_AUTO, ini->cur_section);
 
     ini->buffer         = cf_malloc(1024);
     ini->buffer_size    = 1024;
@@ -144,6 +147,32 @@ cf_bool_t cfx_ini_input(cfx_ini_t* self, const cf_char_t* line) {
     return CF_TRUE;
 }
 
+cf_void_t _cfx_ini_print_section(const cf_char_t* key, cf_void_t* value, cf_file_t f) {
+    cf_hashtbl_iter_t iter2;
+    cf_hashtbl_t* sect = CF_NULL_PTR;
+
+    cf_assert(value != CF_NULL_PTR);
+
+    if (key) {
+        /* print section header */
+        cf_file_printf(f, "[%s]\n", key);
+    }
+
+    /* print section key-value pairs */
+    sect = CF_TYPE_CAST(cf_hashtbl_t*, value);
+    iter2 = cf_hashtbl_iter_init(sect);
+    while (!cf_hashtbl_iter_end(sect, iter2)) {
+        key = cf_hashtbl_iter_key(iter2);
+        value = cf_hashtbl_iter_value(iter2);
+        cf_assert(key != CF_NULL_PTR);
+        cf_assert(value != CF_NULL_PTR);
+
+        cf_file_printf(f, "%s = %s\n", key, value);
+
+        iter2 = cf_hashtbl_iter_next(sect, iter2);
+    }
+}
+
 cf_bool_t cfx_ini_save(cfx_ini_t* self, const cf_char_t* file) {
     cf_file_t f = CF_NULL_PTR;
     cf_hashtbl_iter_t iter, iter2;
@@ -163,29 +192,23 @@ cf_bool_t cfx_ini_save(cfx_ini_t* self, const cf_char_t* file) {
     
     cf_file_printf(f, "; generate by CFAST(tkorays)\n\n");
 
+    /* print global section */
+    _cfx_ini_print_section(CF_NULL_PTR,
+                           cf_hashtbl_get(self->sections, GLOBAL_SECTION_TAG, CF_HASH_STRING_KEY_LEN_AUTO),
+                           f);
+
     iter = cf_hashtbl_iter_init(self->sections);
     while (!cf_hashtbl_iter_end(self->sections, iter)) {
         key = cf_hashtbl_iter_key(iter);
         value = cf_hashtbl_iter_value(iter);
+
+        cf_assert(key != CF_NULL_PTR);
         if (key != CF_NULL_PTR) {
-            /* print section header */
-            cf_file_printf(f, "[%s]\n", key);
+            if (cf_strcmp(key, GLOBAL_SECTION_TAG) != 0) {
+                _cfx_ini_print_section(key, value, f);
+            }
         }
 
-        cf_assert(value != CF_NULL_PTR);
-
-        sect = CF_TYPE_CAST(cf_hashtbl_t*, value);
-        iter2 = cf_hashtbl_iter_init(sect);
-        while (!cf_hashtbl_iter_end(sect, iter2)) {
-            key = cf_hashtbl_iter_key(iter2);
-            value = cf_hashtbl_iter_value(iter2);
-            cf_assert(key != CF_NULL_PTR);
-            cf_assert(value != CF_NULL_PTR);
-
-            cf_file_printf(f, "%s = %s\n", key, value);
-
-            iter2 = cf_hashtbl_iter_next(sect, iter2);
-        }
         iter = cf_hashtbl_iter_next(self->sections, iter);
     }
 
@@ -205,7 +228,7 @@ cf_bool_t cfx_ini_set(cfx_ini_t* self,
     if (key && cf_strlen(key) == 0) return CF_FALSE;
 
     if (section == CF_NULL_PTR || (section && cf_strlen(section) == 0)) {
-        sect = cf_hashtbl_get(self->sections, "__CF_GLB_SECT__", CF_HASH_STRING_KEY_LEN_AUTO); 
+        sect = cf_hashtbl_get(self->sections, GLOBAL_SECTION_TAG, CF_HASH_STRING_KEY_LEN_AUTO); 
         cf_assert(sect != CF_NULL_PTR);
     } else {
         sect = cf_hashtbl_get(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO);
@@ -230,7 +253,7 @@ cf_bool_t cfx_ini_get(cfx_ini_t* self,
     cf_hashtbl_t* sect = CF_NULL_PTR;
     cf_char_t* value = CF_NULL_PTR;
     if (section == CF_NULL_PTR || (section && cf_strlen(section) == 0)) {
-        sect = cf_hashtbl_get(self->sections, "__CF_GLB_SECT__", CF_HASH_STRING_KEY_LEN_AUTO);
+        sect = cf_hashtbl_get(self->sections, GLOBAL_SECTION_TAG, CF_HASH_STRING_KEY_LEN_AUTO);
     } else {
         sect = cf_hashtbl_get(self->sections, section, CF_HASH_STRING_KEY_LEN_AUTO);
     }
