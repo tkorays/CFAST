@@ -38,7 +38,7 @@ static inline cf_bool_t _cf_vectory_copy_buffer(cf_vector_t* vec, void* new_buff
 static inline void* _cf_vector_next_of(void* buffer, size_t elm_size, size_t capacity, void* current) {
     int offset;
     offset = (cf_uint64_t)current - (cf_uint64_t)buffer;
-    offset = offset == (capacity - 1) * elm_size ? 0 : offset + elm_size;
+    offset = offset == CF_TYPE_CAST(int, (capacity - 1) * elm_size) ? 0 : offset + elm_size;
     return CF_TYPE_CAST(void*, (cf_uint8_t*)buffer + offset);
 }
 

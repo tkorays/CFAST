@@ -236,7 +236,7 @@ cf_errno_t  cf_file_copy(const cf_char_t* src, const cf_char_t* dst) {
     if(!src || !dst) return CF_EPARAM;
     
 #ifdef CF_OS_WIN
-    return CopyFile(src, dst, 0) ? CF_OK : CF_NOK; /* copy force */
+    return CopyFileA(src, dst, 0) ? CF_OK : CF_NOK; /* copy force */
 #else
     fd1 = open(src,O_RDWR|O_CREAT);
     if(!fd1) return CF_NOK;

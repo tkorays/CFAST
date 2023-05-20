@@ -209,8 +209,11 @@ CF_DECLARE(cf_bool_t)  cf_path_isdir(const cf_char_t* path) {
 
 CF_DECLARE(cf_bool_t)  cf_path_isabs(const cf_char_t* path) {
 #ifdef CF_OS_WIN
-    if(path && (*path >= 'a' && *path <='z') || (*path >= 'A' && *path <= 'Z') && path[1] == ':') 
+    if(path && (
+        ((*path >= 'a' && *path <='z') || (*path >= 'A' && *path <= 'Z')) && path[1] == ':')
+    ) {
         return CF_TRUE;
+    }
     else return CF_FALSE;
 
 #else 

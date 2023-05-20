@@ -175,8 +175,7 @@ cf_void_t _cfx_ini_print_section(const cf_char_t* key, cf_void_t* value, cf_file
 
 cf_bool_t cfx_ini_save(cfx_ini_t* self, const cf_char_t* file) {
     cf_file_t f = CF_NULL_PTR;
-    cf_hashtbl_iter_t iter, iter2;
-    cf_hashtbl_t* sect = CF_NULL_PTR;
+    cf_hashtbl_iter_t iter;
     cf_char_t* key = CF_NULL_PTR;
     cf_char_t* value = CF_NULL_PTR;
 

@@ -138,8 +138,8 @@ cf_void_t cf_memchk_init() {
 
 cf_bool_t cf_memchk_deinit_and_summary() {
     cf_bool_t is_success = CF_TRUE;
-    cf_hashtbl_iter_t it;
 #ifdef CF_MEMORY_DBG
+    cf_hashtbl_iter_t it;
     malloc_info* info;
     is_success = (g_memchk_ctx.alloc_size == 0);
     if (is_success) {
@@ -197,7 +197,7 @@ static void* _allocator_new_default(void* nullable_allocator, cf_size_t size) {
 
 static void _allocator_delete_default(void* nullable_allocator, void* address) {
     CF_UNUSED_VAR(nullable_allocator);
-    return cf_free(address);
+    cf_free(address);
 }
 
 

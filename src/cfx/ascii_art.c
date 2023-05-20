@@ -66,8 +66,7 @@ static const cf_char_t* ascii_map[94] = {
     "  ___  \n / _ \\ \n| | | |\n| |_| |\n \\__\\_\\\n       \n",
     " ____  \n|  _ \\ \n| |_) |\n|  _ < \n|_| \\_\\\n       \n",
     " ____  \n/ ___| \n\\___ \\ \n ___) |\n|____/ \n       \n",
-    " _____ \n|_   _|\n  | |  \n  | |  \n  |_|  \n       \n"
-    " _   _ \n| | | |\n| | | |\n| |_| |\n \\___/ \n       \n",
+    " _____ \n|_   _|\n  | |  \n  | |  \n  |_|  \n       \n",
     " _   _ \n| | | |\n| | | |\n| |_| |\n \\___/ \n       \n",
     "__     __\n\\ \\   / /\n \\ \\ / / \n  \\ V /  \n   \\_/   \n         \n",
     "__        __\n\\ \\      / /\n \\ \\ /\\ / / \n  \\ V  V /  \n   \\_/\\_/   \n            \n",
@@ -218,7 +217,7 @@ const cf_char_t* art_tab = "  \n  \n  \n  \n  \n  \n";
 
 
 cf_int_t cfx_art_print(const cf_char_t* input, cf_char_t* buff, cf_size_t size, cfx_art_font_t font) {
-    cf_char_t** pp = CF_NULL_PTR;
+    const cf_char_t** pp = CF_NULL_PTR;
     cf_size_t i = 0, j = 0, cnt = 0, len;
     if (input == CF_NULL_PTR || buff == CF_NULL_PTR) return -1;
 

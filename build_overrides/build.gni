@@ -1,0 +1,3 @@
+# 不需要编译chrome
+build_with_chromium = false
+

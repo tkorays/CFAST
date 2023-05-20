@@ -10,8 +10,10 @@
 #include <sys/time.h>
 #endif
 
+/*
 static char* g_month_name_abbr[] = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"};
 static char* g_weekday_name_abbr[] = {"Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"};
+*/
 static cf_uint8_t g_mondays[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 cf_void_t cf_time_sleep(cf_uint32_t ms)

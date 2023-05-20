@@ -31,6 +31,7 @@ typedef enum {
 typedef enum {
     CFX_FEC_ENCODER,
     CFX_FEC_DECODER,
+    CFX_FEC_CREATE_NONE,
 } CFX_FEC_CREATE_TYPE;
 
 /**

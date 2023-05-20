@@ -144,8 +144,6 @@ cf_bool_t cf_lite_queue_extend(cf_lite_queue_t* self) {
 }
 
 cf_bool_t cf_lite_queue_push_back(cf_lite_queue_t* self, void* data) {
-    void* new_items = CF_NULL_PTR;
-    cf_size_t new_capacity;
     if (!data) {
         return CF_FALSE;
     }

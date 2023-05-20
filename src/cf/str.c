@@ -166,7 +166,7 @@ cf_bool_t cf_str_switch_case(cf_char_t* s) {
 }
 
 cf_bool_t cf_str_center(cf_char_t* dst, cf_size_t size, cf_char_t* s, cf_char_t c, cf_size_t total) {
-    cf_size_t left = 0, right = 0, len = 0;
+    cf_size_t left = 0, len = 0;
     cf_char_t* p = CF_NULL_PTR;
     if (!dst || !s) {
         return CF_FALSE;

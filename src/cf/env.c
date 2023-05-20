@@ -10,14 +10,16 @@
 #endif
 
 cf_errno_t cf_env_get(const cf_char_t* name, cf_char_t* value, cf_size_t size) {
-    const char* v = 0;
-    if(!name || !value) return CF_EPARAM;
+    
 #ifdef CF_OS_WIN
-    DWORD ret = GetEnvironmentVariable(name, value, size);
+    if(!name || !value) return CF_EPARAM;
+    DWORD ret = GetEnvironmentVariableA(name, value, size);
     if (ret == 0 || ret > size) {
         return CF_ENOK;
     }
 #else 
+    const char* v = 0;
+    if(!name || !value) return CF_EPARAM;
     v = getenv(name);
     if(!v) return CF_ENOK;
 
@@ -30,7 +32,7 @@ cf_errno_t cf_env_get(const cf_char_t* name, cf_char_t* value, cf_size_t size) {
 cf_errno_t cf_env_set(const cf_char_t* name, const cf_char_t* value) {
     if(!name || !value) return CF_EPARAM;
 #ifdef CF_OS_WIN
-    if (!SetEnvironmentVariable(name, value)) return CF_ENOK;
+    if (!SetEnvironmentVariableA(name, value)) return CF_ENOK;
 #else 
     if(0 > setenv(name, value, 1)) return CF_ENOK;
 #endif
@@ -41,7 +43,7 @@ cf_errno_t cf_env_set(const cf_char_t* name, const cf_char_t* value) {
 cf_errno_t cf_env_delete(const cf_char_t* name) {
     if(!name) return CF_EPARAM;
 #ifdef CF_OS_WIN
-    if (!SetEnvironmentVariable(name, NULL)) return CF_ENOK;
+    if (!SetEnvironmentVariableA(name, NULL)) return CF_ENOK;
 #else 
     unsetenv(name);
 #endif

@@ -1,0 +1,62 @@
+config("cfast_config") {
+    include_dirs = [ "include/" ]
+    defines = [
+        "CF_IS_LITTLE_ENDIAN",
+    ]
+}
+
+
+static_library("cfast") {
+    complete_static_lib = true
+    public_configs = [ ":cfast_config" ]
+    
+    sources = [
+        "src/cf/list.c",
+        "src/cf/memory.c",
+        "src/cf/mpool.c",
+        "src/cf/opt.c",
+        "src/cf/str.c",
+        "src/cf/logging.c",
+        "src/cf/thread.c",
+        "src/cf/err.c",
+        "src/cf/event.c",
+        "src/cf/file.c",
+        "src/cf/queue.c",
+        "src/cf/config.c",
+        "src/cf/sock.c",
+        "src/cf/mutex.c",
+        "src/cf/dso.c",
+        "src/cf/dbg.c",
+        "src/cf/select.c",
+        "src/cf/path.c",
+        "src/cf/env.c",
+        "src/cf/time.c",
+        "src/cf/system.c",
+        "src/cf/string.c",
+        "src/cf/vector.c",
+        "src/cf/clock.c",
+        "src/cf/array.c",
+        "src/cf/tls.c",
+        "src/cf/bytes.c",
+        "src/cf/task_queue.c",
+        "src/cf/version.c",
+        "src/cf/numerics.c",
+        "src/cf/hashtbl.c",
+        "src/cf/value.c",
+        "src/cf/fifobuf.c",
+        "src/cf/rwlock.c",
+        "src/cfx/cli.c",
+        "src/cfx/fec.c",
+        "src/cfx/ascii_art.c",
+        "src/cfx/ini.c",
+    ]
+
+    if (is_win) {
+        sources += [ "src/cf/shm_win.c" ]
+    } else {
+        sources += [
+            "src/cf/poll.c",
+            "src/cf/shm_linux.c",
+        ]
+    }
+}

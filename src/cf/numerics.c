@@ -23,7 +23,7 @@ cf_int64_t cf_unwrapper_u8(cf_unwrapper_t* self, cf_uint8_t n) {
                 WRAP - (self->last_value - n)
         );
         // handle going back
-        if (n > self->last_value && n - self->last_value > WRAP / 2) {
+        if (n > self->last_value && CF_TYPE_CAST(cf_int64_t, n - self->last_value) > WRAP / 2) {
             self->last_unwrapped -= WRAP;
         }
     }
@@ -44,7 +44,7 @@ cf_int64_t cf_unwrapper_u16(cf_unwrapper_t* self, cf_uint16_t n) {
                 WRAP - (self->last_value - n)
         );
         // handle going back
-        if (n > self->last_value && n - self->last_value > WRAP / 2) {
+        if (n > self->last_value && CF_TYPE_CAST(cf_int64_t, n - self->last_value) > WRAP / 2) {
             self->last_unwrapped -= WRAP;
         }
     }
@@ -65,7 +65,7 @@ cf_int64_t cf_unwrapper_u32(cf_unwrapper_t* self, cf_uint32_t n) {
                 WRAP - (self->last_value - n)
         );
         // handle going back
-        if (n > self->last_value && n - self->last_value > WRAP / 2) {
+        if (n > self->last_value && CF_TYPE_CAST(cf_int64_t, n - self->last_value) > WRAP / 2) {
             self->last_unwrapped -= WRAP;
         }
     }

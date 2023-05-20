@@ -27,7 +27,7 @@ cfx_fec_t* cfx_fec_new(CFX_FEC_CREATE_TYPE create, CFX_FEC_TYPE type) {
     if (type < CFX_FEC_TYPE_DEFAULT || type >= CFX_FEC_TYPE_NUM) {
         return CF_NULL_PTR;
     }
-    if (create != CFX_FEC_DECODER || create != CFX_FEC_ENCODER) {
+    if (create != CFX_FEC_DECODER && create != CFX_FEC_ENCODER) {
         return CF_NULL_PTR;
     }
 

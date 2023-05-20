@@ -65,7 +65,6 @@ cf_bool_t cf_sock_ntop(cf_int_t af, const cf_void_t* src, cf_char_t* dst, cf_siz
 }
 
 cf_bool_t cf_sockaddr_in4_init(cf_sockaddr_in4_t* addr, const cf_char_t* addr_str, cf_uint16_t port) {
-    char buf[4] = {0};
 #if defined(__APPLE__)
     addr->sin_len = sizeof(cf_sockaddr_in4_init);
 #endif

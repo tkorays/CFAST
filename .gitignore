@@ -10,4 +10,5 @@ output/
 *.log
 .clangd/
 .cache/
+out/
 compile_commands.json

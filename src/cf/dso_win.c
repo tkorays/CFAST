@@ -13,7 +13,7 @@ CF_DECLARE(cf_errno_t) cf_dso_load(cf_dso_handle_t** handle, const cf_char_t* pa
     *handle = (cf_dso_handle_t*)cf_malloc(sizeof(cf_dso_handle_t));
     if(!*handle) return CF_EMALLOC;
 
-    (*handle)->handle = LoadLibrary(path);
+    (*handle)->handle = LoadLibraryA(path);
     if (!(*handle)->handle) {
         cf_free(*handle);
         *handle = CF_NULL_PTR;

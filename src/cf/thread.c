@@ -39,7 +39,7 @@ void SetThreadName(DWORD dwThreadID, char* threadName)
 cf_errno_t cf_thread_create(cf_thread_t* t, cf_thread_attr_t* attr,
                             cf_thread_proc_t proc, cf_void_t* arg) {
 #ifdef CF_OS_WIN
-    cf_uint32_t tid = 0;
+    unsigned long tid;
     *t = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)proc, arg, 0, &tid);
     if (*t == NULL) return CF_NOK;
     else return CF_OK;
@@ -60,8 +60,12 @@ cf_void_t cf_thread_exit(cf_uint32_t code) {
 
 cf_errno_t cf_thread_join(cf_thread_t t, cf_uint32_t* retval) {
 #ifdef CF_OS_WIN
+    DWORD retval_dw = 0;
     cf_uint32_t ret = WaitForSingleObject(t, INFINITE);
-    if(retval) (cf_void_t)GetExitCodeThread(t, retval);
+    if(retval) {
+        (cf_void_t)GetExitCodeThread(t, &retval_dw);
+        *retval = retval_dw;
+    }
     if (WAIT_OBJECT_0 == ret) return CF_OK;
     else return CF_NOK;
 #else
@@ -106,7 +110,7 @@ cf_bool_t cf_thread_equal(cf_thread_t t1, cf_thread_t t2) {
 
 void cf_thread_setname(cf_thread_t t, const char* name) {
 #ifdef CF_OS_WIN
-    SetThreadName(GetThreadId(t), name);
+    SetThreadName(GetThreadId(t), CF_TYPE_CAST(char*, name));
 #elif defined(CF_OS_MAC)
     pthread_setname_np(name);
 #else
