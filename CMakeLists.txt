@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.12)
 
-project(cfast C)
+project(cfast
+        LANGUAGES C
+        VERSION 1.0
+        DESCRIPTION "CFAST is c library.")
 
 option(CF_ENABLE_TEST "Enable Unittest" ON)
-option(USE_CFEXP_LIBTELNET_SERVER "use libtelnet server in cfexp"  OFF)
 option(CF_ENABLE_COV "Enable Coverage" OFF)
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
@@ -15,89 +17,19 @@ if (CF_ENABLE_COV)
     SET(CMAKE_C_LINK_FLAGS "-fprofile-arcs -fprofile-generate --coverage")
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_definitions("-DCF_MEMORY_DBG")
+
+if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    enable_testing()
 endif()
 
-include(TestBigEndian)
-TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
-if(IS_BIG_ENDIAN)
-    add_definitions("-DCF_IS_BIG_ENDIAN")
-else()
-    add_definitions("-DCF_IS_LITTLE_ENDIAN")
-endif()
+add_subdirectory(src)
+add_subdirectory(examples)
+add_subdirectory(tests)
 
-include_directories(./include)
 
 if(NOT CMAKE_INSTALL_PREFIX)
     set(CMAKE_INSTALL_PREFIX /usr/local)
 endif()
-
-set(SRC_LIST src/cf/list.c
-    src/cf/memory.c
-    src/cf/mpool.c
-    src/cf/cli.c
-    src/cf/opt.c 
-    src/cf/str.c
-    src/cf/logging.c
-    src/cf/thread.c
-    src/cf/err.c
-    src/cf/event.c
-    src/cf/file.c
-    src/cf/queue.c
-    src/cf/config.c
-    src/cf/sock.c
-    src/cf/mutex.c
-    src/cf/dso.c
-    src/cf/dbg.c
-    src/cf/select.c
-    src/cf/path.c
-    src/cf/env.c
-    src/cf/time.c
-    src/cf/system.c
-    src/cf/string.c
-    src/cf/vector.c
-    src/cf/clock.c
-    src/cf/array.c
-    src/cf/tls.c
-    src/cf/bytes.c
-    src/cf/task_queue.c
-    src/cf/version.c
-    src/cf/numerics.c
-    src/cf/hashtbl.c
-    src/cf/value.c
-    src/cf/fifobuf.c
-    src/cf/rwlock.c
-    src/cfx/cli.c
-    src/cfx/fec.c
-    src/cfx/ascii_art.c
-    src/cfx/ini.c
-    )
-
-if(USE_CFEXP_LIBTELNET_SERVER)
-    set(SRC_LIST ${SRC_LIST}   
-        src/cfexp/telnet_server.c
-        3rdparty/libtelnet/libtelnet.c)
-endif()
-
-if(WIN32)
-    set(SRC_LIST ${SRC_LIST}
-        src/cf/shm_win.c)
-else()
-    set(SRC_LIST ${SRC_LIST}
-        src/cf/poll.c
-        src/cf/shm_linux.c)
-endif()
-
-add_library(cfast STATIC ${SRC_LIST})
-if(WIN32)
-    add_definitions("-DHAVE_STRUCT_TIMESPEC")
-else()
-target_link_libraries(cfast pthread)
-endif()
-
-add_executable(mycli examples/mycli.c)
-target_link_libraries(mycli cfast)
 
 install(TARGETS cfast
     RUNTIME DESTINATION bin
@@ -106,39 +38,5 @@ install(TARGETS cfast
 install(DIRECTORY include DESTINATION .)
 
 if(WIN32)
-install(DIRECTORY DESTINATION bin)
+    install(DIRECTORY DESTINATION bin)
 endif()
-
-if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    enable_testing()
-    set(TESTS
-        array
-        list
-        str
-        bytes
-        types
-        tls
-        time
-        string
-        location
-        cli
-        queue
-        logging
-        task_queue
-        version
-        numerics
-        hashtbl
-        fec
-        sock
-        ascii_art
-        fifobuf
-        ini
-    )
-    foreach(TEST_NAME ${TESTS})
-        add_executable(test_${TEST_NAME} tests/test_${TEST_NAME}.c ${ADDL_SOURCE})
-        target_link_libraries(test_${TEST_NAME} cfast)
-        message(STATUS ${PROJECT_BINARY_DIR}/test_${TEST_NAME})
-        add_test(NAME ${TEST_NAME} COMMAND test_${TEST_NAME})
-    endforeach()
-endif()
-
