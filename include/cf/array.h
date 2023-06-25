@@ -143,6 +143,10 @@ cf_bool_t cf_array_reset(cf_array_t* self);
  */
 #define cf_array_size(arr) ((arr)->elm_count)
 
+#define cf_array_push_front(self, elm, size) cf_array_insert((self), CF_ARRAY_BEGIN_INDEX, (elm), (size))
+
+#define cf_array_push_back(self, elm, size) cf_array_insert((self), CF_ARRAY_BEGIN_INDEX, (elm), (size))
+
 
 CF_DECLS_END
 

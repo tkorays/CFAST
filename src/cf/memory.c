@@ -145,7 +145,7 @@ cf_bool_t cf_memchk_deinit_and_summary() {
     if (is_success) {
         printf("[memchk][leak] No leaks!\n");
     } else {
-        printf("[memchk][leak] has leaks, leak size: %ld\n", g_memchk_ctx.alloc_size);
+        printf("[memchk][leak] has leaks, leak size: %lld\n", g_memchk_ctx.alloc_size);
     }
 
     for (it = cf_hashtbl_iter_init(g_memchk_ctx.alloc_info);
@@ -153,7 +153,7 @@ cf_bool_t cf_memchk_deinit_and_summary() {
         it = cf_hashtbl_iter_next(g_memchk_ctx.alloc_info, it)) {
         info = cf_hashtbl_iter_value(it);
         if (info != CF_NULL_PTR) {
-            printf("[%s@%d : %s] leak: %ldbytes\n", info->location.file_name,
+            printf("[%s@%d : %s] leak: %lldbytes\n", info->location.file_name,
                 info->location.line_number, info->location.function_name, info->size);
         }
     }

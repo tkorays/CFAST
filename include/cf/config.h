@@ -88,7 +88,7 @@
 #    undef CF_WORDSIZE
 #    define CF_WORDSIZE 64
 #endif
-#if (defined __LP64__) || (defined __x86_64__) || (defined __amd64) || (defined __WIN64)
+#if (defined __LP64__) || (defined __x86_64__) || (defined __amd64) || (defined __WIN64) || (defined _M_X64)
 #    undef CF_WORDSIZE
 #    define CF_WORDSIZE 64
 #endif

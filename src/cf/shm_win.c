@@ -15,13 +15,13 @@ cf_errno_t cf_shm_create(cf_shm_t** shm, cf_size_t size, const cf_char_t* filena
     HANDLE hMapFile;
     LPTSTR pBuf;
 
-    hMapFile = CreateFileMapping(
+    hMapFile = CreateFileMappingA(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
         PAGE_READWRITE,          // read/write access
         0,                       // maximum object size (high-order DWORD)
         size,                // maximum object size (low-order DWORD)
-        CF_TYPE_CAST(LPCWSTR, filename));                 // name of mapping object
+        CF_TYPE_CAST(LPCSTR, filename));                 // name of mapping object
 
     if (hMapFile == NULL)
     {
