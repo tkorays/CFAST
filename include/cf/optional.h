@@ -1,3 +1,6 @@
+#ifndef __ZRTC_OPTIONAL_H__
+#define __ZRTC_OPTIONAL_H__
+
 #include "cf/types.h"
 
 
@@ -20,12 +23,6 @@ typedef struct {
 #define cf_optional_reset(opt) ((opt).has_val = CF_FALSE)
 #define cf_optional_set(opt, type, v) do { (opt).has_val = CF_TRUE; cf_optional_get(opt, type) = (v); } while(0)
 #define cf_optional_get(opt, type) ((opt).v.val_##type)
+#define cf_optional_has_val(opt) ((opt).has_val)
 
-void a() {
-    cf_optional_t opt;
-    opt.has_val = CF_TRUE;
-    opt.v.val_int32 = 1234;
-    cf_optional_reset(opt);
-    cf_optional_set(opt, int32, 4444);
-    cf_optional_get(opt, int32);
-}
+#endif /* __ZRTC_OPTIONAL_H__ */
