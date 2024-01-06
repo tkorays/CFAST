@@ -35,6 +35,19 @@ cf_void_t cf_array_deinit(cf_array_t* self) {
     cf_array_clear(self);
 }
 
+
+cf_bool_t cf_array_reserve(cf_array_t* self, int count) {
+    if (count < 0) {
+        count = self->capacity;
+    }
+    if (count > (int)self->capacity) {
+        return CF_FALSE;
+    }
+    self->elm_count = count;
+    cf_membzero(self->elm_start, self->elm_size * count);
+    return CF_TRUE;
+}
+
 cf_bool_t cf_array_insert(cf_array_t* self, int index, cf_void_t* elm, cf_size_t size) {
     int i;
     cf_size_t new_memory_size = 0;

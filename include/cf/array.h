@@ -76,6 +76,9 @@ cf_bool_t cf_array_init(cf_array_t* self, cf_size_t el_size, cf_int_t capacity);
  */
 cf_void_t cf_array_deinit(cf_array_t* self);
 
+
+cf_bool_t cf_array_reserve(cf_array_t* self, int count);
+
 /**
  * Insert an element into the array.
  *
@@ -142,6 +145,8 @@ cf_bool_t cf_array_reset(cf_array_t* self);
  * @return          Number of elements in the array
  */
 #define cf_array_size(arr) ((arr)->elm_count)
+
+#define cf_array_capacity(arr) ((arr)->capacity)
 
 #define cf_array_push_front(self, elm, size) cf_array_insert((self), CF_ARRAY_BEGIN_INDEX, (elm), (size))
 
