@@ -38,8 +38,11 @@
 
 #define CF_UNUSED_VAR(var) ((void*)(var))
 
+#define CF_MAX_INT16    32767
+#define CF_MIN_INT16    (-32768)
+#define CF_MAX_UINT16   65535
 #define CF_MAX_INT32    0x7fffffff
-#define CF_MAX_UINT32   UINT_MAX
+#define CF_MAX_UINT32   0xffffffff 
 #define CF_MIN_INT32    0x80000000
 #define CF_MAX_INT64    9223372036854775807L
 #define CF_MAX_UINT64   18446744073709551615UL
