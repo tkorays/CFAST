@@ -17,6 +17,7 @@ typedef struct {
         cf_uint64_t     val_uint64;
         float           val_float;
         double          val_double;
+        void*           val_ptr;
     } v;
 } cf_optional_t;
 

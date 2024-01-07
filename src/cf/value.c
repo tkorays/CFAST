@@ -34,7 +34,7 @@ cf_void_t cf_value_deinit(cf_value_t* value) {
     if (value->type == CF_VALUE_STRING && value->len <= 8) {
         goto finish;
     }
-    if (value->data.ptr) {
+    if (value->data.ptr && value->type != CF_VALUE_POINTER) {
         cf_free(value->data.ptr);
     }
 finish:

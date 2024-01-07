@@ -20,6 +20,7 @@ typedef enum {
     CF_VALUE_FLOAT,
     CF_VALUE_DOUBLE,
     CF_VALUE_STRING,
+    CF_VALUE_POINTER,
     CF_VALUE_CUSTOM,
 } cf_value_type_t;
 
@@ -213,6 +214,11 @@ CF_FORCE_INLINE cf_void_t cf_value_set_double(cf_value_t* value, double v) {
     value->data.f64 = v;
 }
 
+CF_FORCE_INLINE cf_void_t cf_value_set_ptr(cf_value_t* value, cf_void_t* v) {
+    value->type = CF_VALUE_POINTER;
+    value->len = sizeof(void*);
+    value->data.ptr = v;
+}
 
 /**
  * @brief Set the value of a cf_value_t struct to a string
@@ -336,6 +342,10 @@ CF_FORCE_INLINE double cf_value_double(cf_value_t* value) { return value->data.f
 CF_FORCE_INLINE cf_char_t* cf_value_string(cf_value_t* value) {
     if (value->len <= 8) return &value->data.arr[0];
     return value->data.str;
+}
+
+CF_FORCE_INLINE cf_void_t* cf_value_ptr(cf_value_t* value) {
+    return value->data.ptr;
 }
 
 /**
