@@ -4,6 +4,11 @@
 #include "cf/str.h"
 
 
+typedef struct {
+    char a;
+} json_parse_context;
+
+
 cfx_json_t* cfx_json_new() {
     cfx_json_t* json = cf_malloc_z(sizeof(cfx_json_t));
     json->type = CFX_JSON_VALUE_TYPE_OBJECT;
@@ -32,11 +37,21 @@ void cfx_json_delete(cfx_json_t* self) {
     cf_free(self);
 }
 
-cf_bool_t cfx_json_parse(cfx_json_t* self, const cf_char_t* file);
+cf_bool_t cfx_json_load(cfx_json_t* self, const cf_char_t* file) {
+    return CF_TRUE;
+}
 
-cf_bool_t cfx_json_save(cfx_json_t* self, const cf_char_t* file);
+cf_bool_t cfx_json_save(cfx_json_t* self, const cf_char_t* file) {
+    return CF_TRUE;
+}
 
-cf_bool_t cfx_json_parse_str(cfx_json_t* self, const cf_char_t* lines);
+cf_bool_t cfx_json_parse(cfx_json_t* self, const cf_char_t* lines) {
+    return CF_TRUE;
+}
+
+cf_bool_t cfx_json_dump(cfx_json_t* self, cf_char_t* buf, cf_size_t size) {
+    return CF_TRUE;
+}
 
 cfx_json_t* cfx_json_new_int(int value) {
     cfx_json_t* json = cf_malloc_z(sizeof(cfx_json_t));

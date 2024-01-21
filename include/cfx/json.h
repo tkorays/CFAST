@@ -33,11 +33,13 @@ cfx_json_t* cfx_json_new();
 
 void cfx_json_delete(cfx_json_t* self);
 
-cf_bool_t cfx_json_parse(cfx_json_t* self, const cf_char_t* file);
+cf_bool_t cfx_json_load(cfx_json_t* self, const cf_char_t* file);
 
 cf_bool_t cfx_json_save(cfx_json_t* self, const cf_char_t* file);
 
-cf_bool_t cfx_json_parse_str(cfx_json_t* self, const cf_char_t* lines);
+cf_bool_t cfx_json_parse(cfx_json_t* self, const cf_char_t* lines);
+
+cf_bool_t cfx_json_dump(cfx_json_t* self, cf_char_t* buf, cf_size_t size);
 
 cfx_json_t* cfx_json_new_int(int value);
 cfx_json_t* cfx_json_new_double(double value);

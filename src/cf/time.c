@@ -44,7 +44,7 @@ cf_bool_t cf_datetime_now(cf_datetime_t* dt) {
     dt->week_day = st.wDayOfWeek;
     dt->utc = CF_TRUE;
 
-    dt->timestamp = CF_TYPE_CAST(cf_int64_t, (CF_TYPE_CAST(cf_uint64_t, lft.dwHighDateTime) << 32 | lft.dwLowDateTime) / 10000);
+    dt->timestamp = CF_TYPE_CAST(cf_int64_t, (CF_TYPE_CAST(cf_uint64_t, lft.dwHighDateTime) << 32 | lft.dwLowDateTime) / 10000) - 11644473600000;
 #else
     struct tm* t;
     time_t timer;

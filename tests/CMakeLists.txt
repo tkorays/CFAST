@@ -23,6 +23,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         ascii_art
         fifobuf
         ini
+        json
     )
 
     foreach(TEST_NAME ${TESTS})

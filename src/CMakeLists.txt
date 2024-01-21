@@ -38,6 +38,7 @@ set(SRC_LIST cf/list.c
     cfx/fec.c
     cfx/ascii_art.c
     cfx/ini.c
+    cfx/json.c
     )
 
 if(WIN32)
