@@ -93,7 +93,7 @@ typedef int             cf_uintptr_t;
 #else
 typedef cf_int64_t      cf_uintptr_t; 
 #endif
-typedef int             cf_errno_t;     /** errno */
+typedef cf_uint32_t     cf_errno_t;     /** errno */
 
 /** @} */
 

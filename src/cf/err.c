@@ -44,14 +44,14 @@ const cf_char_t* __common_strerr(cf_uint_t eid) {
 }
 
 
-static cf_strerr_fn g_err4modules[CF_ERR_MODULE_MAX_NUM] = {
+static cf_strerr_fn g_err4modules[CF_ERR_MID_NUM_MAX] = {
     __common_strerr,
     0
 };
 
 
 cf_void_t cf_err_register(cf_uint32_t module, cf_strerr_fn fn) {
-    if(module >= CF_ERR_MODULE_MAX_NUM || !fn) return ;
+    if(module >= CF_ERR_MID_NUM_MAX || !fn) return ;
     g_err4modules[module] = fn;
     return ;
 }
@@ -65,12 +65,12 @@ cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size) {
         return;
     }
 
-    if(m >= CF_ERR_MODULE_MAX_NUM || m < CF_ERR_MODULE_START) {
+    if(m >= CF_ERR_MID_NUM_MAX || m < CF_ERR_MID_START) {
         cf_strcpy_s(msg, size, "Module NOT FOUND!");
         return;
     }
 
-    if(g_err4modules[m - CF_ERR_MODULE_START]) {
+    if(g_err4modules[m - CF_ERR_MID_START]) {
         cf_strcpy_s(msg, size, g_err4modules[m](e));
     } else {
         cf_strcpy_s(msg, size, "Module NOT REGISTERED!");
