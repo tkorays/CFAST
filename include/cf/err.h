@@ -15,7 +15,7 @@ CF_DECLS_BEGIN
 
 
 /** a custom errno should implement this function to allow strerr return the errno description */
-typedef const cf_char_t*(*cf_strerr_fn)(cf_uint_t eid);
+typedef const cf_char_t*(*cf_strerr_fn)(cf_errno_t eid);
 
 #define CF_ERR_CODE_BITS            16  /** use 16bits to hold errno */
 #define CF_ERR_MID_BITS             6   /** use 5bits to hold mid */
@@ -50,6 +50,7 @@ typedef const cf_char_t*(*cf_strerr_fn)(cf_uint_t eid);
 #define CF_EDSO_OPEN    CF_MAKE_ERRNO(CF_ERR_MID_START, 16)
 #define CF_EDSO_GETSYM  CF_MAKE_ERRNO(CF_ERR_MID_START, 17)
 #define CF_ESELECT_TOUT CF_MAKE_ERRNO(CF_ERR_MID_START, 18)
+#define CF_EBAD_ID      CF_MAKE_ERRNO(CF_ERR_MID_START, 19)
 
 #define CF_OK   CF_EOK
 #define CF_NOK  CF_ENOK
@@ -60,7 +61,7 @@ typedef const cf_char_t*(*cf_strerr_fn)(cf_uint_t eid);
  * @param fn            strerr function.
  * @param reg ok
  */
-cf_void_t cf_err_register(cf_uint32_t module, cf_strerr_fn fn);
+cf_errno_t cf_err_register(cf_uint32_t module, cf_strerr_fn fn);
 
 /**
  * strerror.

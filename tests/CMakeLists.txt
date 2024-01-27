@@ -24,6 +24,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         fifobuf
         ini
         json
+        err
     )
 
     foreach(TEST_NAME ${TESTS})

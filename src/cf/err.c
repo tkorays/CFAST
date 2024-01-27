@@ -37,6 +37,7 @@ cf_err_info_t common_err_str[] = {
     CF_ERR_STR_BUILD(CF_EDSO_OPEN, "dso open error."),
     CF_ERR_STR_BUILD(CF_EDSO_GETSYM, "fail to get dso symbol."),
     CF_ERR_STR_BUILD(CF_ESELECT_TOUT, "select timeout."),
+    CF_ERR_STR_BUILD(CF_EBAD_ID, "bad id"),
 };
 
 const cf_char_t* __common_strerr(cf_uint_t eid) {
@@ -50,10 +51,10 @@ static cf_strerr_fn g_err4modules[CF_ERR_MID_NUM_MAX] = {
 };
 
 
-cf_void_t cf_err_register(cf_uint32_t module, cf_strerr_fn fn) {
-    if(module >= CF_ERR_MID_NUM_MAX || !fn) return ;
+cf_errno_t cf_err_register(cf_uint32_t module, cf_strerr_fn fn) {
+    if(module >= CF_ERR_MID_NUM_MAX || !fn) return CF_EBAD_ID;
     g_err4modules[module] = fn;
-    return ;
+    return CF_EOK;
 }
 
 cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size) {
@@ -71,7 +72,7 @@ cf_void_t cf_err_strerr(cf_errno_t err, cf_char_t* msg, cf_size_t size) {
     }
 
     if(g_err4modules[m - CF_ERR_MID_START]) {
-        cf_strcpy_s(msg, size, g_err4modules[m](e));
+        cf_strcpy_s(msg, size, g_err4modules[m](err));
     } else {
         cf_strcpy_s(msg, size, "Module NOT REGISTERED!");
     }
