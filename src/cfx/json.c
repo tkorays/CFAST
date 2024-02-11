@@ -2,6 +2,7 @@
 
 #include "cf/memory.h"
 #include "cf/str.h"
+#include "cf/file.h"
 
 
 typedef struct {
@@ -19,15 +20,15 @@ void cfx_json_delete(cfx_json_t* self) {
     cfx_json_t* first = CF_NULL_PTR;
     if (self->type == CFX_JSON_VALUE_TYPE_OBJECT ||
         self->type == CFX_JSON_VALUE_TYPE_ARRAY) {
-        first = self->child;
+        first = self->value.child;
         while (first) {
-            self->child = first->next;
+            self->value.child = first->next;
             cfx_json_delete(first);
-            first = self->child; 
+            first = self->value.child; 
         }
     } else if (self->type == CFX_JSON_VALUE_TYPE_STRING) {
-        if (self->string) {
-            cf_free(self->string);
+        if (self->value.string) {
+            cf_free(self->value.string);
         }
     } 
 
@@ -49,29 +50,67 @@ cf_bool_t cfx_json_parse(cfx_json_t* self, const cf_char_t* lines) {
     return CF_TRUE;
 }
 
-cf_bool_t cfx_json_dump(cfx_json_t* self, cf_char_t* buf, cf_size_t size) {
-    return CF_TRUE;
+cf_size_t cfx_json_dump(cfx_json_t* self, cf_char_t* buf, cf_size_t size) {
+    cf_size_t writed_size = 0;
+    cfx_json_t* child = CF_NULL_PTR;
+    int cnt = 0;
+
+    if (self->type == CFX_JSON_VALUE_TYPE_NUMBER) {
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "%f", self->value.number);
+    } else if (self->type == CFX_JSON_VALUE_TYPE_STRING) {
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "\"%s\"", self->value.string);
+    } else if (self->type == CFX_JSON_VALUE_TYPE_BOOLEAN) {
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "%s", self->value.boolean ? "true" : "false");
+    } else if (self->type == CFX_JSON_VALUE_TYPE_NULL) {
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "null");
+    } else if (self->type == CFX_JSON_VALUE_TYPE_OBJECT) {
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "{");
+        child = self->value.child;
+        while (child) {
+            writed_size += cf_snprintf(buf + writed_size, size - writed_size, "%s:", child->name);
+            writed_size += cfx_json_dump(child, buf + writed_size, size - writed_size);
+            child = child->next;
+            if (child) {
+                writed_size += cf_snprintf(buf + writed_size, size - writed_size, ",");
+            }
+        }
+
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "}");
+    } else if (self->type == CFX_JSON_VALUE_TYPE_ARRAY) {
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "[");
+        child = self->value.child;
+        while (child) {
+            writed_size += cfx_json_dump(child, buf + writed_size, size - writed_size);
+            child = child->next;
+            if (child) {
+                writed_size += cf_snprintf(buf + writed_size, size - writed_size, ",");
+            }
+        }
+
+        writed_size += cf_snprintf(buf + writed_size, size - writed_size, "]");
+    }
+    return writed_size;
 }
 
 cfx_json_t* cfx_json_new_int(int value) {
     cfx_json_t* json = cf_malloc_z(sizeof(cfx_json_t));
     json->type = CFX_JSON_VALUE_TYPE_NUMBER;
-    json->number = value;
+    json->value.number = value;
     return json;
 }
 
 cfx_json_t* cfx_json_new_double(double value) {
     cfx_json_t* json = cf_malloc_z(sizeof(cfx_json_t));
     json->type = CFX_JSON_VALUE_TYPE_NUMBER;
-    json->number = value;
+    json->value.number = value;
     return json;
 }
 
 cfx_json_t* cfx_json_new_string(const cf_char_t* value) {
     cfx_json_t* json = cf_malloc_z(sizeof(cfx_json_t));
     json->type = CFX_JSON_VALUE_TYPE_STRING;
-    json->string = cf_malloc(cf_strlen(value) + 1);
-    cf_strcpy_s(json->string, cf_strlen(value) + 1, value);
+    json->value.string = cf_malloc(cf_strlen(value) + 1);
+    cf_strcpy_s(json->value.string, cf_strlen(value) + 1, value);
     return json;
 }
 
@@ -84,7 +123,7 @@ cfx_json_t* cfx_json_new_null() {
 cfx_json_t* cfx_json_new_bool(cf_bool_t value) {
     cfx_json_t* json = cf_malloc_z(sizeof(cfx_json_t));
     json->type = CFX_JSON_VALUE_TYPE_BOOLEAN;
-    json->boolean = value;
+    json->value.boolean = value;
     return json;
 }
 
@@ -101,50 +140,62 @@ cfx_json_t* cfx_json_new_object() {
 }
 
 cfx_json_t* cfx_json_array_add(cfx_json_t* root, cfx_json_t* node) {
+    cfx_json_t* tmp = CF_NULL_PTR;
     if (root->type != CFX_JSON_VALUE_TYPE_ARRAY) {
         return CF_NULL_PTR;
     }
-    if (root->child == CF_NULL_PTR) {
-        root->child = node;
-        node->next = CF_NULL_PTR;
-        node->prev = node;
+    if (root->value.child == CF_NULL_PTR) {
+        root->value.child = node;
     } else {
-        // root->child : the first node
-        // root->child->prev : the last node
-        // root->child->prev->next = node : add node to the last node
-        root->child->prev->next = node;
-        node->next = CF_NULL_PTR;
-        node->prev = root->child->prev;
-        root->prev = node;
+        tmp = root->value.child;
+        while (tmp->next) {
+            tmp = tmp->next;
+        }
+        tmp->next = node;
     }
     return node;
 }
 
 cfx_json_t* cfx_json_object_add(cfx_json_t* root, const cf_char_t* name, cfx_json_t* node) {
+    cfx_json_t* tmp = CF_NULL_PTR;
     if (root->type != CFX_JSON_VALUE_TYPE_OBJECT) {
         return CF_NULL_PTR;
     }
     node->name = cf_malloc_z(cf_strlen(name) + 1);
     cf_strcpy_s(node->name, cf_strlen(name) + 1, name);
 
-    if (root->child == CF_NULL_PTR) {
-        root->child = node;
-        node->next = CF_NULL_PTR;
-        node->prev = node;
+    if (root->value.child == CF_NULL_PTR) {
+        root->value.child = node;
     } else {
-        // root->child : the first node
-        // root->child->prev : the last node
-        // root->child->prev->next = node : add node to the last node
-        root->child->prev->next = node;
-        node->next = CF_NULL_PTR;
-        node->prev = root->child->prev;
-        root->prev = node;
+        tmp = root->value.child;
+        while (tmp->next) {
+            tmp = tmp->next;
+        }
+        tmp->next = node;
     }
     return node;
 
 }
 
 cfx_json_t* cfx_json_get(cfx_json_t* self, const cf_char_t* name) {
+    cfx_json_t* tmp = CF_NULL_PTR;
+    if (self->type != CFX_JSON_VALUE_TYPE_OBJECT) {
+        return CF_NULL_PTR;
+    }
+    if (!self->value.child) {
+        return CF_NULL_PTR;
+    }
+    tmp = self->value.child;
+
+    while (tmp) {
+        if (cf_strcmp(tmp->name, name) == 0) {
+            return tmp;
+        }
+    }
+    return CF_NULL_PTR;
+}
+
+cfx_json_t* cfx_json_get_cascade(cfx_json_t* self, const cf_char_t* name) {
     return CF_NULL_PTR;
 }
 

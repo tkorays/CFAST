@@ -17,15 +17,14 @@ typedef enum cfx_json_type {
 
 typedef struct cfx_json {
     CFX_JSON_VALUE_TYPE     type;
-    // object and array has childs
-    // and the childs are organized with linked list
-    struct cfx_json*        child;
+    cf_char_t*              name;
+    union {
+        double              number;
+        cf_char_t*          string;
+        cf_bool_t           boolean;
+        struct cfx_json*    child;
+    } value;
     struct cfx_json*        next;
-    struct cfx_json*        prev;
-    double                  number;
-    char*                   string;
-    cf_bool_t               boolean;
-    char*                   name;
 } cfx_json_t;
 
 
@@ -39,7 +38,7 @@ cf_bool_t cfx_json_save(cfx_json_t* self, const cf_char_t* file);
 
 cf_bool_t cfx_json_parse(cfx_json_t* self, const cf_char_t* lines);
 
-cf_bool_t cfx_json_dump(cfx_json_t* self, cf_char_t* buf, cf_size_t size);
+cf_size_t cfx_json_dump(cfx_json_t* self, cf_char_t* buf, cf_size_t size);
 
 cfx_json_t* cfx_json_new_int(int value);
 cfx_json_t* cfx_json_new_double(double value);
@@ -52,6 +51,7 @@ cfx_json_t* cfx_json_array_add(cfx_json_t* root, cfx_json_t* node);
 cfx_json_t* cfx_json_object_add(cfx_json_t* root, const cf_char_t* name, cfx_json_t* node);
 
 cfx_json_t* cfx_json_get(cfx_json_t* self, const cf_char_t* name);
+cfx_json_t* cfx_json_get_cascade(cfx_json_t* self, const cf_char_t* name);
 
 CF_DECLS_END
 
