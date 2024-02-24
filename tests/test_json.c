@@ -17,8 +17,9 @@ int main(int argc, char *argv[]) {
     cfx_json_array_add(a1, s2);
     cfx_json_object_add(json, "a1", a1);
     cf_char_t buf[1024];
-    cfx_json_dump(json, buf, 1024);
+    cfx_json_dump_s(json, buf, 1024);
     printf("json: %s\n", buf);
+    // cfx_json_load_s(buf);
 
     cfx_json_delete(json);
     return 0;

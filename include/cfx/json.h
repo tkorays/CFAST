@@ -6,6 +6,9 @@
 
 CF_DECLS_BEGIN
 
+/**
+ * types for json value
+ */
 typedef enum cfx_json_type {
     CFX_JSON_VALUE_TYPE_NUMBER,
     CFX_JSON_VALUE_TYPE_STRING,
@@ -15,6 +18,9 @@ typedef enum cfx_json_type {
     CFX_JSON_VALUE_TYPE_NULL,
 } CFX_JSON_VALUE_TYPE;
 
+/**
+ * json object
+ */
 typedef struct cfx_json {
     CFX_JSON_VALUE_TYPE     type;
     cf_char_t*              name;
@@ -32,13 +38,13 @@ cfx_json_t* cfx_json_new();
 
 void cfx_json_delete(cfx_json_t* self);
 
-cf_bool_t cfx_json_load(cfx_json_t* self, const cf_char_t* file);
+cfx_json_t* cfx_json_load(const cf_char_t* file);
 
-cf_bool_t cfx_json_save(cfx_json_t* self, const cf_char_t* file);
+cf_bool_t cfx_json_dump(cfx_json_t* self, const cf_char_t* file);
 
-cf_bool_t cfx_json_parse(cfx_json_t* self, const cf_char_t* lines);
+cfx_json_t* cfx_json_load_s(const cf_char_t* json_str);
 
-cf_size_t cfx_json_dump(cfx_json_t* self, cf_char_t* buf, cf_size_t size);
+cf_size_t cfx_json_dump_s(cfx_json_t* self, cf_char_t* buf, cf_size_t size);
 
 cfx_json_t* cfx_json_new_int(int value);
 cfx_json_t* cfx_json_new_double(double value);
