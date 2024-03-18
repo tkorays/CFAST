@@ -13,11 +13,14 @@ cf_void_t cf_value_set_str(cf_value_t* value, const cf_char_t* v) {
     }
 }
 
-cf_void_t cf_value_set_data(cf_value_t* value, cf_void_t* v, cf_size_t len) {
+cf_void_t* cf_value_set_data(cf_value_t* value, cf_void_t* v, cf_size_t len) {
     value->type = CF_VALUE_CUSTOM;
     value->len = len;
     value->data.ptr = cf_malloc(len);
-    cf_memcpy_s(value->data.ptr, value->len, v, len);
+    if (v) {
+        cf_memcpy_s(value->data.ptr, value->len, v, len);
+    }
+    return value->data.ptr;
 }
 
 

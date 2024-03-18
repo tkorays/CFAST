@@ -232,10 +232,10 @@ cf_void_t cf_value_set_str(cf_value_t* value, const cf_char_t* v);
  * @brief Set the value of a cf_value_t struct to a block of data
  * 
  * @param value the value to be set
- * @param v the block of data to set the value to
+ * @param v the block of data to set the value to, only alloc and not copy if v is null
  * @param len the length of the block of data
  */
-cf_void_t cf_value_set_data(cf_value_t* value, cf_void_t* v, cf_size_t len);
+cf_void_t* cf_value_set_data(cf_value_t* value, cf_void_t* v, cf_size_t len);
 
 /**
  * @brief Get the value of a cf_value_t struct as a character
