@@ -95,6 +95,11 @@ typedef cf_int64_t      cf_uintptr_t;
 #endif
 typedef cf_uint32_t     cf_errno_t;     /** errno */
 
+typedef struct {
+    void*       iov_base;
+    cf_size_t   iov_len;
+} cf_iovec_t;
+
 /** @} */
 
 #endif /* __CF_TYPES_H__ */

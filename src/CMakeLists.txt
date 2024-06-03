@@ -36,6 +36,8 @@ set(SRC_LIST cf/list.c
     cf/rwlock.c
     cfx/cli.c
     cfx/fec.c
+    cfx/fec_xor.c
+    cfx/fec_xor_tbl.c
     cfx/ascii_art.c
     cfx/ini.c
     cfx/json.c

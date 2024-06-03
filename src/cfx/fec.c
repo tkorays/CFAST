@@ -15,13 +15,13 @@ cf_bool_t cfx_rs_fec_encode(cf_bool_t use_cauchy_matrix,
 
 struct cfx_fec {
     CFX_FEC_CREATE_TYPE instance_type;
-    CFX_FEC_TYPE        fec_type;
+    CFX_FEC_METHOD        fec_type;
     cfx_fec_param_t     param;
     cf_list_t           input;
     cf_list_t           output;
 };
 
-cfx_fec_t* cfx_fec_new(CFX_FEC_CREATE_TYPE create, CFX_FEC_TYPE type) {
+cfx_fec_t* cfx_fec_new(CFX_FEC_CREATE_TYPE create, CFX_FEC_METHOD type) {
     cfx_fec_t* fec = CF_NULL_PTR;
 
     if (type < CFX_FEC_TYPE_DEFAULT || type >= CFX_FEC_TYPE_NUM) {
