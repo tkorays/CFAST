@@ -28,6 +28,15 @@
 #define CF_MAX2(a, b) ((a) > (b) ? (a) : (b))
 #define CF_SWAP16(a) (cf_uint16_t)((((cf_uint16_t)(a) & 0xFF) << 8) | (((cf_uint16_t)(a) & 0xFF00) >> 8))
 #define CF_SWAP32(a) ((((a) & 0xFF) << 24) | (((a) & 0xFF00) << 8) | (((a) & 0xFF0000) >> 8) | (((a) & 0xFF000000) >> 24))
+#define CF_SWAP64(a)            \
+            ( ( ((a) >> 56) & 0x00000000000000FFLL ) |       \
+              ( ((a) >> 40) & 0x000000000000FF00LL ) |       \
+              ( ((a) >> 24) & 0x0000000000FF0000LL ) |       \
+              ( ((a) >>  8) & 0x00000000FF000000LL ) |       \
+              ( ((a) <<  8) & 0x000000FF00000000LL ) |       \
+              ( ((a) << 24) & 0x0000FF0000000000LL ) |       \
+              ( ((a) << 40) & 0x00FF000000000000LL ) |       \
+              ( ((a) << 56) & 0xFF00000000000000LL ) )
 #define CF_ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #define CF_PCHAR(s) ((cf_char_t*)(s))
 #define CF_TYPE_CAST(t, v) ((t)(v))
@@ -51,13 +60,17 @@
 #ifdef CF_BIG_ENDIAN
 #define cf_hton_u16(a) (a)
 #define cf_hton_u32(a) (a)
+#define cf_hton_u64(a) (a)
 #define cf_ntoh_u16(a) (a)
 #define cf_ntoh_u32(a) (a)
+#define cf_ntoh_u64(a) (a)
 #else
 #define cf_hton_u16(a) CF_SWAP16(a)
 #define cf_hton_u32(a) CF_SWAP32(a)
+#define cf_hton_u64(a) CF_SWAP64(a)
 #define cf_ntoh_u16(a) CF_SWAP16(a)
 #define cf_ntoh_u32(a) CF_SWAP32(a)
+#define cf_ntoh_u64(a) CF_SWAP64(a)
 #endif
 
 #define _CF_IN_

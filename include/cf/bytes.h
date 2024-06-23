@@ -58,6 +58,8 @@ CF_DECLS_BEGIN
  */
 #define cf_byte_reader_remaining(p) ((p)->len - (p)->pos)
 
+#define cf_byte_reader_pos(pos) ((p))
+
 /**
  * @brief a macro template for generate `cf_byte_reader_get*` functions.
  * 
