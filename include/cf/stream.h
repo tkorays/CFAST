@@ -24,11 +24,13 @@ typedef cf_sr_t cf_sw_t;
     (_strm)->pos = 0;                             \
 } while(0)
 #define cf_sr_deinit(_strm) ((void)0)
+#define cf_sr_ptr(_strm) ((_strm)->data)
 #define cf_sr_pos(_strm) ((_strm)->pos)
 #define cf_sr_remain(_strm) ((_strm)->len - (_strm)->pos)
 
 #define cf_sw_init(_strm, _data, _len, _net) cf_sr_init((_strm), (_data), (_len), (_net))
 #define cf_sw_deinit(_strm) ((void)0)
+#define cf_sw_ptr(_strm) ((_strm)->data)
 #define cf_sw_pos(_strm) ((_strm)->pos)
 #define cf_sw_remain(_strm) ((_strm)->len - (_strm)->pos)
 
@@ -54,6 +56,15 @@ CF_FORCE_INLINE cf_uint64_t cf_sr_read64(cf_sr_t* self) {
     cf_uint64_t ret = *CF_TYPE_CAST(cf_uint64_t*, self->data + self->pos);
     self->pos += 8;
     return self->net ? cf_hton_u64(ret) : ret;
+}
+
+CF_FORCE_INLINE void cf_sr_read(cf_sr_t* self, cf_uint8_t* data, cf_size_t len) {
+    cf_memcpy_s(data, len, self->data + self->pos, cf_sw_remain(self));
+    self->pos += len;
+}
+
+CF_FORCE_INLINE void cf_sr_add_pos(cf_sr_t* self, cf_size_t len) {
+    self->pos += len;
 }
 
 CF_FORCE_INLINE void cf_sw_write8(cf_sr_t* self, cf_uint8_t data) {
