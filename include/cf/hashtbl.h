@@ -76,7 +76,6 @@ cf_void_t cf_hashtbl_delete(cf_hashtbl_t* self);
  */
 cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len);
 
-
 /**
  * @brief set value with a common key.
  *
@@ -88,6 +87,25 @@ cf_void_t* cf_hashtbl_get(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t le
  * @param   value   value to be set, a null value means clear the item in hashtbl
  */
 cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* value);
+
+/**
+ * @brief get value from hash table with hash key
+ *
+ *
+ * @param   self    this pointer
+ * @param   hash    hash key
+ * @return          hash value for this key
+ */
+cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash);
+
+/**
+ * @brief set value with hash key.
+ *
+ * @param   self    this pointer
+ * @param   key     hash key
+ * @param   value   value to be set, a null value means clear the item in hashtbl
+ */
+cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t* value);
 
 /**
  * @brief return the count of items in hashtable.
@@ -112,7 +130,7 @@ cf_hashtbl_iter_t cf_hashtbl_iter_init(cf_hashtbl_t* self);
  * @param   it      the current iterator.
  * @return          an iterator pointing to the next item in the hashtable.
  */
-cf_hashtbl_iter_t cf_hashtbl_iter_next(cf_hashtbl_t* self, cf_hashtbl_iter_t it);
+cf_hashtbl_iter_t cf_hashtbl_iter_next(cf_hashtbl_iter_t it);
 
 /**
  * @brief check if the iterator has reached the end of the hashtable.
@@ -121,7 +139,7 @@ cf_hashtbl_iter_t cf_hashtbl_iter_next(cf_hashtbl_t* self, cf_hashtbl_iter_t it)
  * @param   it      the current iterator.
  * @return          CF_TRUE if the iterator has reached the end of the hashtable, CF_FALSE otherwise.
  */
-CF_FORCE_INLINE cf_bool_t cf_hashtbl_iter_end(cf_hashtbl_t* self, cf_hashtbl_iter_t it) {
+CF_FORCE_INLINE cf_bool_t cf_hashtbl_iter_end(cf_hashtbl_iter_t it) {
     return it == CF_NULL_PTR ? CF_TRUE : CF_FALSE;
 }
 

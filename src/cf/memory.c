@@ -149,8 +149,8 @@ cf_bool_t cf_memchk_deinit_and_summary() {
     }
 
     for (it = cf_hashtbl_iter_init(g_memchk_ctx.alloc_info);
-        !cf_hashtbl_iter_end(g_memchk_ctx.alloc_info, it);
-        it = cf_hashtbl_iter_next(g_memchk_ctx.alloc_info, it)) {
+        !cf_hashtbl_iter_end(it);
+        it = cf_hashtbl_iter_next(it)) {
         info = cf_hashtbl_iter_value(it);
         if (info != CF_NULL_PTR) {
             printf("[%s@%d : %s] leak: %udbytes\n", info->location.file_name,

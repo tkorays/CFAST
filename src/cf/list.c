@@ -59,6 +59,10 @@ cf_void_t cf_list_insert_after(cf_list_t* self, cf_list_iter_t iter, void* data)
 cf_void_t cf_list_erase(cf_list_t* self, cf_list_iter_t iter) {
     cf_list_node_t* node = iter;
 
+    if (cf_list_iter_end(self, iter)) {
+        return;
+    }
+
     iter->prev->next =  iter->next;
     iter->next->prev = iter->prev;
     cf_free(node);

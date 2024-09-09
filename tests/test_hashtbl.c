@@ -36,8 +36,8 @@ void test_hashtbl_iter() {
     
     i = 0;
     for (it = cf_hashtbl_iter_init(tbl);
-        !cf_hashtbl_iter_end(tbl, it);
-        it = cf_hashtbl_iter_next(tbl, it)) {
+        !cf_hashtbl_iter_end(it);
+        it = cf_hashtbl_iter_next(it)) {
         i++;
     }
     cf_assert(i == 4);

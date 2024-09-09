@@ -161,7 +161,7 @@ cf_void_t _cfx_ini_print_section(const cf_char_t* key, cf_void_t* value, cf_file
     /* print section key-value pairs */
     sect = CF_TYPE_CAST(cf_hashtbl_t*, value);
     iter2 = cf_hashtbl_iter_init(sect);
-    while (!cf_hashtbl_iter_end(sect, iter2)) {
+    while (!cf_hashtbl_iter_end(iter2)) {
         key = cf_hashtbl_iter_key(iter2);
         value = cf_hashtbl_iter_value(iter2);
         cf_assert(key != CF_NULL_PTR);
@@ -169,7 +169,7 @@ cf_void_t _cfx_ini_print_section(const cf_char_t* key, cf_void_t* value, cf_file
 
         cf_file_printf(f, "%s = %s\n", key, value);
 
-        iter2 = cf_hashtbl_iter_next(sect, iter2);
+        iter2 = cf_hashtbl_iter_next(iter2);
     }
 }
 
@@ -197,7 +197,7 @@ cf_bool_t cfx_ini_save(cfx_ini_t* self, const cf_char_t* file) {
                            f);
 
     iter = cf_hashtbl_iter_init(self->sections);
-    while (!cf_hashtbl_iter_end(self->sections, iter)) {
+    while (!cf_hashtbl_iter_end(iter)) {
         key = cf_hashtbl_iter_key(iter);
         value = cf_hashtbl_iter_value(iter);
 
@@ -208,7 +208,7 @@ cf_bool_t cfx_ini_save(cfx_ini_t* self, const cf_char_t* file) {
             }
         }
 
-        iter = cf_hashtbl_iter_next(self->sections, iter);
+        iter = cf_hashtbl_iter_next(iter);
     }
 
     cf_file_close(f);
