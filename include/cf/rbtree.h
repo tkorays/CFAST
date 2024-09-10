@@ -88,24 +88,7 @@ static inline struct page * rb_insert_page_cache(struct inode * inode,
 
 #ifndef	__CF_RBTREE_H__
 #define	__CF_RBTREE_H__
-
-#if defined(container_of)
-#undef container_of
-#define container_of(ptr, type, member) ({			\
-                                         const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
-(type *)( (char *)__mptr - offsetof(type,member) );})
-#else
-#define container_of(ptr, type, member) ({			\
-                                         const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
-(type *)( (char *)__mptr - offsetof(type,member) );})
-#endif
-
-#if defined(offsetof)
-#undef offsetof
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#else 
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#endif
+#include "cf/types.h"
 
 #undef NULL
 #if defined(__cplusplus)
@@ -147,7 +130,7 @@ static inline void rb_set_color(struct rb_node *rb, int color)
 }
 
 #define RB_ROOT	(struct rb_root) { NULL, }
-#define	rb_entry(ptr, type, member) container_of(ptr, type, member)
+#define	rb_entry(ptr, type, member) CF_CONTAINER_OF(ptr, type, member)
 
 #define RB_EMPTY_ROOT(root)	((root)->rb_node == NULL)
 #define RB_EMPTY_NODE(node)	(rb_parent(node) == node)

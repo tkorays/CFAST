@@ -2,6 +2,8 @@
 #define __CF_VALUE_H__
 
 #include "cf/types.h"
+#include "cf/assert.h"
+#include <string.h>
 
 CF_DECLS_BEGIN
 
@@ -356,6 +358,14 @@ CF_FORCE_INLINE cf_void_t* cf_value_ptr(cf_value_t* value) {
  */
 CF_FORCE_INLINE cf_void_t* cf_value_custom(cf_value_t* value) { return value->data.ptr; }
 
+/**
+ * @brief compare two value
+ *
+ * @param value a
+ * @param value b
+ * @return 0 for equal, -1 if a < b else 1
+ */
+cf_int_t cf_value_cmp(const cf_value_t* a, const cf_value_t* b);
 
 CF_DECLS_END
 

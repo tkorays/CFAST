@@ -57,6 +57,12 @@
 #define CF_MAX_UINT64   18446744073709551615UL
 #define CF_MIN_INT64    (-CF_MAX_INT64 - 1L)
 
+#define CF_CONTAINER_OF(ptr, type, member) ({			\
+                                            const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
+                                            (type *)( (char *)__mptr - CF_OFFSET_OF(type,member) );})
+
+#define CF_OFFSET_OF(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+
 #ifdef CF_BIG_ENDIAN
 #define cf_hton_u16(a) (a)
 #define cf_hton_u32(a) (a)

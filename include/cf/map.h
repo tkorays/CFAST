@@ -2,14 +2,12 @@
 #define __CF_MAP_H__
 
 #include "cf/types.h"
+#include "cf/algorithm.h"
 
 typedef struct cf_map cf_map_t;
 typedef struct cf_map_iter cf_map_iter_t;
 
-#define container_of(ptr, type, member) ({                      \
-        const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
-        (type *)((char *)__mptr - offsetof(type,member));})
-
+// cf_alg_cmp_f
 cf_map_t* cf_map_new();
 void cf_map_delete(cf_map_t* self);
 cf_size_t cf_map_size(cf_map_t* self);

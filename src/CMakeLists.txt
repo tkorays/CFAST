@@ -35,6 +35,7 @@ set(SRC_LIST cf/list.c
     cf/fifobuf.c
     cf/rwlock.c
     cf/rbtree.c
+    cf/map.c
     cfx/cli.c
     # cfx/fec.c
     # cfx/fec_xor.c
