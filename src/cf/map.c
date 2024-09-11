@@ -15,10 +15,6 @@ struct cf_map {
     struct rb_root root;
 };
 
-struct cf_map_iter {
-    struct rb_node* node;
-};
-
 cf_map_t* cf_map_new() {
     cf_map_t* m = cf_malloc_z(sizeof(cf_map_t));
     return m;
@@ -41,41 +37,30 @@ cf_size_t cf_map_size(cf_map_t* self) {
     return 0;
 }
 
-void* cf_map_get(cf_map_t* self, const cf_void_t* key, cf_size_t len) {
+void* __cf_map_get_internal(cf_map_t* self, cf_value_t* map_key) {
     struct rb_node *node = self->root.rb_node; 
-    cf_value_t new_key;
-
-    cf_value_init(&new_key);
-    new_key.type = CF_VALUE_CUSTOM;
-    new_key.len = len;
-    new_key.data.ptr = (void*)key;
-
     while (node) {
         map_item* data = CF_CONTAINER_OF(node, map_item, node);
 
-        int ret = cf_value_cmp(&new_key, &data->map_key);
+        int ret = cf_value_cmp(map_key, &data->map_key);
         if (ret < 0) {
             node = node->rb_left;
         }else if (ret > 0) {
             node = node->rb_right;
         }else {
-            return data;
+            return data->value;
         }
    }
    return NULL;
 }
 
-void cf_map_set(cf_map_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* value) {
-    map_item *data = (map_item*)cf_malloc_z(sizeof(map_item));
-    cf_value_init(&data->map_key);
-    cf_value_set_data(&data->map_key, (void*)key, len);
-
-    data->value = value;
+void __cf_map_set_internal(cf_map_t* self, cf_value_t* map_key, cf_void_t* value) {
+    map_item *data = CF_NULL_PTR;
     
     struct rb_node **new_node = &(self->root.rb_node), *parent = NULL;
     while (*new_node) {
         map_item *this_node = CF_CONTAINER_OF(*new_node, map_item, node);
-        int ret = cf_value_cmp(&data->map_key, &this_node->map_key);
+        int ret = cf_value_cmp(map_key, &this_node->map_key);
         parent = *new_node;
 
         if (ret < 0) {
@@ -84,34 +69,71 @@ void cf_map_set(cf_map_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* 
             new_node = &((*new_node)->rb_right);
         }else {
             this_node->value = value;
-            cf_value_deinit(&data->map_key);
-            cf_free(data);
             return;
         }
     }
 
+    data = (map_item*)cf_malloc_z(sizeof(map_item));
+    cf_memcpy_s(&data->map_key, sizeof(cf_value_t), map_key, sizeof(cf_value_t));
+    cf_membzero(map_key, sizeof(cf_value_t));
+    data->value = value;
     rb_link_node(&data->node, parent, new_node);
     rb_insert_color(&data->node, &self->root);
+    return;
+}
+
+void* cf_map_get(cf_map_t* self, const cf_void_t* key, cf_size_t len) {
+    cf_value_t map_key;
+
+    cf_value_init(&map_key);
+    map_key.type = CF_VALUE_CUSTOM;
+    map_key.len = len;
+    map_key.data.ptr = (void*)key;
+
+    return __cf_map_get_internal(self, &map_key);
+}
+
+void cf_map_set(cf_map_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* value) {
+    cf_value_t map_key;
+    cf_value_init(&map_key);
+    cf_value_set_data(&map_key, (void*)key, len);
+
+    __cf_map_set_internal(self, &map_key, value);
+    cf_value_deinit(&map_key);
+}
+
+void* cf_map_get_u32(cf_map_t* self, cf_uint32_t key) {
+    cf_value_t map_key;
+
+    cf_value_init(&map_key);
+    cf_value_set_u32(&map_key, key);
+
+    return __cf_map_get_internal(self, &map_key);
+}
+
+void cf_map_set_u32(cf_map_t* self, cf_uint32_t key, cf_void_t* value) {
+    cf_value_t map_key;
+    cf_value_init(&map_key);
+    cf_value_set_u32(&map_key, key);
+
+    __cf_map_set_internal(self, &map_key, value);
+    cf_value_deinit(&map_key);
 }
 
 cf_map_iter_t cf_map_iter_init(cf_map_t* self) {
-    struct cf_map_iter it;
-    it.node = rb_first(&self->root);
-    return it;
+    return (cf_map_iter_t)rb_first(&self->root);
 }
 
 cf_map_iter_t cf_map_iter_next(cf_map_iter_t it) {
-    struct cf_map_iter it_next;
-    it_next.node = rb_next(it.node);
-    return it_next;
+    return (cf_map_iter_t)rb_next(CF_TYPE_CAST(struct rb_node*, it));
 }
 
 cf_bool_t cf_map_iter_end(cf_map_iter_t it) {
-    return it.node == CF_NULL_PTR;
+    return it == CF_NULL_PTR;
 }
 
 void* cf_map_iter_value(cf_map_iter_t it) {
-     map_item* item = CF_TYPE_CAST(map_item*, it.node);
+     map_item* item = CF_TYPE_CAST(map_item*, CF_TYPE_CAST(struct rb_node*, it));
     return item->value;
 }
 
