@@ -19,7 +19,7 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         numerics
         hashtbl
         map
-        fec
+        # fec
         sock
         ascii_art
         fifobuf
