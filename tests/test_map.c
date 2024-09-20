@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
-    cf_map_t* m = cf_map_new(); 
+    cf_map_t* m = cf_map_new(CF_NULL_PTR); 
 
     cf_map_set_u32(m, 100, (void*)100);
     cf_map_set_u32(m, 70, (void*)70);

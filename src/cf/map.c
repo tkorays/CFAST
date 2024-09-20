@@ -13,10 +13,16 @@ typedef struct {
 
 struct cf_map {
     struct rb_root root;
+    cf_value_cmp_f map_key_cmp;
 };
 
-cf_map_t* cf_map_new() {
+
+cf_map_t* cf_map_new(cf_value_cmp_f f) {
     cf_map_t* m = cf_malloc_z(sizeof(cf_map_t));
+    m->map_key_cmp = f;
+    if (m->map_key_cmp == CF_NULL_PTR) {
+        m->map_key_cmp = cf_value_cmp;
+    }
     return m;
 }
 void cf_map_delete(cf_map_t* self) {
@@ -42,7 +48,7 @@ void* __cf_map_get_internal(cf_map_t* self, cf_value_t* map_key) {
     while (node) {
         map_item* data = CF_CONTAINER_OF(node, map_item, node);
 
-        int ret = cf_value_cmp(map_key, &data->map_key);
+        int ret = self->map_key_cmp(map_key, &data->map_key);
         if (ret < 0) {
             node = node->rb_left;
         }else if (ret > 0) {
@@ -60,7 +66,7 @@ void __cf_map_set_internal(cf_map_t* self, cf_value_t* map_key, cf_void_t* value
     struct rb_node **new_node = &(self->root.rb_node), *parent = NULL;
     while (*new_node) {
         map_item *this_node = CF_CONTAINER_OF(*new_node, map_item, node);
-        int ret = cf_value_cmp(map_key, &this_node->map_key);
+        int ret = self->map_key_cmp(map_key, &this_node->map_key);
         parent = *new_node;
 
         if (ret < 0) {
@@ -97,24 +103,6 @@ void cf_map_set(cf_map_t* self, const cf_void_t* key, cf_size_t len, cf_void_t* 
     cf_value_t map_key;
     cf_value_init(&map_key);
     cf_value_set_data(&map_key, (void*)key, len);
-
-    __cf_map_set_internal(self, &map_key, value);
-    cf_value_deinit(&map_key);
-}
-
-void* cf_map_get_u32(cf_map_t* self, cf_uint32_t key) {
-    cf_value_t map_key;
-
-    cf_value_init(&map_key);
-    cf_value_set_u32(&map_key, key);
-
-    return __cf_map_get_internal(self, &map_key);
-}
-
-void cf_map_set_u32(cf_map_t* self, cf_uint32_t key, cf_void_t* value) {
-    cf_value_t map_key;
-    cf_value_init(&map_key);
-    cf_value_set_u32(&map_key, key);
 
     __cf_map_set_internal(self, &map_key, value);
     cf_value_deinit(&map_key);

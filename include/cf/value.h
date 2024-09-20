@@ -56,6 +56,7 @@ typedef struct cf_value {
 } cf_value_t;
 
 
+typedef cf_int_t (*cf_value_cmp_f)(const cf_value_t*, const cf_value_t*);
 
 /**
  * @brief initialize a value
