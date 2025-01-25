@@ -13,11 +13,11 @@ cf_size_t get_mask_index(cf_size_t n, cf_size_t k) {
         index += i * (i + 1);
         i++;
     }
-    printf("n: %lld, k: %lld, index:%lld, exp: %d\n", n, k, index, FEC_MASK_TBL_RANDOM[index]);
+    printf("n: %zu, k: %zu, index:%zu, exp: %d\n", n, k, index, FEC_MASK_TBL_RANDOM[index]);
     cf_assert(n == FEC_MASK_TBL_RANDOM[index]);
     index += 1;
     index += k * (k - 1);
-    printf("->%lld\n", index);
+    printf("->%zu\n", index);
     return index;
 }
 
@@ -50,7 +50,7 @@ int cfx_fec_xor_encode(void* self,
         cf_size_t j = 0;
         while (j < n) {
             if ((mask << j) & 0x8000) {
-                printf(">> j: %lld i: %lld\n", j, i);
+                printf(">> j: %zu i: %zu\n", j, i);
                 cf_size_t a = 0;
                 while (a < input[j].iov_len) {
                     *((cf_uint8_t*)output[i].iov_base + a) ^= *((cf_uint8_t*)input[j].iov_base + a);
@@ -108,7 +108,7 @@ int cfx_fec_xor_decode(void* self,
         cf_size_t j = 0;
         while (j < n) {
             if ((mask << j) & 0x8000) {
-                printf(">> j: %lld i: %lld\n", j, i);
+                printf(">> j: %zu i: %zu\n", j, i);
                 if (input[j].iov_base == CF_NULL_PTR) {
                     miss++;
                     missing_index = j;
@@ -117,13 +117,13 @@ int cfx_fec_xor_decode(void* self,
             j++;
         }
         if (miss == 1) {
-            printf("has one missing, index: %lld, try to decode, mask: %x\n", missing_index, mask);
+            printf("has one missing, index: %zu, try to decode, mask: %x\n", missing_index, mask);
             cf_memcpy_s(output[missing_index].iov_base, output[missing_index].iov_len,
                         input[n + i].iov_base, input[n + i].iov_len);
             j = 0;
             while (j < n) {
                 if ((mask << j) & 0x8000 && input[j].iov_base != CF_NULL_PTR) {
-                    printf(">> j: %lld i: %lld\n", j, i);
+                    printf(">> j: %zu i: %zu\n", j, i);
                     cf_size_t a = 0;
                     for (a = 0; a < input[j].iov_len; a++) {
                         *((cf_uint8_t*)output[missing_index].iov_base + a) ^= *((cf_uint8_t*)input[j].iov_base + a);
