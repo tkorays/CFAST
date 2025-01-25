@@ -34,10 +34,12 @@ set(SRC_LIST cf/list.c
     cf/value.c
     cf/fifobuf.c
     cf/rwlock.c
+    # cf/rbtree.c
+    # cf/map.c
     cfx/cli.c
-    cfx/fec.c
-    cfx/fec_xor.c
-    cfx/fec_xor_tbl.c
+    # cfx/fec.c
+    # cfx/fec_xor.c
+    # cfx/fec_xor_tbl.c
     cfx/ascii_art.c
     cfx/ini.c
     cfx/json.c

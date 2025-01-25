@@ -18,7 +18,8 @@ if(CF_ENABLE_TEST AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         version
         numerics
         hashtbl
-        fec
+        map
+        # fec
         sock
         ascii_art
         fifobuf

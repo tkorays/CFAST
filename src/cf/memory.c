@@ -8,12 +8,19 @@
 #include "cf/location.h"
 #include "cf/str.h"
 
+#ifdef _WIN32
+#pragma comment(lib, "DbgHelp.lib")
+#include <DbgHelp.h>
+HANDLE g_current_process = 0;
+#endif
+
 #ifdef CF_MEMORY_DBG
 #include <stdio.h>
 
 typedef struct {
     cf_location_t   location;
     cf_size_t       size;
+    cf_uint8_t      info[256];
 } malloc_info;
 
 struct cf_memchk_ctx {
@@ -60,6 +67,30 @@ void CF_MEMTRACE_MALLOC(void* p, cf_size_t size,
 
         info->location.line_number = line;
         info->size = size;
+
+
+#ifdef _WIN32
+        if (g_current_process == 0) {
+            g_current_process = GetCurrentProcess();
+            SymInitialize(g_current_process, NULL, TRUE);
+        }
+        void* stack[10];
+        DWORD frames = CaptureStackBackTrace(2, 5, stack, NULL);
+        DWORD i;
+        for (i = 0; i < frames; i++) {
+            DWORD64 addr = (DWORD64)stack[i];
+            PSYMBOL_INFO sym_info = cf_malloc_native(sizeof(SYMBOL_INFO) + 64);
+            sym_info->SizeOfStruct = sizeof(SYMBOL_INFO);
+            sym_info->MaxNameLen = 64;
+            DWORD64 displacement_sym = 0;
+            if (SymFromAddr(g_current_process, addr, &displacement_sym, sym_info)) {
+                cf_snprintf(info->info, sizeof(info->info) - cf_strlen(info->info),
+                    "%s<-%s", info->info, sym_info->Name);
+                    //SymGetLineFromAddr()
+            }
+            cf_free_native(sym_info);
+        }
+#endif
     }
     cf_hashtbl_set(g_memchk_ctx.alloc_info, &p, sizeof(void*), (cf_void_t*)info);
 
@@ -149,12 +180,13 @@ cf_bool_t cf_memchk_deinit_and_summary() {
     }
 
     for (it = cf_hashtbl_iter_init(g_memchk_ctx.alloc_info);
-        !cf_hashtbl_iter_end(g_memchk_ctx.alloc_info, it);
-        it = cf_hashtbl_iter_next(g_memchk_ctx.alloc_info, it)) {
+        !cf_hashtbl_iter_end(it);
+        it = cf_hashtbl_iter_next(it)) {
         info = cf_hashtbl_iter_value(it);
         if (info != CF_NULL_PTR) {
-            printf("[%s@%d : %s] leak: %udbytes\n", info->location.file_name,
-                info->location.line_number, info->location.function_name, (cf_uint32_t)info->size);
+            printf("[%s@%d : %s] leak: %udbytes, stack: %s\n", info->location.file_name,
+                info->location.line_number, info->location.function_name, (cf_uint32_t)info->size,
+                info->info);
         }
     }
     

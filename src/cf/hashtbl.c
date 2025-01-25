@@ -1,11 +1,13 @@
 #include "cf/hashtbl.h"
 #include "cf/memory.h"
+#include "cf/types.h"
 #include <string.h>
 
 /**
  * use a linked list to store values with the same hash value.
  */
 typedef struct hashtbl_node {
+    cf_hashtbl_t*           tbl;    /** hash table ponter */
     struct hashtbl_node*    next;
     cf_uint32_t             hash;   /** hash index */
     cf_void_t*              key;    /** original key */
@@ -80,6 +82,7 @@ hashtbl_node_t* hashtbl_get_node(cf_hashtbl_t* tbl, const cf_void_t* key, cf_siz
     }
 
     node = cf_malloc_z_native(sizeof(hashtbl_node_t));
+    node->tbl = tbl;
     node->hash = hash; 
     node->key = cf_malloc_native(len);
     node->keylen = len;
@@ -193,6 +196,14 @@ cf_void_t cf_hashtbl_set(cf_hashtbl_t* self, const cf_void_t* key, cf_size_t len
     }
 }
 
+cf_void_t* cf_hashtbl_get_by_hash(cf_hashtbl_t* self, cf_uint32_t hash) {
+    return cf_hashtbl_get(self, &hash, sizeof(cf_uint32_t));
+}
+
+cf_void_t cf_hashtbl_set_by_hash(cf_hashtbl_t* self, cf_uint32_t hash, cf_void_t* value) {
+    cf_hashtbl_set(self, &hash, sizeof(cf_uint32_t), value);
+}
+
 cf_size_t cf_hashtbl_size(cf_hashtbl_t* self) {
     return self->size;
 }
@@ -208,7 +219,9 @@ cf_hashtbl_iter_t cf_hashtbl_iter_init(cf_hashtbl_t* self) {
     return CF_NULL_PTR;
 }
 
-cf_hashtbl_iter_t cf_hashtbl_iter_next(cf_hashtbl_t* self, cf_hashtbl_iter_t it) {
+cf_hashtbl_iter_t cf_hashtbl_iter_next(cf_hashtbl_iter_t it) {
+    cf_hashtbl_t* self = it->tbl;
+
     /* the next index */
     cf_uint32_t i = it->hash + 1;
     if (it->next) {

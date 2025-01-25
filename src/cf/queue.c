@@ -121,12 +121,12 @@ cf_bool_t cf_lite_queue_extend(cf_lite_queue_t* self) {
         return CF_FALSE;
     }
 
-    if (self->tail - self->head > 0 && self->tail - self->head + 1 == self->count) {
+    if (self->tail > self->head) {
         cf_memcpy_s(new_items, new_capacity * self->elm_size,\
             &((cf_uint8_t*)(self->items))[self->elm_size*self->head],\
             self->count*self->elm_size);
     } else {
-        partial_count = self->capacity - self->tail + 1;
+        partial_count = self->capacity - self->head;
         cf_memcpy_s(new_items, new_capacity * self->elm_size,\
             &((cf_uint8_t*)(self->items))[self->elm_size*self->head],\
             partial_count*self->elm_size);
@@ -195,8 +195,13 @@ void* cf_lite_queue_pop_front(cf_lite_queue_t* self) {
         return CF_NULL_PTR;
     }
     data = cf_lite_queue_front(self);
-    self->head = (self->head + 1) % self->capacity;
     self->count--;
+    if (self->count == 0) {
+        self->head = 0;
+        self->tail = 0;
+    } else {
+        self->head = (self->head + 1) % self->capacity;
+    }
     return data;
 }
 
